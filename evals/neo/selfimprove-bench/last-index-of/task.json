@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 2,
+  "id": "last-index-of",
+  "category": "bug_fix",
+  "title": "取最后一次出现下标",
+  "summary": "循环方向错：buggy 返回首次出现，应返回最后一次。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "lastIndexOf",
+  "signature": "lastIndexOf(arr: any[], value: any): number — 返回 value 最后一次出现的下标，无则 -1。",
+  "probes": [
+    {
+      "name": "dup",
+      "args": [
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        2
+      ],
+      "expect": 3
+    },
+    {
+      "name": "single",
+      "args": [
+        [
+          9
+        ],
+        9
+      ],
+      "expect": 0
+    },
+    {
+      "name": "absent",
+      "args": [
+        [
+          1,
+          2
+        ],
+        5
+      ],
+      "expect": -1
+    },
+    {
+      "name": "last",
+      "args": [
+        [
+          4,
+          4,
+          4
+        ],
+        4
+      ],
+      "expect": 2
+    }
+  ]
+}

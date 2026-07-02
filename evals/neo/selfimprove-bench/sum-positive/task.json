@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 2,
+  "id": "sum-positive",
+  "category": "bug_fix",
+  "title": "只累加正数",
+  "summary": "差一/条件写错：应只累加 > 0 的项，buggy 累加了所有项。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "sumPositive",
+  "signature": "sumPositive(nums: number[]): number — 只累加 > 0 的项之和；空集为 0。",
+  "probes": [
+    {
+      "name": "mixed",
+      "args": [
+        [
+          1,
+          -2,
+          3,
+          -4,
+          5
+        ]
+      ],
+      "expect": 9
+    },
+    {
+      "name": "all-neg",
+      "args": [
+        [
+          -1,
+          -2,
+          -3
+        ]
+      ],
+      "expect": 0
+    },
+    {
+      "name": "empty",
+      "args": [
+        []
+      ],
+      "expect": 0
+    },
+    {
+      "name": "zeros",
+      "args": [
+        [
+          0,
+          0,
+          2
+        ]
+      ],
+      "expect": 2
+    }
+  ]
+}

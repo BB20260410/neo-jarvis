@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 2,
+  "id": "get-nested",
+  "category": "boundary",
+  "title": "安全取嵌套字段",
+  "summary": "边界：路径中途为 null 应回退，buggy 直接链式访问会抛错。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "getNested",
+  "signature": "getNested(obj: object, keys: string[], fallback: any): any — 路径中途为 null/undefined 返回 fallback。",
+  "probes": [
+    {
+      "name": "deep",
+      "args": [
+        {
+          "a": {
+            "b": {
+              "c": 1
+            }
+          }
+        },
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        0
+      ],
+      "expect": 1
+    },
+    {
+      "name": "missing-mid",
+      "args": [
+        {
+          "a": {}
+        },
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        "d"
+      ],
+      "expect": "d"
+    },
+    {
+      "name": "null-root",
+      "args": [
+        null,
+        [
+          "a"
+        ],
+        "r"
+      ],
+      "expect": "r"
+    },
+    {
+      "name": "leaf-null",
+      "args": [
+        {
+          "a": null
+        },
+        [
+          "a"
+        ],
+        "f"
+      ],
+      "expect": "f"
+    }
+  ]
+}

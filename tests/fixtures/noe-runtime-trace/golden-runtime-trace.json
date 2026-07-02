@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "traceId": "rt-golden-runtime-trace-001",
+  "rootRef": "goal:runtime-trace-golden",
+  "stage": "can_execute",
+  "stageDetail": "permissionPreflight",
+  "ts": 1781846400000,
+  "at": "2026-06-19T05:20:00.000Z",
+  "source": "act_pipeline",
+  "entity": {
+    "type": "act",
+    "id": "act-runtime-trace-golden"
+  },
+  "status": "passed",
+  "summary": "permission preflight passed for sanitized trace fixture",
+  "refs": [
+    "docs/DESIGN_2026-06-19_Neo_RuntimeTrace_只读审计与首版方案.md"
+  ],
+  "policy": {
+    "runtimeTouched": false,
+    "runtimeSemanticChange": false,
+    "memoryV2Writes": false,
+    "liveRestart": false,
+    "privateHoldoutRead": false,
+    "secretValuesReturned": false
+  },
+  "redaction": {
+    "prompts": "excluded",
+    "rawStreams": "excluded",
+    "memoryBodies": "excluded",
+    "lessonBodies": "excluded",
+    "ownerTokens": "excluded",
+    "secrets": "excluded"
+  },
+  "metrics": {
+    "candidateCount": 1,
+    "latencyMs": 12
+  },
+  "sha256": "4dd46766768661a6a4ae661808a636d1bf2e80e53f10033d1a54002d94cc6115"
+}

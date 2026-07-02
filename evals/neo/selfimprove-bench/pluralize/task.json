@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "id": "pluralize",
+  "category": "feature",
+  "title": "补全复数后缀",
+  "summary": "小特性：count===1 用单数，其余加 s；buggy 永远不加 s。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "pluralize",
+  "signature": "pluralize(count: number, word: string): string — count===1 单数，否则词尾加 s。",
+  "probes": [
+    {
+      "name": "one",
+      "args": [
+        1,
+        "cat"
+      ],
+      "expect": "1 cat"
+    },
+    {
+      "name": "many",
+      "args": [
+        3,
+        "cat"
+      ],
+      "expect": "3 cats"
+    },
+    {
+      "name": "zero",
+      "args": [
+        0,
+        "dog"
+      ],
+      "expect": "0 dogs"
+    },
+    {
+      "name": "neg",
+      "args": [
+        2,
+        "box"
+      ],
+      "expect": "2 boxs"
+    }
+  ]
+}

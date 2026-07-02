@@ -1,0 +1,356 @@
+
+/* v0.5 思维镜融合：state chip / cost chip / banner / session 状态多色 */
+.chat-header-goal {
+  font-size: 11.5px;
+  color: var(--orange);
+  margin-top: 3px;
+  font-weight: 500;
+  word-break: break-word;
+}
+.state-chip {
+  display: inline-block;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(127,127,127,0.08);
+  color: var(--gray-mid);
+  border: 1px solid var(--line);
+  letter-spacing: 0.2px;
+}
+.state-chip.state-thinking { background: rgba(232,185,76,0.18); color: var(--state-warning-fg); border-color: rgba(232,185,76,0.35); animation: chipPulse 1.5s infinite; }
+.state-chip.state-running { background: rgba(193,95,60,0.15); color: var(--orange); border-color: rgba(193,95,60,0.35); animation: chipPulse 0.8s infinite; }
+.state-chip.state-completed { background: rgba(110,211,107,0.18); color: var(--state-success-fg); border-color: rgba(110,211,107,0.4); }
+.state-chip.state-error { background: rgba(200,60,60,0.15); color: var(--state-danger-fg); border-color: rgba(200,60,60,0.4); }
+@keyframes chipPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.cost-chip {
+  display: inline-block;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(127,127,127,0.06);
+  color: var(--gray-mid);
+  border: 1px solid var(--line);
+  letter-spacing: 0.3px;
+}
+.cost-chip.cost-warn {
+  background: rgba(232,185,76,0.18);
+  color: var(--state-warning-fg);
+  border-color: rgba(232,185,76,0.4);
+}
+
+/* 警告 banner（danger / loopguard / focus-chain）*/
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 500;
+  word-break: break-word;
+}
+.alert-banner .btn-tiny { margin-left: auto; flex-shrink: 0; }
+.danger-banner {
+  background: rgba(232,185,76,0.14);
+  color: var(--state-warning-fg);
+  border-bottom-color: rgba(232,185,76,0.3);
+}
+.danger-banner.danger-critical {
+  background: rgba(200,60,60,0.14);
+  color: var(--state-danger-fg);
+  border-bottom-color: rgba(200,60,60,0.4);
+  font-weight: 600;
+}
+.loopguard-banner {
+  background: rgba(180,90,180,0.12);
+  color: #6e2a7e;
+  border-bottom-color: rgba(180,90,180,0.3);
+}
+.focus-chain-banner {
+  background: rgba(193,95,60,0.10);
+  color: var(--orange);
+  border-bottom-color: rgba(193,95,60,0.25);
+  font-size: 12px;
+  padding: 8px 24px;
+}
+
+/* session-item 状态点多色（覆盖原 .session-status 固定绿）*/
+.session-status.state-idle { background: var(--c-green-soft); }
+.session-status.state-thinking { background: #E8B94C; animation: pulse 1.5s infinite; }
+.session-status.state-running { background: var(--orange); animation: pulse 0.8s infinite; }
+.session-status.state-completed { background: var(--c-green-soft); }
+.session-status.state-error { background: #B3322F; }
+
+/* session-item 主目标 chip */
+.session-goal {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--orange);
+  margin-top: 3px;
+  padding: 1px 5px;
+  background: rgba(193,95,60,0.06);
+  border-radius: 3px;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Chain depth badge（07 Continuum 接力链）*/
+.chain-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(193, 95, 60, 0.1);
+  color: var(--orange);
+  border: 1px solid rgba(193, 95, 60, 0.25);
+  letter-spacing: 0.3px;
+}
+.chain-badge.warn {
+  background: rgba(200, 60, 60, 0.12);
+  color: var(--state-danger-fg);
+  border-color: rgba(180, 50, 50, 0.4);
+}
+
+/* Snapshot tab 内容 */
+.snapshot-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.snapshot-body {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--gray-deep);
+  word-break: break-word;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+.snapshot-body h1,
+.snapshot-body h2,
+.snapshot-body h3 {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin: 12px 0 6px;
+  color: var(--orange);
+}
+.snapshot-body code {
+  font-family: var(--mono);
+  background: var(--bg-bottom);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.snapshot-body pre {
+  background: var(--bg-bottom);
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 11px;
+  margin: 6px 0;
+}
+.snapshot-body pre code { background: transparent; padding: 0; }
+
+/* 项目监控卡片（方案 B）*/
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: var(--bg-main);
+  transition: all 120ms;
+}
+.project-card:hover {
+  border-color: var(--orange);
+  background: rgba(193, 95, 60, 0.04);
+}
+.proj-row1 {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 500;
+  margin-bottom: 4px;
+}
+.proj-color { font-size: 12px; }
+.proj-name {
+  flex: 1;
+  color: var(--gray-deep);
+  word-break: break-word;
+}
+.proj-cycle {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-mid);
+}
+.proj-row2 {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--gray-mid);
+  margin-bottom: 4px;
+}
+.proj-asc { padding: 1px 6px; background: rgba(193,95,60,0.1); color: var(--orange); border-radius: 3px; }
+.proj-run { padding: 1px 6px; background: rgba(80,140,80,0.12); color: var(--state-success-fg); border-radius: 3px; }
+.proj-run.stale { background: rgba(200,60,60,0.12); color: var(--state-danger-fg); }
+.proj-launchd { padding: 1px 6px; background: rgba(80,80,120,0.12); color: #4a4a7e; border-radius: 3px; }
+.proj-blocked { padding: 1px 6px; background: rgba(200,140,40,0.15); color: var(--state-warning-fg); border-radius: 3px; }
+.proj-commit { margin-left: auto; opacity: 0.7; }
+.proj-headline {
+  font-size: 11px;
+  color: var(--gray-mid);
+  opacity: 0.85;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* 项目详情 modal */
+.modal-wide {
+  /* v0.56 U8：wide modal 进一步加大（原 900 限制了 mcp 等带左右栏的 modal）*/
+  width: min(1280px, 94vw) !important;
+  max-width: 94vw !important;
+  max-height: 88vh;
+  overflow-y: auto;
+  /* v0.56 fix: 让 sticky 子元素工作（必须有滚动容器） */
+  position: relative;
+}
+/* v0.56 fix（重写）：modal head sticky 跟随滚动；用 padding 撑满 modal-body 顶部 */
+.project-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: -24px;                  /* 抵消 modal-body 的 padding: 24px，让 head 贴顶 */
+  z-index: 10;
+  background: var(--card, var(--bg-top));
+  padding: 16px 24px 12px 24px;
+  margin: -24px -24px 12px -24px;  /* 撑满 modal-body 内边距 */
+  border-bottom: 1px solid var(--line);
+}
+.project-modal-head h2 {
+  flex: 1 1 0;
+  min-width: 0;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.project-modal-head .btn-icon {
+  flex-shrink: 0;
+}
+html.dark .project-modal-head {
+  background: #2A2826;
+}
+.project-modal-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+.proj-modal-meta {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+.proj-sec-h {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 600;
+  margin: 16px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--line);
+}
+.proj-sec-body {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--gray-deep);
+  word-break: break-word;
+}
+.proj-sec-body code {
+  font-family: var(--mono);
+  background: var(--bg-bottom);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10.5px;
+}
+.proj-sec-body pre {
+  background: var(--bg-bottom);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  overflow-x: auto;
+}
+
+/* history modal（接力链归档浏览） */
+.history-modal-body {
+  font-size: 13px;
+  word-break: break-word;
+}
+.history-list { display: flex; flex-direction: column; gap: 6px; }
+.history-item {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: var(--bg-main);
+  transition: all 120ms;
+}
+.history-item:hover {
+  border-color: var(--orange);
+  background: rgba(193, 95, 60, 0.04);
+}
+.hist-row1 {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  margin-bottom: 2px;
+}
+.hist-trigger {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.hist-trigger.trigger-panel { background: rgba(193, 95, 60, 0.12); color: var(--orange); }
+.hist-trigger.trigger-manual { background: rgba(80,80,120,0.12); color: #4a4a7e; }
+.hist-trigger.trigger-auto { background: rgba(80,140,80,0.12); color: var(--state-success-fg); }
+.hist-time { color: var(--gray-deep); }
+.hist-size { margin-left: auto; color: var(--gray-mid); opacity: 0.7; }
+.hist-filename { font-family: var(--mono); font-size: 10.5px; opacity: 0.7; word-break: break-all; }
+.history-detail .snapshot-body { max-height: 60vh; }
+
+/* system 角色消息（接力起点 banner）*/
+.msg-system .msg-icon {
+  background: rgba(193, 95, 60, 0.15);
+  color: var(--orange);
+}
+.msg-system .msg-body {
+  background: rgba(193, 95, 60, 0.04);
+  border-left: 3px solid var(--orange);
+  padding: 12px 14px 12px 34px;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  color: var(--gray-deep);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.chat-header-name { font-weight: 500; font-size: 15px; }
+.chat-header-info {
+  font-size: 12px; color: var(--gray-mid);
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.chat-output {
+  flex: 1; overflow-y: auto;
+  padding: 24px 32px;
+  background: var(--bg-main);
+}

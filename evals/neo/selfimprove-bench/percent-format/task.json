@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "id": "percent-format",
+  "category": "bug_fix",
+  "title": "百分比格式化",
+  "summary": "少乘 100：buggy 直接拼 %，0.25 应得 \"25%\"。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "toPercent",
+  "signature": "toPercent(ratio: number): string — 把比例格式化为百分比字符串，如 0.25 => \"25%\"。",
+  "probes": [
+    {
+      "name": "quarter",
+      "args": [
+        0.25
+      ],
+      "expect": "25%"
+    },
+    {
+      "name": "half",
+      "args": [
+        0.5
+      ],
+      "expect": "50%"
+    },
+    {
+      "name": "whole",
+      "args": [
+        1
+      ],
+      "expect": "100%"
+    },
+    {
+      "name": "zero",
+      "args": [
+        0
+      ],
+      "expect": "0%"
+    }
+  ]
+}

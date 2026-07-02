@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "id": "noe-selfimprove-bench-v1",
+  "source": "synthetic",
+  "generatedBy": "evals/neo/selfimprove-bench/_generate_tasks.mjs",
+  "categories": {
+    "bug_fix": 7,
+    "boundary": 6,
+    "feature": 3
+  },
+  "taskCount": 16,
+  "tasks": [
+    {
+      "id": "sum-positive",
+      "category": "bug_fix",
+      "title": "只累加正数"
+    },
+    {
+      "id": "is-even",
+      "category": "bug_fix",
+      "title": "判偶数运算符写反"
+    },
+    {
+      "id": "last-index-of",
+      "category": "bug_fix",
+      "title": "取最后一次出现下标"
+    },
+    {
+      "id": "percent-format",
+      "category": "bug_fix",
+      "title": "百分比格式化"
+    },
+    {
+      "id": "merge-defaults",
+      "category": "bug_fix",
+      "title": "合并默认值方向写反"
+    },
+    {
+      "id": "clamp",
+      "category": "bug_fix",
+      "title": "clamp 边界比较写反"
+    },
+    {
+      "id": "word-count",
+      "category": "bug_fix",
+      "title": "分词忽略多余空格"
+    },
+    {
+      "id": "safe-divide",
+      "category": "boundary",
+      "title": "除零保护"
+    },
+    {
+      "id": "first-or-default",
+      "category": "boundary",
+      "title": "空数组取首元素"
+    },
+    {
+      "id": "truncate",
+      "category": "boundary",
+      "title": "截断字符串边界"
+    },
+    {
+      "id": "parse-int-default",
+      "category": "boundary",
+      "title": "解析整数带兜底"
+    },
+    {
+      "id": "avg",
+      "category": "boundary",
+      "title": "平均值空集保护"
+    },
+    {
+      "id": "get-nested",
+      "category": "boundary",
+      "title": "安全取嵌套字段"
+    },
+    {
+      "id": "pluralize",
+      "category": "feature",
+      "title": "补全复数后缀"
+    },
+    {
+      "id": "classify-sign",
+      "category": "feature",
+      "title": "补全零分支"
+    },
+    {
+      "id": "initials",
+      "category": "feature",
+      "title": "生成姓名缩写"
+    }
+  ]
+}

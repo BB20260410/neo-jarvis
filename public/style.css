@@ -1,0 +1,30 @@
+/* Noe — 参考 Codex 设计语言（结构/Token）+ Anthropic 配色规范 */
+/* S25（2026-06-10）：7522 行单文件按节边界保序拆为 @import 壳 —— 引用方（index.html /style.css）零改动，
+ * 级联顺序与拆分前完全一致。@layer 顺序声明在 01-base 头部，加载即生效。
+ * S25b（2026-06-10）：9 个 ≥500 行的段再按节边界细拆（同法：子段按序拼接与拆前逐字节一致），全部段 <500 行。
+ * 新增样式请进对应段文件（段超 500 行再继续细拆），不要再回填本文件。 */
+@import url('/css/style-01-base.css'); /* token/reset/科幻主题（292 行） */
+@import url('/css/style-02a-widgets-a-buttons-status.css'); /* 按钮系统/timeline/sparkline/安全tab（216 行） */
+@import url('/css/style-02b-widgets-a-code-terminal.css'); /* diff/代码块/marked/终端（284 行） */
+@import url('/css/style-03a-rooms-core.css'); /* 多AI聊天室核心/Plugin中心/仪表盘卡片（318 行） */
+@import url('/css/style-03b-rooms-controls.css'); /* topic工具栏/划词浮层/全屏展开/resize/debate控件/adapter modal（253 行） */
+@import url('/css/style-03c-rooms-chat-kanban.css'); /* Chat房1v1/Squad看板/任务抽屉/doc modal/hook事件流（322 行） */
+@import url('/css/style-04a-widgets-b-watcher.css'); /* session分组/中断脉冲/watcher/stderr折叠（294 行） */
+@import url('/css/style-04b-widgets-b-modals.css'); /* 流式光标/confirm/审批重试/prompt/shimmer+toast（366 行） */
+@import url('/css/style-05a-layout-sidebar.css'); /* Sidebar 主布局（364 行） */
+@import url('/css/style-05b-layout-main.css'); /* Main 主布局（201 行） */
+@import url('/css/style-06a-agents-view.css'); /* AgentsView三件套/StatusBar/右键菜单/⌘K面板（279 行） */
+@import url('/css/style-06b-agents-chips-modals.css'); /* 思维镜chips/banner/snapshot/项目卡片与详情/history modal（356 行） */
+@import url('/css/style-06c-agents-messages-inspector.css'); /* 消息气泡/Inspector/Modal（358 行） */
+@import url('/css/style-07a1-overview-panel-rooms.css'); /* Overview 面板框架+块A房间状态（299 行） */
+@import url('/css/style-07a2-overview-metrics.css'); /* Overview 块B-F：时序/byAdapter/资源/预算/治理聚合（226 行） */
+@import url('/css/style-07b1-brain-governance-center.css'); /* Noe Brain Lite/Governance Center（290 行） */
+@import url('/css/style-07b2-governance-queue.css'); /* P5 治理工作队列看板（338 行） */
+@import url('/css/style-07c1-agent-graph-registry.css'); /* Agent 注册表/档案/策略/模型技能中心（405 行） */
+@import url('/css/style-07c2-agent-graph-code.css'); /* 规则/预览/code-context/codebase map/符号图（320 行） */
+@import url('/css/style-07c3-agent-graph-runs.css'); /* 运行列表/详情/workflow/main-path（289 行） */
+@import url('/css/style-07c4-agent-graph-evidence.css'); /* run-block/产物/会话chip/证据链/响应式（215 行） */
+@import url('/css/style-07d-codebase-approvals.css'); /* Codebase Center/知识库状态框/审批中心/窄屏响应式（415 行） */
+@import url('/css/style-08a-features-modals.css'); /* 房间模板/webhook/归档/report/MCP/autopilot/timeline modal（261 行） */
+@import url('/css/style-08b-features-activity.css'); /* Activity audit viewer（329 行） */
+@import url('/css/style-08c-features-delegation.css'); /* 委派中心/forward ctx/重试/focus-visible/tap target（233 行） */

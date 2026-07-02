@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "id": "is-even",
+  "category": "bug_fix",
+  "title": "判偶数运算符写反",
+  "summary": "运算符写错：buggy 用 === 1 当偶数判定，应为 === 0。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "isEven",
+  "signature": "isEven(n: number): boolean — n 为偶数返回 true。",
+  "probes": [
+    {
+      "name": "4",
+      "args": [
+        4
+      ],
+      "expect": true
+    },
+    {
+      "name": "7",
+      "args": [
+        7
+      ],
+      "expect": false
+    },
+    {
+      "name": "0",
+      "args": [
+        0
+      ],
+      "expect": true
+    },
+    {
+      "name": "neg2",
+      "args": [
+        -2
+      ],
+      "expect": true
+    }
+  ]
+}

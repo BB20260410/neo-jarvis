@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Noe</title>
+<link rel="stylesheet" href="/style.css?v=cognitive-entry-20260605" />
+<!-- v0.70 s5 W4：LobeChat 风格 CSS token 候选（命名空间 :root.token-preview-W4，需手动启用）-->
+<link rel="stylesheet" href="/src/web/learned/lobe-tokens-extension.css" />
+<!-- v0.82 真做：拆 view CSS（双轨过渡，后加载覆盖 style.css 同组定义）-->
+<link rel="stylesheet" href="/css/modal.css" />
+<link rel="stylesheet" href="/css/utility.css" />
+<link rel="stylesheet" href="/css/form.css" />
+<link rel="stylesheet" href="/css/sidebar.css?v=settings-bar-20260607" />
+<!-- v0.23 xterm.js CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><img src="/app-icon.png" width="32" height="32" alt="Noe"></div>
+      <div class="brand-text">
+        <div class="brand-title" id="brandTitle">Noe</div>
+        <div class="brand-subtitle" id="brandSubtitle">多会话管理 · v…</div>
+      </div>
+    </div>
+    <button class="btn-new" id="btnNew">
+      <span class="plus">＋</span> 新建会话
+    </button>
+
+    <div class="session-list" id="sessionList"></div>
+
+    <div class="archived-section" id="archivedSection" style="display:none;">
+      <button class="archived-toggle" id="archivedToggle" aria-expanded="false" aria-controls="archivedList" aria-label="展开/折叠已归档会话列表">
+        <span class="arch-arrow" id="archArrow" aria-hidden="true">▶</span>
+        <span>📦 已归档 (<span id="archivedCount">0</span>)</span>
+      </button>
+      <div class="archived-list" id="archivedList" style="display:none;" role="list"></div>
+    </div>
+
+    <nav class="brand-actions" aria-label="侧边栏设置">
+      <details class="settings-dd" id="settingsDd">
+        <summary class="settings-dd-toggle" aria-label="展开/收起设置">
+          <svg class="settings-dd-gear" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.7 2.8h4.6l.6 2.5c.6.2 1.1.5 1.6.9l2.5-.8 2.3 4-1.9 1.7v1.8l1.9 1.7-2.3 4-2.5-.8c-.5.4-1 .7-1.6.9l-.6 2.5H9.7l-.6-2.5c-.6-.2-1.1-.5-1.6-.9l-2.5.8-2.3-4 1.9-1.7v-1.8L2.7 9.4l2.3-4 2.5.8c.5-.4 1-.7 1.6-.9l.6-2.5Z"/>
+            <circle cx="12" cy="12" r="3.2"/>
+          </svg>
+          <span class="settings-dd-label">设置</span>
+          <svg class="settings-dd-phone" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="8" y="3" width="8" height="18" rx="2"/>
+            <path d="M11 6h2"/>
+          </svg>
+        </summary>
+        <div class="settings-dd-panel">
+      <section class="brand-action-group" aria-label="工作台">
+        <div class="brand-action-title">工作台</div>
+        <div class="brand-action-grid">
+          <a class="theme-toggle nav-action" id="btnCognitive" href="/cognitive.html" style="text-decoration:none" title="🪐 认知界面：实时语音 + 视频 + 认知图，BaiLongma 风沉浸驾驶舱（语音/视觉/聊天一屏）" aria-label="打开认知界面"><span class="nav-icon">🪐</span><span class="nav-label">认知</span></a>
+          <button class="theme-toggle nav-action" id="btnOverview" title="所有房状态汇总 + token 趋势 + adapter 性能横比 + 资源健康（v0.53 Sprint 3）" aria-label="打开总览面板"><span class="nav-icon">📊</span><span class="nav-label">总览</span></button>
+          <button class="theme-toggle nav-action" id="btnTerminal" title="在 panel 内打开真终端（PTY，可跑 claude / git / 任意命令）" aria-label="打开内嵌终端"><span class="nav-icon">💻</span><span class="nav-label">终端</span></button>
+          <button class="theme-toggle nav-action" id="btnRooms" title="多 AI 聊天室：Claude/GPT/MiniMax 协同 debate 出最优方案" aria-label="打开聊天室"><span class="nav-icon">💬</span><span class="nav-label">房间</span></button>
+          <button class="theme-toggle nav-action" id="btnNoeBrain" title="Noe Brain：查看 loop、记忆、焦点栈、工具和健康状态" aria-label="打开 Noe Brain"><span class="nav-icon">◉</span><span class="nav-label">Brain</span></button>
+          <button class="theme-toggle nav-action" id="btnAgentRegistry" title="Agent 图谱：查看角色、任务标签和 Skill 绑定" aria-label="打开 Agent 图谱"><span class="nav-icon">🧠</span><span class="nav-label">Agent</span></button>
+          <button class="theme-toggle nav-action" id="btnCodebaseCenter" title="Codebase Center：本地代码索引查询与上下文证据" aria-label="打开 Codebase Center"><span class="nav-icon">⌘</span><span class="nav-label">代码</span></button>
+          <button class="theme-toggle nav-action" id="btnKnowledgeCenter" title="知识库：跨 Agent Run / 工具结果 / 审计的本地证据全文检索" aria-label="打开知识库"><span class="nav-icon">📚</span><span class="nav-label">知识</span></button>
+        </div>
+      </section>
+      <section class="brand-action-group" aria-label="治理">
+        <div class="brand-action-title">治理</div>
+        <div class="brand-action-grid">
+          <button class="theme-toggle nav-action" id="btnGovernance" title="治理中心：统一查看审批、预算、委派、Autopilot 和 Agent Run 阻塞" aria-label="打开治理中心"><span class="nav-icon">🧷</span><span class="nav-label">治理</span></button>
+          <button class="theme-toggle nav-action" id="btnApprovals" title="审批中心：查看并处理危险命令、预算覆盖等人工确认事项" aria-label="打开审批中心"><span class="nav-icon">🛡</span><span class="nav-label">审批</span></button>
+          <button class="theme-toggle nav-action" id="btnActivity" title="审计时间线：查看 AI 输出、工具调用、审批、预算和错误事件" aria-label="打开审计时间线"><span class="nav-icon">📜</span><span class="nav-label">审计</span></button>
+          <button class="theme-toggle nav-action" id="btnDelegations" title="委派中心：管理跨房间任务委派队列" aria-label="打开委派中心"><span class="nav-icon">🧭</span><span class="nav-label">委派</span></button>
+          <button class="theme-toggle nav-action" id="btnAutopilot" title="🤖 Autopilot 自驾：房完成/出错时按规则自动 forward / notify（默认关）" aria-label="配置 Autopilot"><span class="nav-icon">🤖</span><span class="nav-label">自驾</span></button>
+        </div>
+      </section>
+      <section class="brand-action-group" aria-label="系统">
+        <div class="brand-action-title">系统</div>
+        <div class="brand-action-grid">
+          <button class="theme-toggle nav-action" id="btnPlugins" title="通用 CLI Plugin 中心：装 PraisonAI / iOS 工具链 / AutoGen 等任意 CLI（v0.52 W2）" aria-label="打开 Plugin 中心"><span class="nav-icon">🧩</span><span class="nav-label">插件</span></button>
+          <button class="theme-toggle nav-action" id="btnRoomAdapters" title="配置房间 adapter：MiniMax / Gemini API / Gemini CLI / 自定义 OpenAI 兼容" aria-label="配置 adapter"><span class="nav-icon">⚙️</span><span class="nav-label">模型</span></button>
+          <button class="theme-toggle nav-action" id="btnWebhooks" title="🔔 Webhook 出站推送：房间完成/失败/暂停时推 Discord/Slack/自定义 URL" aria-label="配置 Webhook"><span class="nav-icon">🔔</span><span class="nav-label">推送</span></button>
+          <button class="theme-toggle nav-action" id="btnArchive" title="📂 聊天归档：每次房间完成自动写 markdown 到目录，按时间/房名分类" aria-label="配置归档"><span class="nav-icon">📂</span><span class="nav-label">归档</span></button>
+          <button class="theme-toggle nav-action" id="btnMcp" title="🔌 MCP 服务器：让房成员调用任意 MCP server 的 tool（filesystem / github / playwright / 自定义）" aria-label="配置 MCP"><span class="nav-icon">🔌</span><span class="nav-label">MCP</span></button>
+          <button class="theme-toggle nav-action" id="btnLoginClaude" title="在外部 Terminal 跑 claude /login（OAuth 浏览器跳转）" aria-label="登录 Claude Code"><span class="nav-icon">🔐</span><span class="nav-label">登录</span></button>
+          <button class="theme-toggle nav-action" id="themeToggle" title="切换暗/亮主题 (⌘D)" aria-label="切换暗亮主题"><span class="nav-icon">🌓</span><span class="nav-label">主题</span></button>
+          <button class="theme-toggle nav-action" id="btnInspectorToggle" title="折叠/展开右侧 inspector 面板" aria-label="折叠右侧面板"><span class="nav-icon">⇥</span><span class="nav-label">右栏</span></button>
+        </div>
+      </section>
+        </div>
+      </details>
+    </nav>
+
+  </aside>
+
+  <main class="main">
+    <header class="main-header" id="mainHeader">
+      <div class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 64 64" width="48" height="48" style="opacity:0.4"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.4"/><g stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"><line x1="19" y1="19" x2="45" y2="45"/><line x1="45" y1="19" x2="19" y2="45"/></g><circle cx="32" cy="32" r="4" fill="currentColor"/></svg></div>
+        <h2>欢迎使用 Noe</h2>
+        <p>按任务类型开始 ↓</p>
+
+        <div class="empty-cta-grid">
+          <button class="cta-card cta-card-primary" data-cta="cognitive" title="进入认知界面：语音、视频、聊天、搜索研究一屏处理">
+            <div class="cta-icon">🪐</div>
+            <div class="cta-title">认知界面</div>
+            <div class="cta-desc">语音 · 视频 · 聊天 · 搜索研究<br/>进入主工作台</div>
+          </button>
+          <button class="cta-card" data-cta="rooms-chat" title="一个 AI 跟你 1v1 持续对话（最简单）">
+            <div class="cta-icon">💬</div>
+            <div class="cta-title">直接聊天</div>
+            <div class="cta-desc">1v1 持续对话<br/>问答、改写、讨论</div>
+          </button>
+          <button class="cta-card" data-cta="rooms-debate" title="多模型协作：多个模型独立提案、互评修订，再合成共识">
+            <div class="cta-icon">🤝</div>
+            <div class="cta-title">多模型协作</div>
+            <div class="cta-desc">提案 → 互评 → 共识<br/>方案、判断、取舍</div>
+          </button>
+          <button class="cta-card" data-cta="rooms-squad" title="AI 团队拆活：PM 拆任务 → Dev 并行实现 → QA 审查 → 不过自动返工">
+            <div class="cta-icon">👥</div>
+            <div class="cta-title">项目拆活</div>
+            <div class="cta-desc">PM → Dev → QA<br/>实现、审查、返工</div>
+          </button>
+          <button class="cta-card" data-cta="terminal" title="在 panel 内打开真终端（PTY，可跑任意命令）">
+            <div class="cta-icon">💻</div>
+            <div class="cta-title">工具 / 终端</div>
+            <div class="cta-desc">PTY 跑命令<br/>git、Claude、脚本</div>
+          </button>
+        </div>
+
+        <p class="hint-text">或键盘：<kbd>⌘N</kbd> 新建会话 · <kbd>⌘K</kbd> 命令面板 · <kbd>⌘?</kbd> 看完整快捷键</p>
+      </div>
+    </header>
+    <!-- v0.23 内嵌真终端 panel -->
+    <!-- v0.53 Sprint 3: 总览面板 -->
+    <div class="noe-brain-area" id="noeBrainArea" style="display:none;">
+      <div class="noe-brain-header">
+        <div>
+          <div class="noe-brain-title">Noe Brain</div>
+          <div class="noe-brain-subtitle">Loop · Focus · Thought Stream · Memory · Tools · Health</div>
+        </div>
+        <div class="noe-brain-actions">
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeBrainRefresh">⟳ 刷新</button>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnNoeBrainBack">← 返回</button>
+        </div>
+      </div>
+      <div class="noe-brain-grid">
+        <section class="noe-brain-panel" data-noe-panel="loop">
+          <div class="noe-brain-panel-head">
+            <span>Loop</span>
+            <span class="noe-brain-chip" id="noeLoopState">stopped</span>
+          </div>
+          <div class="noe-brain-metrics" id="noeLoopMetrics"></div>
+          <div class="noe-brain-controls">
+            <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnNoeLoopStart">Start</button>
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeLoopTick">Tick</button>
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeLoopActTick">Act Tick</button>
+            <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnNoeLoopStop">Stop</button>
+          </div>
+        </section>
+        <section class="noe-brain-panel noe-brain-panel-wide" data-noe-panel="acts">
+          <div class="noe-brain-panel-head"><span>Act Queue</span><span class="noe-brain-chip" id="noeActPendingCount">0</span></div>
+          <div class="noe-brain-metrics">
+            <div class="noe-brain-metric"><span>current</span><strong id="noeCurrentAct">-</strong></div>
+            <div class="noe-brain-metric"><span>approval</span><strong id="noeApprovalStatus">none</strong></div>
+            <div class="noe-brain-metric"><span>tool permission</span><strong id="noeToolPermissionStatus">unknown</strong></div>
+            <div class="noe-brain-metric"><span>budget</span><strong id="noeBudgetStatus">unknown</strong></div>
+          </div>
+          <div class="noe-brain-failure" id="noeFailureReason">-</div>
+          <a class="noe-brain-log-link" id="noeEvidenceLogLink" href="#" aria-disabled="true">暂无可复现日志</a>
+          <div class="noe-brain-list" id="noeActQueue"></div>
+        </section>
+        <section class="noe-brain-panel" data-noe-panel="focus">
+          <div class="noe-brain-panel-head"><span>Focus Stack</span><span class="noe-brain-chip" id="noeFocusDepth">0</span></div>
+          <div class="noe-brain-list" id="noeFocusList"></div>
+          <div class="noe-brain-inline-form">
+            <input id="noeFocusTitle" type="text" maxlength="160" placeholder="焦点标题" />
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeFocusPush">Push</button>
+          </div>
+        </section>
+        <section class="noe-brain-panel" data-noe-panel="thought">
+          <div class="noe-brain-panel-head"><span>Thought Stream</span><span class="noe-brain-chip" id="noeThoughtCount">0</span></div>
+          <div class="noe-brain-list noe-thought-stream" id="noeThoughtStream"></div>
+        </section>
+        <section class="noe-brain-panel" data-noe-panel="memory">
+          <div class="noe-brain-panel-head"><span>Memory</span><span class="noe-brain-chip" id="noeMemoryCount">0</span></div>
+          <div class="noe-brain-inline-form">
+            <input id="noeMemoryQuery" type="search" maxlength="200" placeholder="召回关键词" />
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeMemorySearch">Search</button>
+          </div>
+          <textarea id="noeMemoryBody" rows="3" maxlength="4000" placeholder="写入一条 Noe 记忆"></textarea>
+          <div class="noe-brain-controls"><button class="cxbtn cxbtn-primary cxbtn-sm" id="btnNoeMemoryWrite">Write</button></div>
+          <div class="noe-brain-list" id="noeMemoryList"></div>
+        </section>
+        <section class="noe-brain-panel" data-noe-panel="tools">
+          <div class="noe-brain-panel-head"><span>Tools</span><span class="noe-brain-chip" id="noeToolCount">0</span></div>
+          <div class="noe-brain-list" id="noeToolsList"></div>
+        </section>
+        <section class="noe-brain-panel" data-noe-panel="health">
+          <div class="noe-brain-panel-head"><span>Health</span><span class="noe-brain-chip" id="noeHealthStatus">ok</span></div>
+          <div class="noe-brain-metrics" id="noeHealthMetrics"></div>
+          <div class="noe-brain-list" id="noeApprovalsList"></div>
+        </section>
+        <section class="noe-brain-panel noe-brain-panel-wide" data-noe-panel="voice">
+          <div class="noe-brain-panel-head"><span>语音 · 视觉 · 主动陪伴</span><span class="noe-brain-chip" id="noeVoiceState">就绪</span></div>
+          <div class="noe-brain-controls">
+            <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnNoeVoiceTalk" title="按住说话，松开发送">🎙 按住说话</button>
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnNoeVisionGlance" title="让 Noe 看一眼你的屏幕">👁 看一眼屏幕</button>
+            <label class="noe-voice-toggle" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox" id="noeProactiveToggle" /> 主动陪伴</label>
+          </div>
+          <div class="noe-brain-list noe-voice-log" id="noeVoiceLog"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="overview-area" id="overviewArea" style="display:none;">
+      <div class="overview-header">
+        <span class="overview-title">📊 总览面板</span>
+        <span class="overview-subtitle">房间状态 · token 趋势 · adapter 横比 · 资源健康</span>
+        <div class="overview-actions">
+          <label class="overview-range-label">时间窗：
+            <select id="overviewRangeSelect">
+              <option value="24h">最近 24 小时</option>
+              <option value="7d" selected>最近 7 天</option>
+              <option value="30d">最近 30 天</option>
+            </select>
+          </label>
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnOverviewRefresh" title="立即刷新">⟳ 刷新</button>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnOverviewBack">← 返回</button>
+        </div>
+      </div>
+      <div class="overview-grid">
+        <section class="overview-card overview-rooms" id="ovBlockA">
+          <div class="overview-card-title">🏠 房间状态</div>
+          <div class="overview-rooms-numbers" id="ovRoomsNumbers"></div>
+          <div class="overview-active-rooms-label">活跃房间</div>
+          <div class="overview-active-rooms" id="ovActiveRooms"></div>
+        </section>
+        <section class="overview-card overview-timeseries" id="ovBlockB">
+          <div class="overview-card-title">📈 Token 趋势</div>
+          <div class="overview-ts-stats" id="ovTsStats"></div>
+          <canvas class="overview-chart-canvas" id="ovChartTimeseries"></canvas>
+        </section>
+        <section class="overview-card overview-byadapter" id="ovBlockC">
+          <div class="overview-card-title">⚖️ Adapter 横比
+            <span class="overview-card-sub">
+              <select id="ovByAdapterMetric" class="overview-metric-select">
+                <option value="totalTokens" selected>总 tokens</option>
+                <option value="totalCostUSD">总成本 USD</option>
+                <option value="avgLatencyMs">平均延迟 ms</option>
+                <option value="successRate">成功率</option>
+                <option value="count">调用次数</option>
+              </select>
+            </span>
+          </div>
+          <canvas class="overview-chart-canvas" id="ovChartByAdapter"></canvas>
+          <div class="overview-byadapter-note" id="ovByAdapterNote"></div>
+        </section>
+        <section class="overview-card overview-health" id="ovBlockD">
+          <div class="overview-card-title">❤️‍🩹 资源健康</div>
+          <div class="overview-health-stats" id="ovHealthStats"></div>
+          <div class="overview-health-warnings" id="ovHealthWarnings"></div>
+        </section>
+        <section class="overview-card overview-budget" id="ovBlockE">
+          <div class="overview-card-title">预算治理
+            <span class="overview-card-sub" id="ovBudgetSummary"></span>
+          </div>
+          <div class="overview-budget-incidents" id="ovBudgetIncidents"></div>
+        </section>
+        <section class="overview-card overview-governance" id="ovBlockF">
+          <div class="overview-card-title">本地治理
+            <span class="overview-card-sub" id="ovGovernanceSummary"></span>
+          </div>
+          <div class="overview-governance-list" id="ovGovernanceList"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="term-area" id="termArea" style="display:none;">
+      <div class="term-header">
+        <span class="term-title">💻 终端</span>
+        <span class="term-meta" id="termMeta">未打开</span>
+        <div class="term-actions">
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnTermNew" title="新建 PTY 在 ~/">＋ 新建</button>
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnTermInCwd" title="新建 PTY 在当前 session 的 cwd（若有）">📂 在当前 cwd 开</button>
+          <button class="cxbtn cxbtn-danger cxbtn-sm" id="btnTermClose" title="关闭当前终端" style="display:none;">✕ 关闭</button>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnTermBack" title="返回 chat">← 返回</button>
+        </div>
+      </div>
+      <div class="term-container" id="termContainer"></div>
+    </div>
+
+    <!-- v0.39 多 AI 聊天室 -->
+    <div class="room-area" id="roomArea" style="display:none;">
+      <div class="room-header">
+        <span class="room-title">💬 多 AI 聊天室</span>
+        <span class="room-subtitle">直接聊天 · 多模型协作 · 项目拆活</span>
+        <div class="room-actions">
+          <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnRoomNewChat" title="一个 AI 跟你 1v1 持续对话（最简单的聊天模式）">＋ 直接聊天</button>
+          <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnRoomNewDebate" title="多个 AI 独立提案、互评修订，再合成共识">＋ 多模型协作</button>
+          <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnRoomNewSquad" title="AI 团队拆活：PM 拆任务 → Dev 并行实现 → QA 审查 → 不过自动返工到 pass">＋ 项目拆活</button>
+          <details class="room-advanced-modes">
+            <summary class="cxbtn cxbtn-secondary cxbtn-sm">高级协作</summary>
+            <div class="room-advanced-panel">
+              <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomNewArena" title="多模型协作 + Judge 联网核实事实">＋ 联网核对</button>
+              <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomNewCv" title="多模型协作 + 对等互审，一致才下一步">＋ 严格互审</button>
+              <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomNewFromTemplate" title="从预设模板快速建房（含 6 个内置 + 用户自存）">🎯 模板</button>
+            </div>
+          </details>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnRoomBack">← 返回</button>
+        </div>
+      </div>
+      <div class="room-body">
+        <aside class="room-list-pane">
+          <div class="room-list-head">房间</div>
+          <div class="room-list" id="roomList"></div>
+          <div class="room-lineage-panel" id="roomLineagePanel"></div>
+          <div class="room-archived-section" id="roomArchivedSection" style="display:none;">
+            <button class="archived-toggle" id="roomArchivedToggle" aria-expanded="false">
+              <span class="arch-arrow" id="roomArchArrow">▶</span>
+              <span>📦 已归档房间 (<span id="roomArchivedCount">0</span>)</span>
+            </button>
+            <div class="room-archived-list" id="roomArchivedList" style="display:none;"></div>
+          </div>
+        </aside>
+        <section class="room-main" id="roomMain">
+          <div class="room-empty">
+            <div class="room-empty-icon">💬</div>
+            <h3>选个房间，或新建一个</h3>
+            <p>三个 AI（Claude / GPT / Ollama 顶位 MiniMax）会就你下达的任务进行 4 轮讨论：</p>
+            <ol style="text-align:left;display:inline-block;line-height:1.7;">
+              <li><b>独立提案</b>：各自给方案（互不可见）</li>
+              <li><b>互评修订</b>：看完对方 → 评价 + 修订</li>
+              <li><b>终稿表态</b>：列共识点 + 分歧</li>
+              <li><b>Claude 主持</b>：合成最终共识方案</li>
+            </ol>
+          </div>
+          <div class="room-debate" id="roomDebate" style="display:none;">
+            <div class="room-debate-head">
+              <div class="room-debate-title">
+                <span class="room-name-display" id="roomNameDisplay"></span>
+                <span class="room-status-chip" id="roomStatusChip">闲置</span>
+              </div>
+              <div class="room-debate-actions">
+                <label class="qa-strict-label" id="qaStrictLabel" style="display:none;">QA 严格度:
+                  <select id="qaStrictSelect">
+                    <option value="loose">🟢 loose 宽松</option>
+                    <option value="standard" selected>🟡 standard 标准</option>
+                    <option value="strict">🔴 strict 严苛</option>
+                  </select>
+                </label>
+                <button class="cxbtn cxbtn-danger" id="btnRoomAbort" title="立即结束当前房（快捷键 Esc）" style="display:none; font-weight:bold;">⏹ 立即结束</button>
+                <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnRoomResume" title="从上次未完成的阶段继续跑（保留已有 R1/R2/R3 产出）" style="display:none;">▶ 续跑</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomRestart" title="清空当前进度，从头重跑" style="display:none;">🔄 重启</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomAddRequirement" title="运行中或暂停时追加新需求，后续阶段会看到">➕ 追加需求</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomClusterPreflight" title="启动前检查集群协同成员、目标、证据和归档条件" style="display:none;">🧪 闭环预检</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomClusterConcurrency" title="查看集群协同并发预算、运行房间和启动预约占用" style="display:none;">📊 并发预算</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomClusterDiagnostics" title="查看集群协同安全启动诊断、自愈状态和修复建议" style="display:none;">🩺 集群诊断</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomClusterRepair" title="同步执行集群协同运行时自愈修复，并返回修复后的诊断报告" style="display:none;">🛠 自愈修复</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomDeliveryPackage" title="打开集群协同最终交付包" style="display:none;">📦 交付包</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnRoomArchiveDeliveryPackage" title="把集群协同最终交付包写入项目归档目录" style="display:none;">🗄 归档交付</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnDelegateRoom" title="把当前房间目标/任务委派成一个带 lineage 的新房间">🧭 委派</button>
+                <button class="cxbtn cxbtn-danger cxbtn-sm" id="btnRoomDelete">🗑 删除</button>
+              </div>
+            </div>
+            <div class="room-members-wrap">
+              <div class="room-members-label">👥 成员（点下拉切模型，✕ 关此成员）</div>
+              <div class="room-members" id="roomMembers"></div>
+              <div class="room-skill-bindings" id="roomSkillBindings"></div>
+            </div>
+            <div class="room-topic-wrap">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <label class="room-topic-label" style="flex:1;">📝 任务（要 AI 讨论的内容）</label>
+                <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnTopicExpand" title="展开 textarea 到全屏（再点收起）">⤢ 展开</button>
+              </div>
+              <div class="room-topic-toolbar">
+                <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnTopicAttach" title="选文件上传（txt/md/json/log 等）；也可以直接把文件拖到 textarea 或 ⌘V 粘贴">📎 附件</button>
+                <input type="file" id="topicAttachFile" style="display:none;" multiple accept=".txt,.md,.json,.log,.csv,.xml,.yaml,.yml,.html,.css,.js,.ts,.py,.go,.rs,.java,.c,.cpp,.h,.swift,.kt,.sh,.sql,.diff,.patch,text/*" />
+                <span class="room-topic-attach-list" id="topicAttachList"></span>
+                <span class="muted small" id="topicCharCount" style="margin-left:auto;">0 字</span>
+              </div>
+              <textarea class="room-topic-input" id="roomTopicInput" rows="8" maxlength="1048576" placeholder="例如：设计一个能扛 10w QPS 的消息推送系统架构，要兼顾延迟和成本（上限 100 万字 ≈ 1MB；也可点 📎 上传文件、把文件拖到此处、或 ⌘V 粘贴大段文字/文件路径）"></textarea>
+              <!-- v0.52 debate 模式：大轮数 N（R1→R2→R3 整组重复 N 次后跑 R4）-->
+              <div class="room-debate-rounds-wrap" id="roomDebateRoundsWrap">
+                <label class="room-debate-rounds-label" for="roomDebateRoundsInput">🔁 大轮数</label>
+                <input type="number" id="roomDebateRoundsInput" min="1" max="10" step="1" value="2" title="每大轮含 R1 提案 / R2 互评 / R3 终稿；N>1 时下一大轮 R1 看上一大轮 R3 后再独立提案" />
+                <span class="room-debate-rounds-hint">N 大轮 R1→R2→R3 后跑一次 R4 主持总结（1~10）</span>
+              </div>
+              <label class="room-goal-mode-wrap" id="roomGoalModeWrap" style="display:none;" title="目标模式：不因阶段轮数/输出截断/交付门禁未过而自然停止，自动返工直到验收通过；手动停止、模型全不可用、额度耗尽等硬阻断仍会暂停。">
+                <input type="checkbox" id="roomGoalModeInput" checked />
+                <span>🎯 目标模式：未完成就继续返工</span>
+              </label>
+              <button class="cxbtn cxbtn-primary" id="btnRoomStart">🚀 启动 debate</button>
+            </div>
+            <!-- Debate 模式：4 轮卡片 -->
+            <div class="room-rounds" id="roomRounds"></div>
+            <!-- v0.48 Chat 模式：1v1 持续对话 -->
+            <div class="chat-room" id="chatRoom" style="display:none;">
+              <div class="chat-room-messages" id="chatRoomMessages"></div>
+              <div class="chat-room-input-wrap">
+                <div class="chat-media-composer" id="chatMediaDropzone">
+                  <div class="chat-media-tray" id="chatMediaTray"></div>
+                  <textarea id="chatRoomInput" rows="2" maxlength="1048576" placeholder="输入消息 · Enter 发送 · Shift+Enter 换行 · 可拖入图片/视频"></textarea>
+                  <div class="chat-media-hint">拖入/粘贴图片或视频后发送；模型会拿到本地文件路径读取。</div>
+                </div>
+                <input id="chatMediaInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm" multiple hidden>
+                <div class="chat-room-actions">
+                  <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnChatAbort" style="display:none;">⏸ 中断</button>
+                  <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnChatRotate" style="display:none;" title="对话太长了：生成交接总结，开一间新房无缝继续（旧房保留）">🔁 轮换交接</button>
+                  <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnChatAttach">📎 图片/视频</button>
+                  <button class="cxbtn cxbtn-primary" id="btnChatSend">发送 ↵</button>
+                </div>
+              </div>
+            </div>
+            <!-- Squad 模式：Kanban 任务看板 + Review 历史 -->
+            <div class="squad-board" id="squadBoard" style="display:none;">
+              <div class="squad-board-head">📋 任务看板</div>
+              <div class="squad-columns">
+                <div class="squad-col" data-status="pending"><div class="squad-col-head">⏳ 待开始</div><div class="squad-col-cards" id="squadColPending"></div></div>
+                <div class="squad-col" data-status="in_progress"><div class="squad-col-head">🔨 Dev 中</div><div class="squad-col-cards" id="squadColInProgress"></div></div>
+                <div class="squad-col" data-status="in_review"><div class="squad-col-head">🔍 QA 中</div><div class="squad-col-cards" id="squadColInReview"></div></div>
+                <div class="squad-col" data-status="done"><div class="squad-col-head">✅ 已通过</div><div class="squad-col-cards" id="squadColDone"></div></div>
+                <div class="squad-col" data-status="escalated" title="task 跑失败，需要人工介入。3 种触发：①Dev/QA 反复迭代 30 次仍 QA 打回；②Dev/QA 调用 adapter 网络失败；③上游 task 已搁置阻塞下游"><div class="squad-col-head">⚠️ 已搁置（需人工）</div><div class="squad-col-cards" id="squadColEscalated"></div></div>
+              </div>
+            </div>
+            <div class="room-consensus" id="roomConsensus" style="display:none;">
+              <div class="room-consensus-head" id="roomConsensusHead">🎯 最终共识方案（Claude 主持）</div>
+              <div class="room-consensus-actions" id="roomConsensusActions">
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" data-forward="squad" title="把这份共识作为 topic 转给 AI 团队拆活，让 PM/Dev/QA 落地执行">➡️ 转 AI 团队拆活</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" data-forward="debate" title="转给多模型辩论做二轮讨论">➡️ 转多模型辩论</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" data-forward="arena" title="转给多模型联网核对：多 AI 给方案 + Judge 联网核实事实">➡️ 转多模型核对</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" data-forward="chat" title="新建单模型聊天，自动把本房完整历史和结论作为上下文 seed 进去">💬 基于此追问（单模型）</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnArchiveNow" title="立即把本房导出到归档目录（见 📂 配置）">📂 立即归档</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnReportNow" title="让 AI 浓缩全部聊天历史生成一份总结报告（按房模式输出 5-6 节人类可读 markdown）">📝 生成总结报告</button>
+                <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnTimeline" title="📈 时间线：每个 turn 的 latency / token / 错误分布（按时间轴）">📈 时间线</button>
+              </div>
+              <div class="room-consensus-body" id="roomConsensusBody"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="chat" id="chatArea" style="display:none;">
+      <div class="chat-header">
+        <div class="chat-header-text">
+          <div class="chat-header-name" id="chatHeaderName"></div>
+          <div class="chat-header-info" id="chatHeaderInfo"></div>
+          <div class="chat-header-goal" id="chatHeaderGoal" style="display:none;"></div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="cxbtn cxbtn-danger cxbtn-sm btn-interrupt-pulse" id="btnInterrupt"
+                  title="中断当前 claude turn (Esc)"
+                  aria-label="中断当前 claude 任务"
+                  style="display:none;">⏸ 停止</button>
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnWatcherToggle" title="启用/关闭监视者（用其他模型监督 Claude 任务进展）" aria-label="监视者开关">👁️ 监视</button>
+          <select class="watcher-provider-select" id="watcherProviderSelect" title="选择由谁监视此 session" aria-label="选择监视者 provider" style="display:none;"></select>
+          <span class="state-chip" id="stateChip" title="claude 当前运行状态" style="display:none;">闲置</span>
+          <span class="cost-chip" id="costChip" title="本 session 累计成本（估算）" style="display:none;">
+            <span id="costChipText">$0.00</span>
+            <svg class="cost-spark" id="costSpark" viewBox="0 0 60 14" xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
+              <path id="costSparkPath" d=""></path>
+            </svg>
+          </span>
+          <div class="ctx-meter" id="ctxMeter" title="claude 上下文占用率（基于 transcript 末次 usage 估算）" style="display:none;">
+            <div class="ctx-bar"><div class="ctx-fill" id="ctxFill"></div></div>
+            <span class="ctx-label" id="ctxLabel">—</span>
+          </div>
+          <span class="chain-badge" id="chainBadge" title="点击查看接力 history 归档" style="display:none;cursor:pointer;"></span>
+          <button class="btn-icon" id="btnHandoff" title="把当前 snapshot 归档 + 在 panel 内新建同 cwd 的新 session 接力">🔄 接力</button>
+          <button class="btn-icon" id="btnExternal" title="在 Terminal 中独立打开（macOS 窗口）">⤴ Terminal</button>
+          <button class="btn-icon" id="btnSpawnAll" title="为所有 session 各开一个 Terminal 窗口">⤴⤴ 全开</button>
+        </div>
+      </div>
+      <div class="ctx-warn-banner" id="ctxWarnBanner" style="display:none;">
+        ⚠️ <span id="ctxWarnText">上下文已达 90%，建议立即点 🔄 接力换 session</span>
+      </div>
+      <div class="alert-banner danger-banner" id="dangerBanner" style="display:none;">
+        🛑 <span id="dangerBannerText"></span>
+        <button class="btn-tiny" id="btnDangerDismiss" style="margin-left:auto;">关闭</button>
+      </div>
+      <div class="alert-banner loopguard-banner" id="loopGuardBanner" style="display:none;">
+        🔁 <span id="loopGuardBannerText"></span>
+        <button class="btn-tiny" id="btnLoopGuardDismiss" style="margin-left:auto;">关闭</button>
+      </div>
+      <div class="alert-banner focus-chain-banner" id="focusChainBanner" style="display:none;">
+        🎯 <span id="focusChainBannerText"></span>
+      </div>
+      <!-- v0.35 Watcher 监视者 verdict banner -->
+      <div class="watcher-verdict-banner" id="watcherVerdictBanner" style="display:none;">
+        <div class="watcher-verdict-head">
+          <span id="watcherVerdictIcon">👁️</span>
+          <span class="watcher-verdict-status" id="watcherVerdictStatus">—</span>
+          <span class="watcher-verdict-conf" id="watcherVerdictConf"></span>
+          <span class="watcher-verdict-provider" id="watcherVerdictProvider"></span>
+          <button class="btn-tiny" id="btnWatcherDismiss" style="margin-left:auto;" aria-label="关闭 verdict">✕</button>
+        </div>
+        <div class="watcher-verdict-reasoning" id="watcherVerdictReasoning"></div>
+        <div class="watcher-verdict-prompt-wrap" id="watcherVerdictPromptWrap" style="display:none;">
+          <div class="watcher-verdict-prompt-label">📌 监视者建议下一步：</div>
+          <div class="watcher-verdict-prompt" id="watcherVerdictPrompt"></div>
+          <div class="watcher-verdict-actions">
+            <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnWatcherReject">✕ 拒绝</button>
+            <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnWatcherAccept">✓ 接受并发送</button>
+          </div>
+        </div>
+      </div>
+      <div class="chat-output" id="chatOutput"></div>
+      <div class="chat-input-wrap">
+        <textarea id="chatInput" placeholder="给当前 Claude 发消息 · Enter 发送 · Shift+Enter 换行" rows="3" maxlength="2097152"></textarea>
+        <div class="chat-actions">
+          <span class="chat-info muted small">支持 markdown · stream-json</span>
+          <button class="btn-send" id="btnSend">发送 ↵</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.52 Sprint2-B1：Plugin 中心 -->
+    <div class="plugin-area" id="pluginArea" style="display:none;">
+      <div class="plugin-header">
+        <span class="plugin-title">🧩 Plugin 中心</span>
+        <span class="plugin-subtitle">manifest 驱动的通用 CLI 容器</span>
+        <div class="plugin-actions">
+          <input type="file" id="pluginInstallFile" accept="application/json" style="display:none;" />
+          <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnPluginInstall" title="上传 manifest JSON 文件安装新 plugin">＋ 安装 Plugin</button>
+          <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnPluginReload" title="重扫 builtin + 用户 manifest 目录">⟳ 刷新</button>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnPluginBack" title="返回">← 返回</button>
+        </div>
+      </div>
+      <div class="plugin-body">
+        <aside class="plugin-list-pane">
+          <div class="plugin-list-head">已加载 Plugin</div>
+          <div class="plugin-list" id="pluginList"></div>
+        </aside>
+        <section class="plugin-main" id="pluginMain">
+          <div class="plugin-empty">
+            <div class="plugin-empty-icon">🧩</div>
+            <h3>选个 Plugin 看详情，或上传 JSON manifest 装新插件</h3>
+            <p>本面板是 <b>manifest-driven 通用 CLI 容器</b>：写一份 JSON 描述任意 CLI 工具（bin / args / 输入输出 / 命令清单 / 仪表盘 schema），panel 就能跑 + 显示进度。</p>
+            <p style="font-size:12px;color:var(--color-text-foreground-tertiary);">已支持类型：spawn（本地 CLI）。HTTP 类 type 在 W2 阶段。</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- v0.54 Sprint 10：删除 🐝 多智能体协调框架面板（用户不用） -->
+  </main>
+
+  <aside class="inspector">
+    <div class="inspector-resizer" id="inspectorResizer" title="拖动调整右侧面板宽度（双击复位）"></div>
+    <div class="ins-tabs">
+      <button class="ins-tab active" data-tab="info" title="当前 session 元信息 + 状态">信息</button>
+      <button class="ins-tab" data-tab="snapshot" title="Claude 最近输出的事实/进展速览">事实</button>
+      <button class="ins-tab" data-tab="safety" title="🛑 安全限速 / 危险命令拦截 / 配额状态">🛑 安全</button>
+      <button class="ins-tab" data-tab="projects" title="桌面项目监控（~/Desktop/00_项目/）">项目</button>
+      <button class="ins-tab" data-tab="files" title="当前 session cwd 的文件树">文件</button>
+      <button class="ins-tab" data-tab="help" title="帮助 + 快捷键速查">帮助</button>
+      <button class="ins-tab" data-tab="debate-state" title="🔬 实时观察 debate 房状态机进度（v0.70 W5+W6 学习）">🔬 Debate</button>
+    </div>
+
+    <div class="ins-content" data-content="info">
+      <div id="sessionInfo" class="muted">— 未选中 —</div>
+    </div>
+
+    <div class="ins-content" data-content="snapshot" style="display:none;">
+      <div class="snapshot-head">
+        <span class="muted small" id="snapshotMeta">—</span>
+        <button class="btn-icon" id="btnSnapRefresh" title="重新读取 snapshot.md">↻</button>
+      </div>
+      <div class="snapshot-body" id="snapshotBody">
+        <div class="muted small" style="padding:8px;">— 未选中 session —</div>
+      </div>
+    </div>
+
+    <div class="ins-content" data-content="safety" style="display:none;">
+      <div class="snapshot-head">
+        <span class="muted small" id="safetyMeta">—</span>
+        <button class="btn-icon" id="btnSafetyRefresh" title="刷新安全历史">↻</button>
+      </div>
+      <div class="safety-body" id="safetyBody">
+        <div class="muted small" style="padding:8px;">— 未选中 session —</div>
+      </div>
+    </div>
+
+    <div class="ins-content" data-content="projects" style="display:none;">
+      <div class="snapshot-head">
+        <span class="muted small">方案 B 项目监控（~/Desktop/00_项目/）</span>
+        <button class="btn-icon" id="btnProjectsRefresh" title="重新扫描">↻</button>
+      </div>
+      <div class="project-list" id="projectList">
+        <div class="muted small" style="padding:8px;">加载中…</div>
+      </div>
+    </div>
+
+    <div class="ins-content" data-content="files" style="display:none;">
+      <div class="file-path" id="filePath">—</div>
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+    <div class="modal" id="agentRegistryModal" style="display:none;">
+      <div class="modal-bg" data-close-agent-registry></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>Agent 图谱</h2>
+          <button class="btn-icon" data-close-agent-registry aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="agent-registry-modal-body" id="agentRegistryModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="codebaseCenterModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="codebaseCenterTitle">
+      <div class="modal-bg" data-close-codebase-center></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2 id="codebaseCenterTitle">Codebase Center</h2>
+          <button class="btn-icon" data-close-codebase-center aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="codebase-center-modal-body" id="codebaseCenterBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 知识库（证据 FTS 检索）modal — P4/A2 -->
+    <div class="modal" id="knowledgeCenterModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="knowledgeCenterTitle">
+      <div class="modal-bg" data-close-knowledge-center></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2 id="knowledgeCenterTitle">知识库</h2>
+          <button class="btn-icon" data-close-knowledge-center aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="codebase-center-modal-body" id="knowledgeCenterBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 项目详情 modal -->
+    <!-- v0.52 Room Adapter 配置 modal -->
+    <div class="modal" id="roomAdaptersModal" style="display:none;">
+      <div class="modal-bg" data-close-room-adapters></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>⚙️ 房间 Adapter 配置（v0.52）</h2>
+          <button class="btn-icon" data-close-room-adapters aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="room-adapters-body" id="roomAdaptersBody">
+          <p class="room-adapters-hint">配置后房间成员下拉里就能选这些 adapter。所有 apiKey 用 0o600 存 <code>~/.noe-panel/room-adapters.json</code>，前端只显示掩码。</p>
+
+          <!-- MiniMax -->
+          <section class="adapter-section" data-id="minimax">
+            <header><label><input type="checkbox" data-field="enabled" /> 🟡 MiniMax</label></header>
+            <div class="adapter-fields">
+              <label>API Key <input type="password" data-field="apiKey" placeholder="MiniMax 控制台 → API Key" autocomplete="off" /></label>
+              <label>Base URL <input type="text" data-field="baseUrl" placeholder="留空 = https://api.minimax.chat/v1" /></label>
+              <label>Model <input type="text" data-field="model" placeholder="留空 = MiniMax-M2" /></label>
+              <label>超时（毫秒，0=默认 1 小时）<input type="number" data-field="timeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <label>最大输出 tokens（0=不传让服务端决定）<input type="number" data-field="maxTokens" min="0" max="200000" step="1024" placeholder="0" /></label>
+            </div>
+          </section>
+
+          <!-- Gemini 原生 API -->
+          <section class="adapter-section" data-id="gemini">
+            <header><label><input type="checkbox" data-field="enabled" /> 🔷 Gemini（Google AI Studio 原生）</label></header>
+            <div class="adapter-fields">
+              <label>API Key <input type="password" data-field="apiKey" placeholder="aistudio.google.com → Get API key" autocomplete="off" /></label>
+              <label>Model <input type="text" data-field="model" placeholder="留空 = gemini-3.1-pro-preview" /></label>
+              <label>Base URL（可选）<input type="text" data-field="baseUrl" placeholder="留空 = https://generativelanguage.googleapis.com/v1beta" /></label>
+              <label>超时（毫秒，0=默认 1 小时）<input type="number" data-field="timeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <label>最大输出 tokens（0=不传，Gemini 3.1 Pro 默认 65536）<input type="number" data-field="maxTokens" min="0" max="200000" step="1024" placeholder="0" /></label>
+            </div>
+          </section>
+
+          <!-- Gemini OpenAI 兼容 -->
+          <section class="adapter-section" data-id="gemini_openai">
+            <header><label><input type="checkbox" data-field="enabled" /> 🔷 Gemini（OpenAI 兼容）</label></header>
+            <div class="adapter-fields">
+              <label>API Key <input type="password" data-field="apiKey" placeholder="OpenRouter / 代理服务的 key" autocomplete="off" /></label>
+              <label>Base URL <input type="text" data-field="baseUrl" placeholder="如 https://openrouter.ai/api/v1" /></label>
+              <label>Model <input type="text" data-field="model" placeholder="如 google/gemini-3.1-pro-preview" /></label>
+              <label>超时（毫秒，0=默认 1 小时）<input type="number" data-field="timeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <label>最大输出 tokens（0=不传）<input type="number" data-field="maxTokens" min="0" max="200000" step="1024" placeholder="0" /></label>
+            </div>
+          </section>
+
+          <!-- Gemini CLI -->
+          <section class="adapter-section" data-id="gemini_cli">
+            <header>
+              <label><input type="checkbox" data-field="enabled" /> 🔷 Gemini CLI（本地 spawn）</label>
+              <span class="adapter-status" id="geminiCliStatus"></span>
+            </header>
+            <div class="adapter-fields">
+              <label>Model <input type="text" data-field="model" placeholder="留空 = CLI 默认" /></label>
+              <label>超时（毫秒，0=默认 2 小时）<input type="number" data-field="timeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <small>无需 apiKey，spawn 本地 <code>gemini</code>（@google/gemini-cli）。系统找不到时此项禁用。</small>
+            </div>
+          </section>
+
+          <!-- v0.52 内置 spawn adapter timeout 覆盖 -->
+          <section class="adapter-section" data-id="spawn_overrides">
+            <header><strong>⏱ 内置 CLI adapter 超时覆盖</strong></header>
+            <div class="adapter-fields">
+              <label>Claude 超时（毫秒，0=默认 2 小时）<input type="number" data-field="claudeTimeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <label>Codex 超时（毫秒，0=默认 2 小时）<input type="number" data-field="codexTimeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <label>CCR 超时（毫秒，0=默认 2 小时）<input type="number" data-field="ccrTimeoutMs" min="0" max="7200000" step="60000" placeholder="0" /></label>
+              <small>填 0 走默认 2 小时上限；填正数（如 1800000 = 30 分钟）覆盖。</small>
+            </div>
+          </section>
+
+          <!-- 自定义条目 -->
+          <section class="adapter-section adapter-customs">
+            <header>
+              <strong>🧩 自定义 OpenAI 兼容（最多 10 个）</strong>
+              <button class="cxbtn cxbtn-secondary cxbtn-sm" id="btnAddCustom">＋ 新增</button>
+            </header>
+            <div id="customsList"></div>
+          </section>
+
+          <div class="adapter-actions">
+            <span class="adapter-save-status" id="adapterSaveStatus"></span>
+            <button class="cxbtn cxbtn-tertiary" data-close-room-adapters>取消</button>
+            <button class="cxbtn cxbtn-primary" id="btnSaveRoomAdapters">💾 保存并重建池</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="projectModal" style="display:none;">
+      <div class="modal-bg" data-close-project></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2 id="projectModalTitle">项目详情</h2>
+          <button class="btn-icon" data-close-project aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="project-modal-body" id="projectModalBody">加载中…</div>
+      </div>
+    </div>
+
+    <!-- 接力链 history modal -->
+    <div class="modal" id="historyModal" style="display:none;">
+      <div class="modal-bg" data-close-history></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>接力链 history</h2>
+          <button class="btn-icon" data-close-history aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="history-modal-body" id="historyModalBody">加载中…</div>
+      </div>
+    </div>
+
+    <!-- v0.56 Sprint 15-R4：Autopilot modal -->
+    <div class="modal" id="autopilotModal" style="display:none;">
+      <div class="modal-bg" data-close-autopilot></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>🤖 Autopilot 自驾（房完成/出错自动触发规则）</h2>
+          <button class="btn-icon" data-close-autopilot aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="autopilot-modal-body" id="autopilotModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="approvalModal" style="display:none;">
+      <div class="modal-bg" data-close-approval></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>审批中心</h2>
+          <button class="btn-icon" data-close-approval aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="approval-modal-body" id="approvalModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="governanceCenterModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="governanceCenterTitle">
+      <div class="modal-bg" data-close-governance-center></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2 id="governanceCenterTitle">治理中心</h2>
+          <button class="btn-icon" data-close-governance-center aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="governance-center-modal-body" id="governanceCenterBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="activityModal" style="display:none;">
+      <div class="modal-bg" data-close-activity></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>审计时间线</h2>
+          <button class="btn-icon" data-close-activity aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="activity-modal-body" id="activityModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="delegationModal" style="display:none;">
+      <div class="modal-bg" data-close-delegation></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>委派中心</h2>
+          <button class="btn-icon" data-close-delegation aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="delegation-modal-body" id="delegationModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.55 Sprint 13-D：trace 时间线 modal -->
+    <div class="modal" id="timelineModal" style="display:none;">
+      <div class="modal-bg" data-close-timeline></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>📈 房间时间线（per-turn latency / tokens / 错误）</h2>
+          <button class="btn-icon" data-close-timeline aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="timeline-modal-body" id="timelineModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.55 Sprint 12：MCP 服务器配置 modal -->
+    <div class="modal" id="mcpModal" style="display:none;">
+      <div class="modal-bg" data-close-mcp></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>🔌 MCP 服务器（Model Context Protocol）</h2>
+          <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnMcpCallHistory" style="margin-left:auto;" title="W7：MCP tool 调用历史 jsonl 日志">📜 调用历史</button>
+          <button class="btn-icon" data-close-mcp aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="mcp-modal-body">
+          <aside class="mcp-list-pane">
+            <div class="mcp-list-head">
+              已配置（<span id="mcpCount">0</span>）
+              <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnMcpNew" style="margin-left:auto;">＋ 新建</button>
+            </div>
+            <div class="mcp-list" id="mcpList"></div>
+          </aside>
+          <section class="mcp-detail-pane" id="mcpDetail">
+            <div class="muted small" style="padding:20px;">
+              <p><b>MCP（Model Context Protocol）</b>让你给 AI 房成员挂载外部 tool。比如 filesystem server 让 Claude 读文件、playwright server 让 AI 跑浏览器、github server 让 AI 操作 PR。</p>
+              <p>配置好后 Claude spawn adapter 自动启用（CLI 原生 <code>--mcp-config</code>）；Codex / Gemini CLI / HTTP adapter 待后续。</p>
+              <p>常见公开 server：<code>npx -y @modelcontextprotocol/server-everything</code>（演示）/ <code>server-filesystem</code>（带路径） / <code>server-puppeteer</code>。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.54 Sprint 9：AI 总结报告 modal -->
+    <div class="modal" id="reportModal" style="display:none;">
+      <div class="modal-bg" data-close-report></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>📝 让 AI 总结房间聊天 → 生成报告</h2>
+          <button class="btn-icon" data-close-report aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="report-modal-body" id="reportModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.54 Sprint 4.5：归档配置 modal -->
+    <div class="modal" id="archiveModal" style="display:none;">
+      <div class="modal-bg" data-close-archive></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>📂 聊天归档：每次房完成自动导出 markdown</h2>
+          <button class="btn-icon" data-close-archive aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="archive-modal-body" id="archiveModalBody">
+          <div class="muted small" style="padding:20px;">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.54 Sprint 4：Webhook 配置 modal -->
+    <div class="modal" id="webhookModal" style="display:none;">
+      <div class="modal-bg" data-close-webhook></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>🔔 Webhook 出站推送（房间事件转 Discord / Slack / 自定义 URL）</h2>
+          <button class="btn-icon" data-close-webhook aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="webhook-modal-body">
+          <div class="webhook-list-pane">
+            <div class="webhook-list-head">
+              已配置（<span id="webhookCount">0</span>）
+              <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnWebhookNew" style="margin-left:auto;">＋ 新建</button>
+            </div>
+            <div class="webhook-list" id="webhookList"></div>
+          </div>
+          <div class="webhook-detail-pane" id="webhookDetail">
+            <div class="muted small" style="padding:20px;">从左侧选一项编辑，或点 ＋ 新建一个</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.53 Sprint 3：从模板新建房间 modal -->
+    <div class="modal" id="roomTemplateModal" style="display:none;">
+      <div class="modal-bg" data-close-room-template></div>
+      <div class="modal-body modal-wide">
+        <div class="project-modal-head">
+          <h2>🎯 从模板新建房间</h2>
+          <button class="btn-icon" data-close-room-template aria-label="关闭" title="关闭（ESC）">✕</button>
+        </div>
+        <div class="room-template-modal-body">
+          <aside class="room-template-list" id="roomTemplateList"></aside>
+          <section class="room-template-detail" id="roomTemplateDetail">
+            <div class="muted small" style="padding: 20px;">从左侧选一个模板开始</div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="ins-content" data-content="help" style="display:none;">
+      <div class="ins-section">
+        <h3>快捷键（按 <kbd>⌘?</kbd> 看完整速查）</h3>
+        <ul class="muted small">
+          <li><kbd>⌘N</kbd> 新建会话</li>
+          <li><kbd>⌘1..9</kbd> 切换会话</li>
+          <li><kbd>⌘↵</kbd> 发送消息</li>
+          <li><kbd>⌘K</kbd> 命令面板（搜 session / 命令）</li>
+          <li><kbd>⌘⇧F</kbd> 跨 session 搜索消息</li>
+          <li><kbd>⌘P</kbd> Prompt 模板库</li>
+          <li><kbd>⌘?</kbd> 完整快捷键速查</li>
+          <li><kbd>⌘D</kbd> 切换暗 / 亮主题</li>
+          <li>右键会话项 / 消息 看上下文菜单</li>
+        </ul>
+      </div>
+      <div class="ins-section">
+        <h3>5 大功能</h3>
+        <ul class="muted small">
+          <li>💻 多 <b>Claude session</b> 管理（左侧）+ 接力（snapshot）</li>
+          <li>💬 多 AI <b>聊天室</b>：Chat 1v1 / Debate 4 轮 / Squad PM-Dev-QA</li>
+          <li>👁️ <b>Watcher 监督</b>（chat header 开关）：Claude / Codex / Ollama / MiniMax 池</li>
+          <li>💻 内嵌 <b>PTY 终端</b>（顶部 💻 按钮）</li>
+        </ul>
+      </div>
+      <div class="ins-section">
+        <h3>Continuum 集成</h3>
+        <div class="muted small">
+          "事实" tab 显示 07 Continuum 的 snapshot.md。<br>
+          点 🔄 接力：归档当前 snapshot + 新建同 cwd 的 session，新 session 第一条让新 claude 读 ~/HANDOFF_LATEST.md 接手。<br>
+          snapshot 若为空，先装 07：<code>cd ~/Desktop/00_项目/07_Continuum_会话接力工具 && ./install.sh</code>
+        </div>
+      </div>
+      <div class="ins-section">
+        <h3>关于</h3>
+        <div class="muted small">
+          Noe <span id="aboutVersion">v…</span><br>
+          多 AI 会话管理 + 监督 + 协作<br>
+          UI 参考 Codex 设计语言<br>
+          数据保存于 ~/.noe-panel/<br>
+          快照存于 ~/.claude/state/&lt;md5(cwd)&gt;/
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.70.2 W5+W6：debate state 实时观察 tab -->
+    <div class="ins-content" data-content="debate-state" style="display:none;">
+      <div class="ins-section">
+        <h3>🔬 Debate 状态观察</h3>
+        <p class="muted small" style="min-width:0;word-break:break-word;">
+          实时显示当前活跃 debate 房的 state machine 进度和共识检测结果。
+          仅在你启动 debate 后有数据。
+        </p>
+        <div id="debateStateLog" style="font-family:var(--mono);font-size:12px;line-height:1.6;max-height:60vh;overflow-y:auto;border:1px solid var(--color-border-light);border-radius:6px;padding:8px;background:var(--bg-top);">
+          <div class="muted small">— 等待 debate_state_meta WS 事件 —</div>
+        </div>
+        <button class="cxbtn cxbtn-tertiary cxbtn-sm" id="btnDebateStateClear" style="margin-top:8px;">清空</button>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="modal" id="newModal" style="display:none;">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-body modal-narrow">
+    <h2>新建 Claude 会话</h2>
+    <label>
+      <span>会话名称</span>
+      <input type="text" id="newName" maxlength="200" placeholder="例如：FreelancerTimer 调试" />
+    </label>
+    <label>
+      <span>工作目录（cwd）</span>
+      <input type="text" id="newCwd" placeholder="例如：~/Desktop/项目（留空 = ~）" />
+    </label>
+    <label>
+      <span>🎯 主目标（可选，每 5 轮自动提醒 claude 防漂移）</span>
+      <input type="text" id="newMainGoal" maxlength="4000" placeholder="例如：修完 OnboardingFlow 的输入校验 + 真测通过" />
+    </label>
+    <div class="hint muted small" style="margin-bottom:8px;">快速选 Desktop 子目录：</div>
+    <div class="quick-cwd" id="quickCwd"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close>取消</button>
+      <button class="btn-primary" id="btnCreateConfirm">创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- v0.6 全局底部 StatusBar -->
+<div class="status-bar" id="statusBar">
+  <span class="status-item"><span class="status-dot" id="statusDotSync"></span><span id="statusSync">同步中…</span></span>
+  <span class="status-item" id="statusActive">Claude 会话活跃 0</span>
+  <span class="status-item" id="statusBusy">Claude 会话在跑 0</span>
+  <span class="status-item" id="statusArchived">归档 0</span>
+  <span class="status-item" id="statusRoomsRunning" title="正在运行的聊天室数（≥3 提示并发限速）">🏟 运行中 0 房</span>
+  <span class="status-spacer"></span>
+  <span class="status-item" id="statusCost">$0.00</span>
+  <button class="status-item" id="statusKbBtn" type="button" title="查看完整快捷键速查（也可按 ⌘?）" style="background:transparent;border:none;cursor:pointer;color:inherit;font:inherit;padding:0 6px;">⌨️ 快捷键</button>
+  <span class="status-item" id="statusVersion">v… · ⌘K 命令面板</span>
+</div>
+
+<!-- v0.6 ⌘K 命令面板 -->
+<div class="cmdk-modal" id="cmdkModal" style="display:none;">
+  <div class="cmdk-body">
+    <input type="text" id="cmdkInput" class="cmdk-input" placeholder="搜索会话 / 命令…  ↑↓ 选择 · ⏎ 执行 · Esc 关闭" />
+    <div class="cmdk-list" id="cmdkList"></div>
+    <div class="cmdk-footer">
+      <span>⏎ 跳转</span>
+      <span>⌘N 新建</span>
+      <span>⌘D 切主题</span>
+      <span>Esc 关闭</span>
+    </div>
+  </div>
+</div>
+
+<!-- v0.50 全局搜索 modal（F1）-->
+<div class="cmdk-modal" id="searchModal" style="display:none;">
+  <div class="cmdk-body" style="width: 720px; max-width: 96vw;">
+    <input type="text" id="searchInput" class="cmdk-input" placeholder="跨 session 搜索消息内容…  ⏎ 跳转 · Esc 关闭" />
+    <div class="cmdk-list" id="searchResults"></div>
+    <div class="cmdk-footer">
+      <span>⌘⇧F 打开</span>
+      <span>⏎ 跳转该条消息</span>
+      <span>Esc 关闭</span>
+    </div>
+  </div>
+</div>
+
+<!-- v0.53 Sprint 3.5 跨房搜索 modal（⌘⇧R）-->
+<div class="cmdk-modal" id="roomSearchModal" style="display:none;">
+  <div class="cmdk-body" style="width: 720px; max-width: 96vw;">
+    <input type="text" id="roomSearchInput" class="cmdk-input" placeholder="跨房搜索（topic / 共识 / turn 内容 / task / chat）…  ⏎ 跳转 · Esc 关闭" />
+    <div class="cmdk-list" id="roomSearchResults"></div>
+    <div class="cmdk-footer">
+      <span>⌘⇧R 打开</span>
+      <span>⏎ 跳转该房</span>
+      <label style="margin-left:auto;cursor:pointer;"><input type="checkbox" id="roomSearchInclArchived" /> 包含归档房</label>
+      <span>Esc 关闭</span>
+    </div>
+  </div>
+</div>
+
+<!-- v0.50 ⌘? 快捷键 cheatsheet modal（F4）-->
+<div class="cmdk-modal" id="cheatsheetModal" style="display:none;">
+  <div class="cmdk-body" style="width: 560px;">
+    <div class="cheatsheet-head">⌨️ 快捷键速查</div>
+    <div class="cheatsheet-body">
+      <div class="ch-row"><kbd>⌘N</kbd><span>新建会话</span></div>
+      <div class="ch-row"><kbd>⌘K</kbd><span>命令面板（搜 session / 命令）</span></div>
+      <div class="ch-row"><kbd>⌘⇧F</kbd><span>跨 session 搜索消息</span></div>
+      <div class="ch-row"><kbd>⌘⇧R</kbd><span>跨房搜索（topic / turn / chat / task）</span></div>
+      <div class="ch-row"><kbd>⌘P</kbd><span>Prompt 模板库</span></div>
+      <div class="ch-row"><kbd>⌘?</kbd><span>显示本帮助</span></div>
+      <div class="ch-row"><kbd>⌘D</kbd><span>切换暗/亮主题</span></div>
+      <div class="ch-row"><kbd>⌘1..9</kbd><span>跳到第 N 个 session</span></div>
+      <div class="ch-row"><kbd>⌘↵</kbd><span>发送消息</span></div>
+      <div class="ch-row"><kbd>Esc</kbd><span>中断 / 关弹窗</span></div>
+      <div class="cheatsheet-sep">📍 鼠标</div>
+      <div class="ch-row"><kbd>双击 session 名</kbd><span>重命名</span></div>
+      <div class="ch-row"><kbd>右键 session</kbd><span>菜单（编辑/归档/导出/删除）</span></div>
+      <div class="ch-row"><kbd>右键 message</kbd><span>菜单（收藏 ⭐ / 从此分叉）</span></div>
+      <div class="ch-row"><kbd>双击 ⏸ 中断</kbd><span>强制释放 busy（child 卡死时）</span></div>
+      <div class="cheatsheet-sep">🔘 顶部按钮</div>
+      <div class="ch-row"><kbd>💻</kbd><span>内嵌 PTY 终端</span></div>
+      <div class="ch-row"><kbd>💬</kbd><span>多 AI 聊天室（Chat/Debate/Squad）</span></div>
+      <div class="ch-row"><kbd>🔐</kbd><span>Claude /login（外部 Terminal）</span></div>
+    </div>
+    <div class="cmdk-footer"><span>Esc 关闭</span></div>
+  </div>
+</div>
+
+<!-- v0.50 Prompts 模板库 modal（F6）-->
+<div class="cmdk-modal" id="promptsModal" style="display:none;">
+  <div class="cmdk-body" style="width: 640px;">
+    <div class="cheatsheet-head">📋 Prompt 模板库</div>
+    <div class="prompts-list" id="promptsList"></div>
+    <div class="prompts-form">
+      <input type="text" id="promptName" maxlength="100" placeholder="模板名（如：生成 commit msg）" />
+      <textarea id="promptContent" rows="3" maxlength="50000" placeholder="模板内容（粘贴时支持多行）"></textarea>
+      <div class="prompts-form-actions">
+        <button class="cxbtn cxbtn-primary cxbtn-sm" id="btnPromptAdd">＋ 添加模板</button>
+      </div>
+    </div>
+    <div class="cmdk-footer"><span>点击模板插入到输入框</span><span>Esc 关闭</span></div>
+  </div>
+</div>
+
+<!-- v0.23 xterm.js -->
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+<!-- v0.24 markdown 渲染 -->
+<script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+
+<script src="/src/web/plain-terminal.js"></script>
+<!-- S18-3 Modal 组件（须先于 app.js 加载，让 app.js 启动时 Modal 已可用） -->
+<script src="/src/components/Modal.js"></script>
+<!-- S18-4 UI 原子组件集（EmptyState/Badge/Tag/Card/List/Drawer，同上） -->
+<script src="/src/components/UI.js"></script>
+
+<script src="/app.js?v=cognitive-entry-20260605"></script>
+<!-- Noe 语音/视觉/主动陪伴前端（在 app.js 之后，复用其 fetch wrap 自动鉴权）-->
+<script src="/src/web/noe-voice.js?v=voice-stream-20260610b"></script>
+<!-- S18-1 starter 激活：ES module 入口，defer 加载，在 app.js 之后跑，挂 window.PanelUtils 不替换 app.js 内 helper -->
+<script type="module" src="/main.js?v=owner-token-gate-20260601"></script>
+<script src="/i18n.js?v=i18n-20260604"></script>
+<!-- 内心透视入口（意识方案 P8）：独立页面 /mind.html，看 Noe 想了什么/做了什么；浮动角标零侵入主布局 -->
+<a id="mindEntry" href="/mind.html" title="内心透视：他此刻在想什么、做了什么" style="position:fixed;right:14px;bottom:14px;z-index:9000;background:#11151d;border:1px solid #2a3139;color:#d7dce4;border-radius:18px;padding:5px 13px;font-size:12px;text-decoration:none;opacity:.82">🫀 内心</a>
+</body>
+</html>

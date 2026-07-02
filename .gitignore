@@ -1,0 +1,104 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json.bak
+
+# macOS
+.DS_Store
+*.swp
+.AppleDouble
+.LSOverride
+
+# Electron build
+out/
+dist/
+build/*
+!build/icon.icns
+!build/icon.png
+*.dmg
+*.app
+*.pkg
+
+# Editor
+.vscode/
+.idea/
+*.iml
+
+# Logs / runtime
+*.log
+.RUNNING_LOCK/
+.heartbeat
+iter_logs/
+
+# Loop runtime（这些是 cron 自维护的，不进版本）
+STOP
+ALL_DONE.md
+BUDGET_HIT.md
+RATE_LIMITED.md
+ERROR_LOG.md
+
+# Test screenshots
+/05-v*.png
+/cmdk-*.png
+.playwright-mcp/
+.playwright-cli/
+test-results/
+output/playwright/
+
+# Env
+.env
+.env.local
+
+# ESLint 本地输出（quality-gate 内部用，不进库）
+eslint-report.json
+
+# === 增强：v2.0 商品化阶段加防泄漏 ===
+.env.*
+*.pem
+*-private-key*
+*-token.json
+github-token.json
+keygen.json
+webhook-secrets.json
+license.txt
+licenses-issued.jsonl
+mcp-calls-*.jsonl
+metrics-*.jsonl
+autopilot-log.jsonl
+panel.db
+panel.db-*
+logs/
+.DS_Store
+*.log
+.playwright-mcp/
+panel-*.png
+
+# BaiLongma 只读审计镜像（第三方上游 clone，config.json 含明文第三方密钥）
+# 仅作只读审计用，禁止纳入 Noe git 历史。详见 NOE_BAILONGMA_ARCH_AUDIT.md §7 安全结论。
+BaiLongma-audit/
+
+# === 接手加固 2026-06-03：堵产物/工具目录漏洞，防误提交近 600M ===
+# Electron 输出目录（package.json build.directories.output=out-noe，381M）
+out-noe/
+# 运行/测试产物（playwright/ce12-p0 证据等，可重新生成）
+output/
+# Unity 工具缓存（误入的非 Node 产物，107M）
+.unity/
+# opencode / Mavis 执行器本地安装（含 node_modules，57M 运行时产物）
+.opencode/
+# 空壳残留目录（仅含空的 BaiLongma-audit 子目录）
+贾维斯/
+# panel 运行/重启日志产物（本地生成，可重建）
+.panel-*.log
+# Python 辅助脚本缓存（强健补遗，2026-06-10）
+__pycache__/
+*.pyc
+
+# 本地调研/评测产物（不进版本：benchmark 含 4.2M 模型评测输出+图表；massive-survey 开源项目调研数据；.mavis 多模型协作 cycle 决策快照）
+benchmark/
+massive-survey/
+.mavis/
+
+# 历史项目残留 audit 文件(已迁移到 _archive/)
+.audit-progress.json

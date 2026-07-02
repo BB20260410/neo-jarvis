@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 2,
+  "id": "classify-sign",
+  "category": "feature",
+  "title": "补全零分支",
+  "summary": "小特性：返回 positive/negative/zero；buggy 漏了 zero 分支返回了 negative。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "classifySign",
+  "signature": "classifySign(n: number): string — 返回 \"positive\" / \"negative\" / \"zero\"。",
+  "probes": [
+    {
+      "name": "pos",
+      "args": [
+        5
+      ],
+      "expect": "positive"
+    },
+    {
+      "name": "neg",
+      "args": [
+        -3
+      ],
+      "expect": "negative"
+    },
+    {
+      "name": "zero",
+      "args": [
+        0
+      ],
+      "expect": "zero"
+    }
+  ]
+}

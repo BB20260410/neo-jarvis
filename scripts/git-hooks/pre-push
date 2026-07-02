@@ -1,0 +1,13 @@
+#!/bin/sh
+# pre-push — 推送门：全量单测必须全绿（约 30-40s）。本地最后一道，CI 是异地兜底。
+# 紧急绕过：git push --no-verify（事后必须补跑 npm test）
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+echo "[pre-push] 全量单测中（约 40s，紧急绕过用 --no-verify）..."
+node node_modules/vitest/vitest.mjs run --reporter=dot \
+  || { echo "❌ pre-push: 测试有红，禁止推送。"; exit 1; }
+
+echo "[pre-push] ✅ 全绿，放行。"
+exit 0

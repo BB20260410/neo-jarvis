@@ -1,0 +1,429 @@
+import { describe, expect, it } from 'vitest';
+import { mkdtempSync, mkdirSync, symlinkSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { PermissionGovernance, evaluatePermission } from '../../src/permissions/PermissionGovernance.js';
+
+function makeGovernance(opts = {}) {
+  const approvals = [];
+  const auditEvents = [];
+  const runMessages = [];
+  const governance = new PermissionGovernance({
+    policy: opts.policy || { ownerTrust: 'default' },
+    approvalStore: {
+      createApproval(input) {
+        const approval = { id: `approval-${approvals.length + 1}`, status: 'pending', ...input };
+        approvals.push(approval);
+        return approval;
+      },
+      getApproval(id) {
+        return approvals.find(a => a.id === id) || null;
+      },
+    },
+    audit: {
+      recordSafe(input) {
+        auditEvents.push(input);
+        return input;
+      },
+    },
+    agentRuns: {
+      appendMessage(runId, message) {
+        runMessages.push({ runId, message });
+        return { id: `message-${runMessages.length}`, ...message };
+      },
+    },
+  });
+  return { governance, approvals, auditEvents, runMessages };
+}
+
+describe('PermissionGovernance', () => {
+  it('defaults to owner full developer trust and allows high-impact actions', () => {
+    const governance = new PermissionGovernance({
+      approvalStore: { createApproval() { throw new Error('approval should not be created'); } },
+      audit: { recordSafe() {} },
+      agentRuns: {},
+    });
+    expect(governance.evaluatePermission({
+      action: 'shell.exec',
+      target: { command: 'rm -rf /tmp/noe-owned-test' },
+    })).toMatchObject({ decision: 'allow', reason: expect.stringContaining('owner full developer trust') });
+    expect(governance.evaluatePermission({
+      action: 'external_directory.access',
+      target: { path: '~/.aws/credentials' },
+    })).toMatchObject({ decision: 'allow', reason: expect.stringContaining('owner full developer trust') });
+    expect(governance.evaluatePermission({
+      action: 'network.upload',
+      target: { url: 'http://localhost:8080/hook' },
+    })).toMatchObject({ decision: 'allow', reason: expect.stringContaining('owner full developer trust') });
+  });
+
+  it('owner full developer trust 也不能改 Noe 策略文件', () => {
+    const governance = new PermissionGovernance({
+      policy: { ownerTrust: 'full' },
+      approvalStore: { createApproval() { throw new Error('approval should not be created'); } },
+      audit: { recordSafe() {} },
+      agentRuns: {},
+      env: { HOME: '~' },
+    });
+
+    expect(governance.evaluatePermission({
+      action: 'file.write',
+      cwd: process.cwd(),
+      target: { path: 'src/permissions/PermissionGovernance.js' },
+    })).toMatchObject({
+      decision: 'deny',
+      reason: 'noe_policy_file_mutation_denied',
+      risk: 'critical',
+      details: {
+        noePolicyFileGuard: expect.objectContaining({
+          matchedId: 'src/permissions/permissiongovernance.js',
+          secretValuesReturned: false,
+        }),
+      },
+    });
+
+    expect(governance.evaluatePermission({
+      action: 'shell.exec',
+      cwd: process.cwd(),
+      target: { command: 'sed', args: ['-i', 's/x/y/', 'src/permissions/PermissionGovernance.js'] },
+    })).toMatchObject({
+      decision: 'deny',
+      reason: 'noe_policy_file_mutation_denied',
+      risk: 'critical',
+    });
+  });
+
+  it('asks for approval on dangerous shell commands and records audit plus agent run evidence', () => {
+    const { governance, approvals, auditEvents, runMessages } = makeGovernance();
+
+    const decision = governance.evaluatePermission({
+      actorType: 'session',
+      actorId: 'session-1',
+      agentRunId: 'run-1',
+      sessionId: 'session-1',
+      action: 'shell.exec',
+      cwd: '/tmp/project',
+      target: { toolName: 'Bash', command: 'rm -rf /', guardLevel: 'standard' },
+      details: { source: 'claude_tool_use' },
+    });
+
+    expect(decision).toMatchObject({
+      decision: 'ask',
+      action: 'shell.exec',
+      risk: 'critical',
+      approval: { id: 'approval-1', type: 'manual', status: 'pending' },
+    });
+    expect(decision.approvalPayload.details.classification.hits[0].rule.category).toBe('删除系统/家目录');
+    expect(approvals).toHaveLength(1);
+    expect(auditEvents).toEqual([
+      expect.objectContaining({
+        action: 'permission.decision',
+        entityType: 'permission_decision',
+        status: 'ask',
+      }),
+    ]);
+    expect(runMessages).toEqual([
+      expect.objectContaining({
+        runId: 'run-1',
+        message: expect.objectContaining({
+          kind: 'decision',
+          status: 'ask',
+          payload: expect.objectContaining({ approvalId: 'approval-1' }),
+        }),
+      }),
+    ]);
+  });
+
+  it('asks before writing outside cwd and before sensitive file writes', () => {
+    const { governance } = makeGovernance();
+
+    expect(governance.evaluatePermission({
+      action: 'file.write',
+      cwd: '/tmp/project',
+      target: { path: '../outside.txt' },
+    })).toMatchObject({
+      decision: 'ask',
+      reason: 'external directory file write/delete requires approval',
+    });
+
+    expect(governance.evaluatePermission({
+      action: 'file.write',
+      cwd: '/tmp/project',
+      target: { path: '.env.local' },
+    })).toMatchObject({
+      decision: 'ask',
+      reason: 'sensitive file write/delete requires approval',
+    });
+  });
+
+  it('asks before explicitly approval-gated project-local file writes', () => {
+    const { governance, approvals } = makeGovernance();
+
+    const decision = governance.evaluatePermission({
+      action: 'file.write',
+      cwd: '/tmp/project',
+      target: {
+        path: '/tmp/project/output/playwright/generated.js',
+        relativePath: 'output/playwright/generated.js',
+        operation: 'create',
+        contentSha256: 'abc123',
+        requiresApproval: true,
+      },
+    });
+
+    expect(decision).toMatchObject({
+      decision: 'ask',
+      reason: 'file operation requested explicit approval',
+      approval: { id: 'approval-1', status: 'pending' },
+    });
+    approvals[0].status = 'approved';
+    expect(governance.evaluatePermission({
+      action: 'file.write',
+      approvalId: 'approval-1',
+      cwd: '/tmp/project',
+      target: {
+        operation: 'create',
+        requiresApproval: true,
+        contentSha256: 'abc123',
+        relativePath: 'output/playwright/generated.js',
+        path: '/tmp/project/output/playwright/generated.js',
+      },
+    })).toMatchObject({
+      decision: 'allow',
+      reason: 'approved permission resumed',
+    });
+  });
+
+  it('denies sensitive external directories and private network uploads', () => {
+    const { governance, approvals } = makeGovernance();
+
+    expect(governance.evaluatePermission({
+      action: 'external_directory.access',
+      cwd: '/tmp/project',
+      target: { path: '~/.ssh' },
+    })).toMatchObject({
+      decision: 'deny',
+      risk: 'critical',
+    });
+
+    expect(governance.evaluatePermission({
+      action: 'network.upload',
+      target: { url: 'http://localhost:8080/hook' },
+    })).toMatchObject({
+      decision: 'deny',
+      reason: 'network upload to private/loopback host denied',
+    });
+    expect(governance.evaluatePermission({
+      action: 'external_directory.access',
+      cwd: '/tmp/project',
+      target: { path: '.env.local' },
+    })).toMatchObject({
+      decision: 'ask',
+      reason: 'sensitive file access requires approval',
+    });
+    expect(approvals).toHaveLength(1);
+  });
+
+  it('requires approval for plugin execution, provider config writes, and public uploads', () => {
+    const { governance, approvals } = makeGovernance();
+
+    expect(governance.evaluatePermission({
+      action: 'skill.plugin.execute',
+      target: { pluginId: 'demo', commandId: 'run' },
+    }).decision).toBe('ask');
+    expect(governance.evaluatePermission({
+      action: 'provider.model_config.write',
+      target: { section: 'watcher' },
+    }).decision).toBe('ask');
+    expect(governance.evaluatePermission({
+      action: 'network.upload',
+      target: { url: 'https://example.com/webhook' },
+    }).decision).toBe('ask');
+    expect(approvals).toHaveLength(3);
+  });
+
+  it('allows low-risk auto-accept scope through the helper', () => {
+    const decision = evaluatePermission({
+      action: 'auto_accept.scope',
+      risk: 'low',
+      target: { scope: 'read_only' },
+    }, {
+      policy: { ownerTrust: 'default' },
+      approvalStore: { createApproval() { throw new Error('approval should not be created'); } },
+      audit: { recordSafe() {} },
+      agentRuns: { appendMessage() {} },
+    });
+
+    expect(decision).toMatchObject({
+      decision: 'allow',
+      reason: 'low-risk auto-accept scope allowed',
+    });
+  });
+
+  it('allows an approved permission to resume only the same action and target', () => {
+    const { governance, approvals } = makeGovernance();
+
+    const first = governance.evaluatePermission({
+      action: 'network.upload',
+      target: { url: 'https://example.com/webhook' },
+    });
+    expect(first).toMatchObject({ decision: 'ask', approval: { id: 'approval-1' } });
+    approvals[0].status = 'approved';
+
+    const resumed = governance.evaluatePermission({
+      action: 'network.upload',
+      approvalId: 'approval-1',
+      target: { url: 'https://example.com/webhook' },
+    });
+
+    expect(resumed).toMatchObject({
+      decision: 'allow',
+      reason: 'approved permission resumed',
+      approval: { id: 'approval-1', status: 'approved' },
+      details: { resumed: true, resumeApprovalId: 'approval-1' },
+    });
+    expect(approvals).toHaveLength(1);
+
+    const mismatch = governance.evaluatePermission({
+      action: 'network.upload',
+      approvalId: 'approval-1',
+      target: { url: 'https://evil.example/webhook' },
+    });
+    expect(mismatch).toMatchObject({
+      decision: 'deny',
+      reason: 'approval does not match permission action/target',
+    });
+  });
+
+  it('resolves the matching approval from a multi-id list and keeps unmatched checks as ask (chained approval)', () => {
+    const { governance, approvals } = makeGovernance();
+
+    // 第 1 步：provider 配置写入 ask → approval-1
+    const first = governance.evaluatePermission({
+      action: 'provider.model_config.write',
+      target: { section: 'watcher', provider: 'openai' },
+    });
+    expect(first).toMatchObject({ decision: 'ask', approval: { id: 'approval-1' } });
+    approvals.find((a) => a.id === 'approval-1').status = 'approved';
+
+    // 带 [approval-1] 重试 provider → allow
+    const providerResumed = governance.evaluatePermission({
+      action: 'provider.model_config.write',
+      approvalIds: ['approval-1'],
+      target: { section: 'watcher', provider: 'openai' },
+    });
+    expect(providerResumed).toMatchObject({ decision: 'allow', details: { resumed: true, resumeApprovalId: 'approval-1' } });
+
+    // 同请求第 2 个检查 auto_accept 带 [approval-1]（不匹配）→ 保持 ask 并新建 approval-2，而非 deny
+    const autoAsk = governance.evaluatePermission({
+      action: 'auto_accept.scope',
+      approvalIds: ['approval-1'],
+      risk: 'high',
+      target: { section: 'watcher', autoMode: true },
+    });
+    expect(autoAsk).toMatchObject({ decision: 'ask' });
+    expect(autoAsk.approval.id).toBe('approval-2');
+
+    // 批准 approval-2，带 [approval-1, approval-2] 重试 auto_accept → allow
+    approvals.find((a) => a.id === 'approval-2').status = 'approved';
+    const autoResumed = governance.evaluatePermission({
+      action: 'auto_accept.scope',
+      approvalIds: ['approval-1', 'approval-2'],
+      risk: 'high',
+      target: { section: 'watcher', autoMode: true },
+    });
+    expect(autoResumed).toMatchObject({ decision: 'allow', details: { resumed: true, resumeApprovalId: 'approval-2' } });
+  });
+
+  it('treats a symlink that escapes the project root as an external write (realpath, not just resolve)', () => {
+    const { governance } = makeGovernance();
+    const root = mkdtempSync(join(tmpdir(), 'noe-proj-'));
+    const outside = mkdtempSync(join(tmpdir(), 'noe-out-'));
+    try {
+      // root/escape 是指向 root 外部目录的 symlink；写 root/escape/secret.txt 实际落在 root 外
+      symlinkSync(outside, join(root, 'escape'));
+      const escaped = governance.evaluatePermission({
+        action: 'file.write',
+        cwd: root,
+        target: { path: join(root, 'escape', 'secret.txt') },
+      });
+      expect(escaped.decision).toBe('ask');
+      expect(escaped.reason).toMatch(/external directory/);
+
+      // 对照：项目内正常路径仍直接放行
+      mkdirSync(join(root, 'src'), { recursive: true });
+      const inside = governance.evaluatePermission({
+        action: 'file.write',
+        cwd: root,
+        target: { path: join(root, 'src', 'a.js') },
+      });
+      expect(inside.decision).toBe('allow');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+      rmSync(outside, { recursive: true, force: true });
+    }
+  });
+
+  it('allows trusted local MCP servers to be called without approval, but still gates config changes', () => {
+    const { governance } = makeGovernance();
+    // 默认白名单四个本地 server：调用/列表（execute）免审批，大脑可自主用工具
+    for (const serverName of ['unified-kb', 'filesystem', 'memory', 'playwright']) {
+      const exec = governance.evaluatePermission({
+        action: 'skill.plugin.execute',
+        target: { section: 'mcp', serverName, operation: 'list_tools' },
+      });
+      expect(exec.decision, serverName).toBe('allow');
+    }
+    // 改 spawn 启动规格（configure）= 潜在 RCE → 永远审批，即使是白名单 server
+    expect(governance.evaluatePermission({
+      action: 'skill.plugin.configure',
+      target: { section: 'mcp', serverName: 'filesystem', operation: 'update' },
+    }).decision).toBe('ask');
+    // 不在白名单的 server 调用仍审批
+    expect(governance.evaluatePermission({
+      action: 'skill.plugin.execute',
+      target: { section: 'mcp', serverName: 'some-untrusted-server', operation: 'call' },
+    }).decision).toBe('ask');
+  });
+
+  it('does not create duplicate approvals when a pending approval id is retried', () => {
+    const { governance, approvals } = makeGovernance();
+
+    governance.evaluatePermission({
+      action: 'skill.plugin.execute',
+      target: { pluginId: 'demo', commandId: 'run' },
+    });
+
+    const retry = governance.evaluatePermission({
+      action: 'skill.plugin.execute',
+      approvalId: 'approval-1',
+      target: { commandId: 'run', pluginId: 'demo' },
+    });
+
+    expect(retry).toMatchObject({
+      decision: 'ask',
+      reason: 'approval is still pending',
+      approval: { id: 'approval-1', status: 'pending' },
+    });
+    expect(approvals).toHaveLength(1);
+  });
+
+  it('denies rejected approval resume attempts', () => {
+    const { governance, approvals } = makeGovernance();
+
+    governance.evaluatePermission({
+      action: 'provider.model_config.write',
+      target: { section: 'watcher', provider: 'openai' },
+    });
+    approvals[0].status = 'rejected';
+
+    expect(governance.evaluatePermission({
+      action: 'provider.model_config.write',
+      approvalId: 'approval-1',
+      target: { provider: 'openai', section: 'watcher' },
+    })).toMatchObject({
+      decision: 'deny',
+      reason: 'approval rejected; permission resume denied',
+    });
+  });
+});

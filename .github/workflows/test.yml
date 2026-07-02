@@ -1,0 +1,40 @@
+# Full unit/integration test suite on Node 22 (the version the runtime guard requires).
+#
+# Honest scoping notes:
+# - tests/unit/noe-handoff-consistency.test.js is excluded in vitest.config.mjs:
+#   it validates the maintainer's private workspace instruction file (CLAUDE.md),
+#   which is not part of this public snapshot.
+# - TZ is pinned to Asia/Shanghai: tests/unit/noe-long-task-followup.test.js
+#   asserts deterministic "+08:00" local-time snapshots. Pinning the zone makes
+#   those fixtures reproducible on any runner (verified: 4 cases fail under UTC,
+#   all pass under Asia/Shanghai) — no test logic is skipped.
+# - Electron / Playwright browser binaries are not downloaded: no test in this
+#   suite launches them, and skipping saves ~200 MB per run.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      TZ: "Asia/Shanghai"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run test suite
+        run: npm test

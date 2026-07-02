@@ -1,0 +1,261 @@
+
+/* ============ v0.53 Sprint 3 — 房间模板 modal ============ */
+.room-template-modal-body {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: var(--spacing-4);
+  max-height: 70vh;
+}
+.room-template-list {
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  padding-right: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.room-template-list-section {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: var(--spacing-2) 0 4px;
+  padding: 0 6px;
+}
+.room-template-item {
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background .15s, border-color .15s;
+}
+.room-template-item:hover { background: rgba(193, 95, 60, 0.06); }
+.room-template-item.active { background: rgba(193, 95, 60, 0.10); border-color: var(--orange-soft); }
+.room-template-item .tname { font-weight: 600; color: var(--text-pri); font-size: var(--text-base); }
+.room-template-item .tmode { font-size: 10px; color: var(--text-sec); }
+.room-template-item .tmode .chip {
+  display: inline-block; padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--gray-100); color: var(--text-sec);
+  margin-right: 4px;
+}
+.room-template-detail { overflow: auto; padding: 0 var(--spacing-3); }
+.room-template-detail h3 { margin: 0 0 var(--spacing-2) 0; color: var(--text-pri); }
+.room-template-detail .desc {
+  color: var(--text-sec); font-size: var(--text-sm);
+  margin-bottom: var(--spacing-3); line-height: 1.5;
+}
+.room-template-detail .meta {
+  display: flex; flex-wrap: wrap;
+  gap: var(--spacing-3) var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  font-size: var(--text-sm); color: var(--text-sec);
+}
+.room-template-detail .meta strong { color: var(--text-pri); }
+.room-template-detail .members-list { margin-bottom: var(--spacing-3); }
+.room-template-detail .members-list li {
+  padding: 4px 0;
+  list-style: none;
+  color: var(--text-pri);
+  font-size: var(--text-sm);
+}
+.room-template-detail .members-list li .role-chip {
+  display: inline-block; margin-left: 6px;
+  padding: 1px 6px; font-size: 10px;
+  background: var(--gray-100); color: var(--text-sec); border-radius: 4px;
+}
+.room-template-detail-form {
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+.room-template-detail-form label { font-size: var(--text-sm); color: var(--text-sec); }
+.room-template-detail-form input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-top);
+  color: var(--text-pri);
+  font-family: inherit;
+  font-size: var(--text-base);
+}
+.room-template-detail-form .actions {
+  margin-top: var(--spacing-3);
+  display: flex;
+  gap: var(--spacing-2);
+  justify-content: flex-end;
+}
+.room-template-detail-delete { margin-right: auto; }
+
+/* ============ v0.54 Sprint 4 — Webhook modal ============ */
+.webhook-modal-body { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: var(--spacing-4); max-height: 70vh; }
+.webhook-list-pane { display: flex; flex-direction: column; border-right: 1px solid var(--line); padding-right: var(--spacing-3); min-height: 0; }
+.webhook-list-head { display: flex; align-items: center; gap: var(--spacing-2); font-size: var(--text-sm); color: var(--text-sec); padding-bottom: var(--spacing-2); border-bottom: 1px solid var(--line); margin-bottom: var(--spacing-2); }
+.webhook-list { flex: 1 1 0; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+.webhook-item { cursor: pointer; padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid transparent; transition: background .15s; }
+.webhook-item:hover { background: rgba(193, 95, 60, 0.06); }
+.webhook-item.active { background: rgba(193, 95, 60, 0.10); border-color: var(--orange-soft); }
+.webhook-item .wname { font-weight: 600; color: var(--text-pri); font-size: var(--text-base); display: flex; align-items: center; gap: 6px; }
+.webhook-item .wname .badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--gray-100); color: var(--text-sec); }
+.webhook-item .wname .badge.is-disabled { opacity: 0.5; }
+.webhook-item .wurl { font-size: var(--text-xs); color: var(--text-muted); font-family: ui-monospace, monospace; word-break: break-all; margin-top: 2px; }
+.webhook-item .wstats { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.webhook-item .wstats .ok { color: var(--color-success-alt); }
+.webhook-item .wstats .err { color: var(--color-danger-alt); }
+.webhook-detail-pane { overflow: auto; padding: 0 var(--spacing-3); display: flex; flex-direction: column; gap: var(--spacing-3); }
+.webhook-form-row { display: flex; flex-direction: column; gap: 4px; }
+.webhook-form-row label { font-size: var(--text-sm); color: var(--text-sec); }
+.webhook-form-row input, .webhook-form-row select, .webhook-form-row textarea {
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--bg-top); color: var(--text-pri); font-family: inherit; font-size: var(--text-base);
+}
+.webhook-form-row textarea { font-family: ui-monospace, monospace; font-size: var(--text-sm); min-height: 80px; resize: vertical; }
+.webhook-events-row { display: flex; gap: var(--spacing-3); flex-wrap: wrap; }
+.webhook-events-row label { display: flex; align-items: center; gap: 4px; font-size: var(--text-sm); }
+.webhook-form-actions { display: flex; gap: var(--spacing-2); justify-content: flex-end; margin-top: var(--spacing-2); }
+.webhook-form-actions .left-grow { margin-right: auto; }
+.webhook-help-text { font-size: var(--text-xs); color: var(--text-muted); line-height: 1.5; font-style: italic; }
+
+/* ============ v0.54 Sprint 4.5 — 归档配置 modal ============ */
+.archive-modal-body { padding: var(--spacing-3) var(--spacing-4); max-height: 70vh; overflow: auto; display: flex; flex-direction: column; gap: var(--spacing-3); }
+.archive-section { background: rgba(127,127,127,0.04); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--spacing-3); display: flex; flex-direction: column; gap: var(--spacing-2); }
+.archive-section-title { font-weight: 600; color: var(--text-pri); font-size: var(--text-md); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.archive-form-row { display: flex; flex-direction: column; gap: 4px; }
+.archive-form-row label { font-size: var(--text-sm); color: var(--text-sec); }
+.archive-form-row input, .archive-form-row select { padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-top); color: var(--text-pri); font-family: inherit; font-size: var(--text-base); }
+.archive-form-row .help { font-size: var(--text-xs); color: var(--text-muted); font-style: italic; }
+.archive-tree-preview { font-family: ui-monospace, monospace; font-size: var(--text-sm); background: var(--bg-main); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--spacing-3); white-space: pre; overflow-x: auto; color: var(--text-sec); }
+.archive-list-empty { color: var(--text-muted); font-size: var(--text-sm); padding: 12px; font-style: italic; }
+.archive-list-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--bg-top); border: 1px solid var(--line); margin-bottom: 4px; font-size: var(--text-sm); }
+.archive-list-item .name { flex: 1; color: var(--text-pri); }
+.archive-list-item .mode { font-size: 10px; padding: 1px 6px; background: var(--gray-100); border-radius: 4px; color: var(--text-sec); }
+.archive-list-item .dir { font-family: ui-monospace, monospace; font-size: 10px; color: var(--text-muted); word-break: break-all; }
+.archive-actions-row { display: flex; gap: var(--spacing-2); justify-content: flex-end; }
+
+/* v0.54 Sprint 9 — Report modal */
+.report-modal-body { padding: var(--spacing-3) var(--spacing-4); max-height: 75vh; overflow: auto; display: flex; flex-direction: column; gap: var(--spacing-3); }
+.report-form-row { display: flex; flex-direction: column; gap: 4px; }
+.report-form-row label { font-size: var(--text-sm); color: var(--text-sec); }
+.report-form-row input, .report-form-row select { padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-top); color: var(--text-pri); font-family: inherit; font-size: var(--text-base); }
+.report-form-row .help { font-size: var(--text-xs); color: var(--text-muted); font-style: italic; }
+.report-progress { padding: 20px; text-align: center; color: var(--text-sec); }
+.report-progress .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--orange); border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.report-preview-wrap { display: flex; flex-direction: column; gap: var(--spacing-2); }
+.report-preview-meta { font-size: var(--text-sm); color: var(--text-sec); padding: 8px 10px; background: rgba(127,127,127,0.05); border-radius: var(--radius-sm); }
+.report-preview-content { padding: var(--spacing-3); background: var(--bg-top); border: 1px solid var(--line); border-radius: var(--radius-md); max-height: 50vh; overflow: auto; font-size: var(--text-sm); line-height: 1.6; }
+.report-actions { display: flex; gap: var(--spacing-2); justify-content: flex-end; }
+
+/* v0.55 Sprint 12 — MCP modal */
+.mcp-modal-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: var(--spacing-4); max-height: 75vh; }
+.mcp-list-pane { display: flex; flex-direction: column; border-right: 1px solid var(--line); padding-right: var(--spacing-3); min-height: 0; }
+.mcp-list-head { display: flex; align-items: center; gap: var(--spacing-2); font-size: var(--text-sm); color: var(--text-sec); padding-bottom: var(--spacing-2); border-bottom: 1px solid var(--line); margin-bottom: var(--spacing-2); }
+.mcp-list { flex: 1 1 0; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+.mcp-item { cursor: pointer; padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid transparent; transition: background .15s; }
+.mcp-item:hover { background: rgba(193, 95, 60, 0.06); }
+.mcp-item.active { background: rgba(193, 95, 60, 0.10); border-color: var(--orange-soft); }
+.mcp-item .mname { font-weight: 600; color: var(--text-pri); font-size: var(--text-base); display: flex; align-items: center; gap: 6px; }
+.mcp-item .mname .badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--gray-100); color: var(--text-sec); }
+.mcp-item .mname .badge.is-disabled { opacity: 0.5; }
+.mcp-item .mname .badge.is-stdio { background: rgba(34, 139, 34, 0.15); color: var(--color-success-alt); }
+.mcp-item .mname .badge.is-sse { background: rgba(0, 123, 255, 0.15); color: #1d4ed8; }
+.mcp-item .mname .badge.is-http { background: rgba(193, 95, 60, 0.15); color: var(--orange); }
+.mcp-item .mdesc { font-size: var(--text-xs); color: var(--text-muted); font-family: ui-monospace, monospace; margin-top: 2px; word-break: break-all; }
+.mcp-item .mstatus { font-size: 10px; margin-top: 2px; color: var(--text-muted); }
+.mcp-item .mstatus .ok { color: var(--color-success-alt); }
+.mcp-item .mstatus .err { color: var(--color-danger-alt); }
+.mcp-detail-pane { overflow: auto; padding: 0 var(--spacing-3); display: flex; flex-direction: column; gap: var(--spacing-3); }
+.mcp-form-row { display: flex; flex-direction: column; gap: 4px; }
+.mcp-form-row label { font-size: var(--text-sm); color: var(--text-sec); }
+.mcp-form-row input, .mcp-form-row select, .mcp-form-row textarea {
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--bg-top); color: var(--text-pri); font-family: inherit; font-size: var(--text-base);
+}
+.mcp-form-row textarea { font-family: ui-monospace, monospace; font-size: var(--text-sm); min-height: 80px; resize: vertical; }
+.mcp-form-row .help { font-size: var(--text-xs); color: var(--text-muted); font-style: italic; }
+.mcp-tools-list { background: var(--bg-main); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--spacing-2); max-height: 200px; overflow: auto; font-size: var(--text-sm); }
+.mcp-tool-item { padding: 4px 6px; border-radius: 3px; }
+.mcp-tool-item:hover { background: rgba(127,127,127,0.05); }
+.mcp-tool-item .tname { font-weight: 600; font-family: ui-monospace, monospace; color: var(--text-pri); }
+.mcp-tool-item .tdesc { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+.mcp-form-actions { display: flex; gap: var(--spacing-2); justify-content: flex-end; margin-top: var(--spacing-2); }
+.mcp-form-actions .left-grow { margin-right: auto; }
+
+/* v0.56 Sprint 15-R4 — Autopilot modal */
+.autopilot-modal-body { padding: var(--spacing-3) var(--spacing-4); max-height: 80vh; overflow: auto; display: flex; flex-direction: column; gap: var(--spacing-3); min-width: 0; }
+.autopilot-toggle-row {
+  display: flex; align-items: center; gap: var(--spacing-3);
+  padding: 12px;
+  background: rgba(127,127,127,0.05);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;   /* 窄屏自动换行 */
+}
+.autopilot-toggle-row .big-switch { font-size: 18px; font-weight: bold; white-space: nowrap; flex-shrink: 0; }
+.autopilot-toggle-row .big-switch.is-on { color: var(--color-success-alt); }
+.autopilot-toggle-row .big-switch.is-off { color: var(--text-muted); }
+.autopilot-toggle-row .ap-desc {
+  flex: 1 1 220px;          /* 关键：flex-basis + 允许 shrink + grow */
+  min-width: 0;             /* 关键：允许中文自然换行 */
+  font-size: 13px;
+  color: var(--text-sec);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.autopilot-toggle-row button { flex-shrink: 0; }
+.autopilot-rules { display: flex; flex-direction: column; gap: 6px; }
+.autopilot-rule {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;          /* 窄屏换行 */
+}
+.autopilot-rule.is-disabled { opacity: 0.55; }
+.autopilot-rule .info {
+  flex: 1 1 200px;
+  min-width: 0;             /* 关键 */
+  word-break: break-word;
+}
+.autopilot-rule .info .name { font-weight: 600; color: var(--text-pri); }
+.autopilot-rule .info .meta { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; font-family: ui-monospace, monospace; word-break: break-all; }
+.autopilot-rule .badge-builtin { font-size: 10px; padding: 1px 6px; background: var(--gray-100); color: var(--text-sec); border-radius: 4px; }
+.autopilot-rule input[type="checkbox"] { flex-shrink: 0; }
+.autopilot-rule button { flex-shrink: 0; }
+.autopilot-log {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 8px;
+  background: var(--bg-main);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+.autopilot-log-entry { padding: 2px 0; word-break: break-all; }
+.autopilot-log-entry .ts { color: var(--text-muted); }
+.autopilot-log-entry .type-error, .autopilot-log-entry .type-rule_forward_fail { color: var(--color-danger-alt); }
+.autopilot-log-entry .type-rule_forward_ok, .autopilot-log-entry .type-rule_notify { color: var(--color-success-alt); }
+
+/* v0.55 Sprint 13-D — Timeline modal */
+.timeline-modal-body { padding: var(--spacing-3) var(--spacing-4); max-height: 80vh; overflow: auto; display: flex; flex-direction: column; gap: var(--spacing-3); }
+.timeline-stats { display: flex; gap: var(--spacing-4); font-size: var(--text-sm); color: var(--text-sec); padding: 8px 10px; background: rgba(127,127,127,0.05); border-radius: var(--radius-sm); flex-wrap: wrap; }
+.timeline-stats strong { color: var(--text-pri); }
+.timeline-chart-wrap { height: 320px; }
+.timeline-list { font-family: ui-monospace, monospace; font-size: var(--text-sm); max-height: 240px; overflow: auto; }
+.timeline-row { display: grid; grid-template-columns: 90px 90px 1fr 100px 80px 60px; gap: 8px; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+.timeline-row:hover { background: rgba(127,127,127,0.04); }
+.timeline-row.err { background: rgba(220,53,69,0.06); }
+.timeline-row .ts { color: var(--text-muted); }
+.timeline-row .adapter { color: var(--text-pri); font-weight: 600; }
+.timeline-row .turn { color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timeline-row .latency { color: var(--text-pri); text-align: right; }
+.timeline-row .tokens { color: var(--text-sec); text-align: right; }
+.timeline-row .badge-ok { color: var(--color-success-alt); }
+.timeline-row .badge-err { color: var(--color-danger-alt); }

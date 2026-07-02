@@ -1,0 +1,302 @@
+/* Noe — 参考 Codex 设计语言（结构/Token）+ Anthropic 配色规范 */
+/* 借用 Codex 设计系统的 token 命名约定 + spacing 系统 + radius/shadow 比例 */
+
+/* S18-6 starter：声明 @layer 优先级顺序（base < components < layout < utilities）
+ * 当前所有现有 rules 均未归类到 layer（保持 default layer，优先级最高）
+ * 下次对话用户授权后逐步把 rules 归类到对应 layer，并按 view 拆出 public/css/*.css
+ * 浏览器要求：Chrome 99+ / Safari 15.4+ / Firefox 97+（2022 起，覆盖 panel 用户全部场景） */
+@layer base, components, layout, utilities;
+
+:root {
+  /* Codex 风格 spacing 系统（参考 Codex 真实 --spacing=4px 体系）*/
+  --spacing: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  /* Codex 风格 radius 系统 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  /* Codex 风格 shadow 系统 */
+  --shadow-sm: 0 1px 0 rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+  /* Codex 风格 font-size 系统（13px base 参考 Codex --vscode-font-size:13px）*/
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+}
+:root {
+  /* ===== 原有 Anthropic 配色（保留，旧组件继续用）===== */
+  --orange: #C15F3C;
+  --orange-soft: #D4876A;
+  --bg-main: #F4F1EA;
+  --bg-top: #F8F6F2;
+  --bg-bottom: #F0EDE6;
+  --gray-deep: #2D2D2D;
+  --gray-mid: #6B6963;
+  --gray-soft: #B8B5AE;
+  --line: #E5E2DB;
+  --code-bg: #F0EDE6;
+  --card: #FFFFFF;
+  --card-soft: rgba(255,255,255,0.7);
+  --shadow-soft: 0 1px 0 rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* ===== v0.6 AgentsView 信息层级 token（新组件用）===== */
+  --bg-surface: #FFFFFF;          /* 卡片/面板背景 */
+  --bg-surface-hover: #F0EDE6;    /* hover 态 */
+  --bg-inset: #ECE9E2;            /* 内嵌输入框 / 凹陷区 */
+  --text-pri: #2D2D2D;
+  --text-sec: #555550;
+  --text-muted: #999693;
+  --border-def: #E5E2DB;
+  --accent-blue:  #2563EB;
+  --accent-amber: #D97706;
+  --accent-red:   #B3322F;
+  --accent-green: #2D6E3E;
+  /* 修复：被全 app 引用但拆 CSS 时漏定义的别名 token（引用处此前 color-mix/var 静默失效）。
+     定义为别名 → 随主题跟随对应基础 token；一处修复全部引用点。*/
+  --color-accent-primary:   var(--accent-blue);
+  --color-accent-secondary: var(--accent-amber);
+  --color-text-foreground-primary: var(--color-text-foreground);
+  --color-text-foreground-muted:   var(--color-text-foreground-tertiary);
+  --color-warn-alt: var(--color-warn);
+  --font-mono: var(--mono);
+  --bg: var(--bg-main);
+  --bg-base: var(--bg-top);
+  --bg-hover: var(--bg-surface-hover);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.18);
+  /* 消息气泡 */
+  --user-bg:      #EEF2FF;
+  --assistant-bg: #FAF9FF;
+  --thinking-bg:  #F5F3FF;
+
+  /* ===== v0.7 Codex Design Token（业界级 IDE 设计系统）===== */
+  /* Gray 10 阶 */
+  --gray-0:    #ffffff;
+  --gray-50:   #f9f9f9;
+  --gray-100:  #ededed;
+  --gray-300:  #afafaf;
+  --gray-500:  #5d5d5d;
+  --gray-550:  #4f4f4f;
+  --gray-600:  #414141;
+  --gray-700:  #303030;
+  --gray-750:  #282828;
+  --gray-800:  #212121;
+  --gray-900:  #181818;
+  --gray-1000: #0d0d0d;
+  /* Accent 色板（保留 05 橙作主 accent，其它备用）*/
+  --blue-300:   #339cff;
+  --blue-400:   #0285ff;
+  --green-500:  #138a36;
+  --orange-500: #C15F3C;  /* 同 05 --orange */
+  --red-500:    #B3322F;
+  --yellow-500: #D97706;
+  --purple-400: #7C3AED;
+  /* Radius 系统 + scale */
+  --corner-radius-scale: 1.25;
+  --radius-2xs: calc(.125rem * var(--corner-radius-scale));
+  --radius-xs:  calc(.25rem  * var(--corner-radius-scale));
+  --radius-cx-sm: calc(.375rem * var(--corner-radius-scale));
+  --radius-cx-md: calc(.5rem   * var(--corner-radius-scale));
+  --radius-cx-lg: calc(.625rem * var(--corner-radius-scale));
+  --radius-cx-xl: calc(.75rem  * var(--corner-radius-scale));
+  --radius-2xl: calc(1rem * var(--corner-radius-scale));
+  --radius-full: 9999px;
+  /* 字号 */
+  --text-xs:         11px;
+  --text-sm:         12.5px;
+  --text-base:       14px;
+  --text-heading-md: 18px;
+  --text-heading-lg: 24px;
+  --text-2xl:        36px;
+  /* Font weight */
+  --font-weight-light:    300;
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  /* Spacing 单位 */
+  --spacing: 4px;
+  --padding-row-y:   calc(var(--spacing) * 1);
+  --padding-panel:   calc(var(--spacing) * 3);
+  --padding-toolbar: calc(var(--spacing) * 4);
+  /* Shadow（Codex 版）*/
+  --shadow-cx-md:  0px 2px 4px -1px #00000014;
+  --shadow-cx-xl:  0px 8px 16px -4px #0000001f;
+  --shadow-cx-2xl: 0px 16px 32px -8px #00000030;
+  /* 语义文本 4 级 */
+  --color-text-foreground:           var(--gray-900);
+  --color-text-foreground-secondary: color-mix(in oklab, var(--gray-900) 70%, transparent);
+  --color-text-foreground-tertiary:  color-mix(in oklab, var(--gray-900) 50%, transparent);
+  --color-text-accent:               var(--orange-500);
+  --color-text-error:                var(--red-500);
+  --color-text-success:              var(--green-500);
+  --color-text-warning:              var(--yellow-500);
+  /* 语义边框 5 级 */
+  --color-border-light: color-mix(in oklab, var(--gray-900) 5%, transparent);
+  --color-border-heavy: color-mix(in oklab, var(--gray-900) 12%, transparent);
+  --color-border-focus: var(--orange-500);
+  --color-border-error: color-mix(in oklab, var(--red-500) 15%, transparent);
+  --color-border-warning: color-mix(in oklab, var(--yellow-500) 15%, transparent);
+  /* 按钮 3 等级 × 4 状态矩阵 */
+  --btn-pri:            var(--gray-1000);
+  --btn-pri-hover:      color-mix(in oklab, var(--gray-1000) 88%, transparent);
+  --btn-pri-active:     color-mix(in oklab, var(--gray-1000) 80%, transparent);
+  --btn-pri-text:       var(--gray-0);
+  --btn-sec:            color-mix(in oklab, var(--gray-1000) 5%, transparent);
+  --btn-sec-hover:      color-mix(in oklab, var(--gray-1000) 8%, transparent);
+  --btn-sec-active:     color-mix(in oklab, var(--gray-1000) 12%, transparent);
+  --btn-sec-text:       var(--color-text-foreground);
+  --btn-ter:            transparent;
+  --btn-ter-hover:      color-mix(in oklab, var(--gray-1000) 5%, transparent);
+  --btn-ter-active:     color-mix(in oklab, var(--gray-1000) 10%, transparent);
+  --btn-ter-text:       var(--color-text-foreground-secondary);
+  --btn-danger:         var(--red-500);
+  --btn-danger-hover:   color-mix(in oklab, var(--red-500) 92%, transparent);
+  --btn-danger-active:  color-mix(in oklab, var(--red-500) 80%, transparent);
+  --btn-danger-text:    var(--gray-0);
+}
+
+/* 显式暗色（手动切换优先级最高，类放 <html>）*/
+html.dark {
+  --orange: #D4876A;
+  --orange-soft: #C15F3C;
+  --bg-main: #1E1E1E;
+  --bg-top: #232323;
+  --bg-bottom: #1A1A1A;
+  --gray-deep: #E5E2DB;
+  --gray-mid: #999693;
+  --gray-soft: #555550;
+  --line: #2F2E2C;
+  --code-bg: #2A2A28;
+  --card: #2A2826;
+  --card-soft: rgba(50,48,46,0.7);
+  --shadow-soft: 0 1px 0 rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.25);
+
+  --bg-surface: #2A2826;
+  --bg-surface-hover: #353230;
+  --bg-inset: #1F1E1C;
+  --text-pri: #E5E2DB;
+  --text-sec: #B8B5AE;
+  --text-muted: #6E6B65;
+  --border-def: #2F2E2C;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+  --user-bg:      #1A1E2C;
+  --assistant-bg: #1C1A26;
+  --thinking-bg:  #221C30;
+
+  /* v0.7 Codex token 暗色 override */
+  --color-text-foreground:           var(--gray-100);
+  --color-text-foreground-secondary: color-mix(in oklab, var(--gray-0) 70%, transparent);
+  --color-text-foreground-tertiary:  color-mix(in oklab, var(--gray-0) 50%, transparent);
+  --color-border-light: color-mix(in oklab, var(--gray-0) 5%, transparent);
+  --color-border-heavy: color-mix(in oklab, var(--gray-0) 16%, transparent);
+
+  --btn-pri:        var(--gray-100);
+  --btn-pri-hover:  color-mix(in oklab, var(--gray-100) 92%, transparent);
+  --btn-pri-active: color-mix(in oklab, var(--gray-100) 80%, transparent);
+  --btn-pri-text:   var(--gray-1000);
+  --btn-sec:        color-mix(in oklab, var(--gray-0) 8%, transparent);
+  --btn-sec-hover:  color-mix(in oklab, var(--gray-0) 12%, transparent);
+  --btn-sec-active: color-mix(in oklab, var(--gray-0) 16%, transparent);
+  --btn-ter:        transparent;
+  --btn-ter-hover:  color-mix(in oklab, var(--gray-0) 8%, transparent);
+  --btn-ter-active: color-mix(in oklab, var(--gray-0) 14%, transparent);
+}
+html.dark .modal-body { background: #2A2826; color: var(--gray-deep); }
+
+/* ===== 科幻主题 scifi（深空 · 青琥珀，呼应认知界面 BaiLongma 风；gray 阶重映射让派生自动适配）===== */
+html.scifi {
+  --gray-0:#0a1320; --gray-50:#0c1827; --gray-100:#142539; --gray-300:#34506c;
+  --gray-500:#6a8299; --gray-550:#7a92a9; --gray-600:#8ba3b9; --gray-700:#a7bccf;
+  --gray-750:#b8cbdc; --gray-800:#c8d8e6; --gray-900:#d8e4f0; --gray-1000:#eaf2fa;
+  --orange:#d39872; --orange-soft:#8fb6d8; --orange-500:#d39872;
+  --blue-300:#a7cdec; --blue-400:#8fb6d8;
+  --bg-main:#0b1420; --bg-top:#0e1a28; --bg-bottom:#070b12;
+  --bg-surface:#0e1a28; --bg-surface-hover:#16273a; --bg-inset:#0a131e;
+  --card:#0e1a26; --card-soft:rgba(18,30,46,0.6); --code-bg:#0c1622;
+  --line:#1b2c3e; --gray-deep:#d8e4f0; --gray-mid:#9aabbe; --gray-soft:#5d6d80;
+  --text-pri:#d8e4f0; --text-sec:#9aabbe; --text-muted:#5d6d80; --border-def:#1c2c3e;
+  --shadow-soft:0 1px 0 rgba(0,0,0,0.3),0 10px 30px rgba(20,45,80,0.35);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4); --shadow-md:0 2px 10px rgba(0,0,0,0.5); --shadow-lg:0 10px 30px rgba(0,0,0,0.6);
+  --user-bg:#16202e; --assistant-bg:#111a26; --thinking-bg:#1a1830;
+  --color-text-foreground:#d8e4f0;
+  --color-text-foreground-secondary:color-mix(in oklab,#d8e4f0 72%,transparent);
+  --color-text-foreground-tertiary:color-mix(in oklab,#d8e4f0 48%,transparent);
+  --color-text-accent:#8fb6d8;
+  --color-border-light:color-mix(in oklab,#8fb6d8 10%,transparent);
+  --color-border-heavy:color-mix(in oklab,#8fb6d8 22%,transparent);
+  --color-border-focus:#8fb6d8;
+  --btn-pri:#8fb6d8; --btn-pri-hover:color-mix(in oklab,#8fb6d8 88%,transparent); --btn-pri-active:color-mix(in oklab,#8fb6d8 78%,transparent); --btn-pri-text:#07101a;
+  --btn-sec:color-mix(in oklab,#8fb6d8 10%,transparent); --btn-sec-hover:color-mix(in oklab,#8fb6d8 16%,transparent); --btn-sec-active:color-mix(in oklab,#8fb6d8 22%,transparent); --btn-sec-text:var(--color-text-foreground);
+  --btn-ter:transparent; --btn-ter-hover:color-mix(in oklab,#8fb6d8 8%,transparent); --btn-ter-active:color-mix(in oklab,#8fb6d8 14%,transparent); --btn-ter-text:var(--color-text-foreground-secondary);
+  --state-info-fg:#8fb6d8;
+}
+html.scifi body {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(143,182,216,.07), transparent 40%),
+    radial-gradient(circle at 84% 88%, rgba(211,152,114,.05), transparent 42%),
+    var(--bg-main);
+}
+html.scifi .modal-body { background: #0e1a26; color: var(--gray-deep); }
+
+/* S22 UI3 — 暗黑模式 token 体系（base color tokens for state/severity）
+ * light 默认值在 :root 已有；dark 在 html.dark 下覆盖
+ * 现有 .state-pill / .safety-sev 等硬编码改用这些 token */
+:root {
+  --state-success-bg:  rgba(110, 211, 107, 0.18);
+  --state-success-fg:  #2d6e3e;
+  --state-warning-bg:  rgba(232, 185, 76, 0.22);
+  --state-warning-fg:  #8a6b1f;
+  --state-danger-bg:   rgba(200, 60, 60, 0.18);
+  --state-danger-fg:   #b3322f;
+  --state-info-bg:     rgba(51, 156, 255, 0.20);
+  --state-info-fg:     #1b5fb3;
+  /* v0.83 真做 — 高频 hex 语义化 token（98 处硬编码 → var）*/
+  --color-danger:      #dc2626;
+  --color-danger-alt:  #dc3545;
+  --color-warn:        #f59e0b;
+  --color-success:     #16a34a;
+  --color-success-alt: #2da44e;
+  --color-purple:      #7c3aed;
+  --color-purple-alt:  #8b5cf6;
+  --color-pink:        #d73a49;
+  --color-red-deep:    #b91c1c;
+  --color-gray-500:    #6b7280;
+  /* D7 第四波 — 高频裸 hex 收敛 token（出现 ≥3 次的裸硬编码 → var()；
+     值与原硬编码逐字符一致、仅在 :root 声明不随主题覆盖 → 替换前后渲染零变化。
+     低频（<3 次）硬编码留账，见 CLAUDE.md 技术债表 D7 */
+  --c-white:       #fff;     /* 按钮/徽章反白文字 */
+  --c-accent:      #c15f3c;  /* 主橙的主题不变式（--orange 随主题变，二者语义不同勿混用） */
+  --c-accent-deep: #a74d2c;  /* 深橙强调文字（pending/警示数值） */
+  --c-amber:       #f6b73c;  /* 星标/警示条琥珀 */
+  --c-blue:        #3b82f6;  /* 看板 in_review/hook 事件蓝 */
+  --c-green-soft:  #6ED36B;  /* 会话状态点绿（idle/completed） */
+  --c-yellow-soft: #f0c44a;  /* dark 模式警示字色 */
+  --c-red-soft:    #ff8a93;  /* dark 模式危险字色 */
+}
+html.dark {
+  --state-success-bg:  rgba(110, 211, 107, 0.25);
+  --state-success-fg:  #6ed36b;
+  --state-warning-bg:  rgba(232, 185, 76, 0.30);
+  --state-warning-fg:  #e8b94c;
+  --state-danger-bg:   rgba(200, 60, 60, 0.30);
+  --state-danger-fg:   #ff7a7a;
+  --state-info-bg:     rgba(51, 156, 255, 0.28);
+  --state-info-fg:     #6db4ff;
+}

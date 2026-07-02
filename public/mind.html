@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诺伊 · 运行中枢</title>
+<link rel="stylesheet" href="/mind.css?v=earth-clean-20260614b">
+</head>
+<body>
+<header class="mind-top">
+  <div class="mind-title">
+    <span class="pulse" id="pulseDot" title="心跳状态"></span>
+    <h1>诺伊 · 运行中枢</h1>
+    <span class="sub">本机态势 · 自检修复 · 任务证据</span>
+  </div>
+  <div class="mind-actions">
+    <span id="lastSync" class="dim">—</span>
+    <span id="actionNotice" class="action-notice" aria-live="polite"></span>
+    <button id="tickBtn" title="立即跑一个认知周期（注意力竞争→反刍→可能的深思/研究）">跑一拍</button>
+    <button id="refreshBtn" title="立即刷新（自动每 30s）">刷新</button>
+    <a href="/" class="back" title="回主面板">主面板 ↗</a>
+  </div>
+</header>
+
+<section class="world-surface" id="worldSurface" aria-label="诺伊运行地球">
+  <div class="world-head">
+    <div>
+      <h2>运行地球</h2>
+      <p id="worldSummary" class="dim">正在汇总本机运行、自检修复、证明门、任务入口与心智体征…</p>
+    </div>
+    <div class="world-head-actions">
+      <div id="worldFilters" class="world-filters" aria-label="世界态势筛选"></div>
+      <button id="worldFocusRisk" class="world-risk-button" type="button">聚焦风险</button>
+      <div id="worldHealth" class="world-health">—</div>
+    </div>
+  </div>
+  <div class="world-body">
+    <div class="world-orb" id="worldOrb">
+      <canvas id="worldEarthCanvas" role="img" aria-label="诺伊实时三维地球态势"></canvas>
+      <div class="world-earth-label">实时态势地球</div>
+      <div class="world-earth-hint">拖拽旋转 · 滚轮缩放 · 右侧选择态势</div>
+      <div id="worldEarthStatus" class="world-earth-status">正在加载三维地球…</div>
+      <div class="world-earth-toolbar" aria-label="地球视图工具">
+        <button id="worldChinaView" type="button">中国视图</button>
+        <button id="worldLocateMe" type="button">定位我</button>
+        <button id="worldEarthView" type="button">返回地球</button>
+      </div>
+      <section id="worldChinaPanel" class="world-china-panel" aria-label="中国视图" hidden>
+        <div class="world-china-head">
+          <span>中国态势</span>
+          <button id="worldChinaClose" type="button" aria-label="关闭中国视图">收起</button>
+        </div>
+        <svg class="world-china-map" viewBox="0 0 260 160" role="img" aria-label="中国地图定位面板">
+          <path d="M20 32 L58 20 L95 30 L120 20 L166 31 L229 26 L241 60 L213 75 L216 103 L184 129 L146 124 L113 143 L73 130 L52 102 L27 89 Z" />
+          <circle class="capital" cx="177" cy="68" r="4" />
+          <circle id="worldChinaPanelLocation" class="me" cx="177" cy="68" r="5" hidden />
+        </svg>
+        <p id="worldChinaLocationText">点击「定位我」后标注本机位置；未授权时只显示中国时区参考点。</p>
+      </section>
+      <svg id="worldSurfaceSvg" class="world-svg-fallback" viewBox="0 0 640 360" role="img" aria-label="诺伊世界态势备用图"></svg>
+    </div>
+    <div class="world-side" aria-label="态势控制栏">
+      <div class="world-side-title">
+        <span>态势控制栏</span>
+        <em>点选右侧条目查看证据与动作</em>
+      </div>
+      <div id="worldInsight" class="world-insight" aria-live="polite"></div>
+      <div id="worldHotspots" class="world-hotspots"></div>
+      <div id="worldLegend" class="world-legend"></div>
+    </div>
+  </div>
+</section>
+
+<section class="ops-summary" id="opsSummary" aria-label="关键运行摘要">
+  <div class="ops-summary-head">
+    <div>
+      <h2>关键运行摘要</h2>
+      <p class="dim">只保留判断运行是否健康所需的状态；详细日志已折叠到下方。</p>
+    </div>
+    <a href="#brainDetails" class="ops-summary-link">查看脑内明细</a>
+  </div>
+  <div class="ops-command-deck">
+    <section class="proof" id="proofCard">
+      <div class="proof-score">
+        <div class="k">证明门</div>
+        <div class="v" id="proofScore">—</div>
+        <div class="s" id="proofStatus">等待证明门报告</div>
+      </div>
+      <div class="proof-main">
+        <div class="proof-blockers" id="proofBlockers"></div>
+        <div class="proof-grid">
+          <div><span>上一拍</span><b id="proofLastTick">—</b></div>
+          <div><span>上一念</span><b id="proofLastThought">—</b></div>
+          <div><span>上一行动</span><b id="proofLastAction">—</b></div>
+          <div><span>上一恢复</span><b id="proofLastRecovery">—</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="strip" id="statusStrip" aria-label="运行摘要仪表">
+      <div class="stat" id="statHeart"><div class="k">心跳</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statAffect"><div class="k">此刻心情</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statGoals"><div class="k">目标</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statExpect"><div class="k">期望账本</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statGate"><div class="k">开口预算</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statVitals" title="念头语义多样性与接地率"><div class="k">心智体征</div><div class="v">—</div><div class="s">—</div></div>
+      <div class="stat" id="statMissions" title="长任务是否仍在执行、恢复、等待审批或已完成"><div class="k">长任务</div><div class="v">—</div><div class="s">—</div></div>
+    </section>
+  </div>
+</section>
+
+<div class="detail-accordion" aria-label="诺伊详细运行区">
+  <details class="detail-section" id="memoryDetails">
+    <summary><span>长期记忆</span><em id="memorySummaryRail">本机记忆、来源审计、隔离候选</em></summary>
+    <section class="memory-panel" id="memoryPanel" aria-label="诺伊长期记忆">
+      <div class="memory-head">
+        <div>
+          <h2>长期记忆</h2>
+          <p id="memorySummary" class="dim">正在读取本机记忆状态…</p>
+        </div>
+        <div class="memory-search">
+          <input id="memoryQuery" type="search" placeholder="搜索长期记忆" maxlength="120">
+          <button id="memorySearchBtn" type="button">搜索</button>
+          <button id="memoryQuarantineBtn" type="button">隔离区</button>
+        </div>
+      </div>
+      <div id="memoryStats" class="memory-stats"></div>
+      <div id="memoryItems" class="memory-items list"></div>
+    </section>
+  </details>
+
+  <details class="detail-section" id="workMapDetails">
+    <summary><span>全局任务地图</span><em>会话、目标、长任务和回报队列</em></summary>
+    <section class="work-map" id="workMapCard" aria-label="诺伊全局任务地图">
+      <div class="work-map-head">
+        <div>
+          <h2>全局任务地图</h2>
+          <p id="workMapSummary" class="dim">正在汇总会话、房间、目标、长任务和回报队列…</p>
+        </div>
+        <div id="workMapStatus" class="work-map-status">—</div>
+      </div>
+      <div id="workMapStats" class="work-map-stats"></div>
+      <div id="workMapFilters" class="work-map-filters" aria-label="全局任务地图筛选"></div>
+      <div id="workMapItems" class="work-map-items list"></div>
+    </section>
+  </details>
+
+  <details class="detail-section" id="opsLogDetails">
+    <summary><span>运维日志</span><em id="panelLogSummaryRail">展开读取 51835 脱敏尾部</em></summary>
+    <section class="panel-log" id="panelLogCard" aria-label="诺伊运维日志">
+      <div class="panel-log-head">
+        <div>
+          <h2>运维日志</h2>
+          <p id="panelLogSummary" class="dim">默认不加载日志；展开后读取 51835 面板的只读、脱敏、有界尾部。</p>
+        </div>
+        <div class="panel-log-actions">
+          <span id="panelLogStatus" class="panel-log-status idle">未加载</span>
+          <button id="panelLogRefreshBtn" type="button">刷新日志</button>
+        </div>
+      </div>
+      <div id="panelLogPolicy" class="panel-log-policy">只读 · 有界 · 脱敏 · 不执行动作</div>
+      <div id="panelLogLines" class="panel-log-lines" aria-live="polite"></div>
+    </section>
+  </details>
+
+  <details class="detail-section" id="brainDetails">
+    <summary><span>脑内明细</span><em>意识流、注意力、目标、期望、情感和心跳台账</em></summary>
+    <main class="rows">
+      <div class="row r1">
+        <section class="card">
+          <h2>意识流 <span class="hint">轻醒 · 念头 · 深思 · 梦（最近在前）</span></h2>
+          <div id="thoughts" class="list"></div>
+        </section>
+        <section class="card">
+          <h2>注意力 · 意识日志 <span class="hint">每个周期在注意什么、为什么</span></h2>
+          <div id="journal" class="list"></div>
+        </section>
+      </div>
+
+      <div class="row r2">
+        <section class="card">
+          <h2>情感曲线 <span class="hint">24 小时 · <b style="color:#e0af68">愉悦</b> / <b style="color:#7aa2f7">唤醒</b></span></h2>
+          <div id="affectChart" class="chart"></div>
+          <div id="affectNow" class="feeling dim"></div>
+        </section>
+        <section class="card">
+          <h2>期望账本 <span class="hint">对世界的预测 · 到期请你裁决</span></h2>
+          <div id="calibration" class="feeling dim"></div>
+          <div id="expectations" class="list"></div>
+        </section>
+        <section class="card">
+          <h2>目标 <span class="hint">想要的事 · 一步步推进</span></h2>
+          <div class="goal-new">
+            <input id="goalTitle" type="text" placeholder="给诺伊立一个目标…" maxlength="120">
+            <button id="goalAdd">交办</button>
+          </div>
+          <div id="goals" class="list"></div>
+        </section>
+      </div>
+
+      <div class="row r3">
+        <section class="card">
+          <h2>长任务运行时 <span class="hint">长任务 · 心跳 · 证据 · 审批</span></h2>
+          <div id="missions" class="list"></div>
+        </section>
+        <section class="card">
+          <h2>心跳台账 <span class="hint">每一跳：干了什么 / 成败 / 欠账 / 崩溃恢复痕</span></h2>
+          <div id="ticks" class="list ticks-cols"></div>
+        </section>
+      </div>
+    </main>
+  </details>
+
+  <details class="detail-section" id="awakeningDetails">
+    <summary><span>觉醒驾驶舱</span><em id="awakeningRail">活性可观测 · 模型存活 / 好奇产出 / 校准 / 整合度</em></summary>
+    <section class="awakening-deck" aria-label="诺伊觉醒驾驶舱">
+      <div id="wallSignals" class="wall-signals" style="display:none"></div>
+      <div id="awakeningSignals" class="awakening-signals"></div>
+      <main class="rows">
+        <div class="row r-se">
+          <section class="card">
+            <h2>自进化健康 <span class="hint">改自己代码：implementer → apply → 运行时验证（纯只读 SLO）</span></h2>
+            <div id="selfEvolution" class="self-evo"><div class="empty">展开读取自进化 SLO…</div></div>
+          </section>
+        </div>
+        <div class="row r2">
+          <section class="card">
+            <h2>本地模型存活 <span class="hint">ollama / LM Studio · 三脑 · embedding 后端</span></h2>
+            <div id="modelHealth" class="model-health"><div class="empty">展开读取本地模型存活…</div></div>
+          </section>
+          <section class="card">
+            <h2>好奇产出漏斗 <span class="hint">预测落空 → 惊奇 → 立研究 → 完成</span></h2>
+            <div id="curiosityFunnel" class="funnel"></div>
+          </section>
+        </div>
+        <div class="row r2">
+          <section class="card">
+            <h2>期望校准 <span class="hint">Brier / ECE · 我说 N% 的事真有 N% 应验吗</span></h2>
+            <div id="calibrationCurve" class="chart"></div>
+            <div id="calibrationSummary" class="feeling dim"></div>
+          </section>
+          <section class="card">
+            <h2>整合度趋势 <span class="hint">8 宏节点 TC · 子系统是否整合成统一内容</span></h2>
+            <div id="integrationChart" class="chart"></div>
+            <div id="integrationSummary" class="feeling dim"></div>
+          </section>
+        </div>
+      </main>
+    </section>
+  </details>
+</div>
+
+<footer class="mind-foot dim">数据全部来自本机数据库与意识日志 · 开关未通电的模块会标注「未通电」</footer>
+<script type="module" src="/mind.js?v=earth-clean-20260614b"></script>
+<script type="module" src="/mind-failure-modes.js?v=earth-clean-20260614b"></script>
+</body>
+</html>
