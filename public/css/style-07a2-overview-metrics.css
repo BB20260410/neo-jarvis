@@ -1,0 +1,226 @@
+
+/* 块 B：时间序列 */
+.overview-ts-stats {
+  display: flex;
+  gap: var(--spacing-4);
+  font-size: var(--text-sm);
+  color: var(--text-sec);
+  margin-bottom: var(--spacing-3);
+  flex-wrap: wrap;
+}
+.overview-ts-stat strong { color: var(--text-pri); font-size: var(--text-md); margin-right: 4px; }
+.overview-chart-canvas {
+  flex: 1 1 0;
+  min-height: 180px;
+  width: 100% !important;
+  max-height: 100%;
+}
+
+/* 块 C：byAdapter 横比 */
+.overview-byadapter-note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--spacing-2);
+  font-style: italic;
+}
+
+/* 块 D：资源健康 */
+.overview-health-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+  font-size: var(--text-sm);
+}
+.overview-health-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: rgba(127,127,127,0.05);
+  border-radius: var(--radius-sm);
+}
+.overview-health-row .k { color: var(--text-muted); }
+.overview-health-row .v { color: var(--text-pri); font-weight: 600; }
+.overview-health-warnings {
+  flex: 1 1 0;
+  overflow: auto;
+}
+.overview-health-warn {
+  background: rgba(220, 53, 69, 0.08);
+  border-left: 3px solid var(--color-danger-alt);
+  padding: 6px 10px;
+  font-size: var(--text-sm);
+  color: var(--text-pri);
+  margin-bottom: 4px;
+  border-radius: var(--radius-sm);
+}
+.overview-health-ok {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: 6px 4px;
+  font-style: italic;
+}
+
+/* 块 E：预算治理 */
+.overview-budget {
+  grid-column: 1 / -1;
+  min-height: 220px;
+}
+.overview-budget-summary {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.overview-budget-pill {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-sec);
+  background: rgba(127,127,127,0.04);
+}
+.overview-budget-pill.is-hard {
+  border-color: rgba(220, 53, 69, 0.35);
+  color: var(--color-danger-alt);
+  background: rgba(220, 53, 69, 0.08);
+}
+.overview-budget-pill.is-warn {
+  border-color: rgba(193, 95, 60, 0.35);
+  color: var(--c-accent-deep);
+  background: rgba(193, 95, 60, 0.08);
+}
+.overview-budget-incidents {
+  flex: 1 1 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.overview-budget-incident {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) minmax(180px, 1.5fr) minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: rgba(127,127,127,0.03);
+  font-size: var(--text-sm);
+}
+.overview-budget-incident.is-hard { border-left-color: var(--color-danger-alt); }
+.overview-budget-incident.is-warn { border-left-color: var(--c-accent); }
+.overview-budget-incident .kind {
+  font-weight: 600;
+  color: var(--text-pri);
+}
+.overview-budget-incident .scope,
+.overview-budget-incident .usage,
+.overview-budget-incident .meta {
+  color: var(--text-sec);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.overview-budget-incident .scope code {
+  font-size: 11px;
+  color: var(--text-pri);
+}
+.overview-budget-incident .usage strong {
+  color: var(--text-pri);
+}
+.overview-budget-incident .actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.overview-budget-empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: 10px 4px;
+  font-style: italic;
+}
+
+/* 块 F：本地治理聚合 */
+.overview-governance {
+  grid-column: 1 / -1;
+  min-height: 220px;
+}
+.overview-governance-summary {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.overview-governance-pill {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-sec);
+  background: rgba(127,127,127,0.04);
+}
+.overview-governance-pill.is-hard {
+  border-color: rgba(220, 53, 69, 0.35);
+  color: var(--color-danger-alt);
+  background: rgba(220, 53, 69, 0.08);
+}
+.overview-governance-pill.is-warn {
+  border-color: rgba(193, 95, 60, 0.35);
+  color: var(--c-accent-deep);
+  background: rgba(193, 95, 60, 0.08);
+}
+.overview-governance-list {
+  flex: 1 1 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+.overview-governance-item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: rgba(127,127,127,0.03);
+  color: var(--text-sec);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.overview-governance-item:hover {
+  background: rgba(193, 95, 60, 0.06);
+  border-color: rgba(193, 95, 60, 0.28);
+}
+.overview-governance-item.sev-error { border-left-color: var(--color-danger-alt); }
+.overview-governance-item.sev-warn { border-left-color: var(--c-accent); }
+.overview-governance-item.sev-info { border-left-color: var(--gray-soft); }
+.overview-governance-item .kind {
+  font-weight: 600;
+  color: var(--text-pri);
+  white-space: nowrap;
+}
+.overview-governance-item .title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.overview-governance-item .status {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.overview-governance-empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: 10px 4px;
+  font-style: italic;
+}

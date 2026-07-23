@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "run-stage-b-coverage-augment",
+  "caseSet": {
+    "layer": "dev",
+    "caseRefs": [
+      "evals/neo/dev/case-coverage-memory-recall-001.json",
+      "evals/neo/dev/case-coverage-social-publish-rollback-001.json",
+      "evals/neo/dev/case-coverage-runtime-restart-readiness-001.json",
+      "evals/neo/dev/case-coverage-toolcall-success-verifyfail-001.json",
+      "evals/neo/dev/case-coverage-self-evolution-rollback-001.json",
+      "evals/neo/dev/case-coverage-security-ssrf-skill-scan-001.json",
+      "evals/neo/dev/case-coverage-browser-ui-e2e-001.json",
+      "evals/neo/dev/case-coverage-voice-ear-001.json"
+    ],
+    "caseCount": 8
+  },
+  "candidate": {
+    "kind": "baseline",
+    "candidateRef": "coverage-gap-matrix:20260620",
+    "diffRef": "",
+    "parentRef": ""
+  },
+  "environment": {
+    "repo": "/Users/hxx/Desktop/Neo 贾维斯",
+    "branch": "noe-main",
+    "head": "0063d9df1ebc",
+    "node": "v26.0.0",
+    "runtimeBaseUrl": "http://127.0.0.1:51835",
+    "runtimeTouched": false
+  },
+  "policy": {
+    "readOnly": true,
+    "privateHoldoutAccessibleToCandidate": false,
+    "secretValuesReturned": false,
+    "memoryV2Writes": false,
+    "liveRestart": false
+  },
+  "outputs": {
+    "rawRef": "output/noe-eval-runs/evidence-flywheel-v2-stage-b-coverage-augment/raw.json",
+    "scoreRef": "output/noe-eval-runs/evidence-flywheel-v2-stage-b-coverage-augment/score.json",
+    "traceRefs": []
+  }
+}

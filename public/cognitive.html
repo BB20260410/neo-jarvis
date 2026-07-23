@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neo 贾维斯 · 认知界面</title>
+<link rel="icon" href="data:,">
+<style>
+/* ===== 配色（复刻 BaiLongma Cognitive Surface · Midnight）===== */
+:root{
+  --bg0:#0a1118; --bg1:#0f1822; --bg-deep:#060a10;
+  --ink:#d7e2ee; --ink2:#9aabbe; --dim:#5d6d80;
+  --line:rgba(138,168,200,.10); --line-strong:rgba(138,168,200,.22);
+  --panel:rgba(11,18,26,.56); --console-bg:rgba(15,24,34,.42);
+  --cool:#8fb6d8;  /* 青 · NOE/JARVIS */
+  --warm:#d39872;  /* 琥珀 · YOU */
+  --node-low:#3a556e; --node-high:#cfe3f5;
+  --glow1:rgba(138,158,200,.08); --glow2:rgba(211,152,114,.06);
+  --link:rgba(143,182,216,.18);
+  --bad:#e7a4a4;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Inter","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:var(--sans); color:var(--ink); overflow:hidden;
+  background:
+    radial-gradient(circle at 22% 18%,var(--glow1),transparent 35%),
+    radial-gradient(circle at 80% 82%,var(--glow2),transparent 38%),
+    linear-gradient(160deg,var(--bg0),var(--bg1) 60%,var(--bg-deep) 100%);
+}
+/* 中央认知图 canvas（铺满，最底层）*/
+/* MiniMax 海螺生成的科幻视频背景（铺底）；加载成功才渐显，失败/无文件则 canvas 渐变兜底 */
+#cogBg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1.2s ease;pointer-events:none;filter:brightness(.6) saturate(1.18) contrast(1.04)}
+#graph{position:fixed;inset:0;z-index:1;display:block}
+/* ===== 面板通用 ===== */
+.panel{
+  position:fixed;top:20px;bottom:20px;width:360px;z-index:3;
+  padding:16px 18px;border-radius:16px;border:1px solid var(--line-strong);
+  background:var(--panel);backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;overflow:hidden auto;
+}
+#panel-l1{left:20px}
+#panel-l2{right:20px}
+.panel::-webkit-scrollbar{width:6px}
+.panel::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+/* 面板头 */
+.panel-identity{display:flex;align-items:center;gap:14px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.brand-mark{width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 35%,var(--ink),var(--cool) 45%,var(--bg0));
+  box-shadow:0 0 12px color-mix(in srgb,var(--cool) 33%,transparent);
+  animation:neb-blink 2.6s ease-in-out infinite}
+.eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);font-family:var(--mono)}
+.brand-title{font-size:14px;font-weight:600;color:var(--ink)}
+.panel-section-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-family:var(--mono);margin:14px 0 8px}
+.panel-body{font-size:12px;line-height:1.6;color:var(--ink2);white-space:pre-wrap;word-break:break-word}.perception-box{min-height:78px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(2,7,16,.22);overflow-wrap:anywhere}.identity-box{min-height:68px;color:var(--warm)}
+/* 右栏状态条 */
+.panel-stats{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:0 38px 14px 0;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat-label{font-size:9px;color:var(--dim);letter-spacing:.15em;text-transform:uppercase;font-family:var(--mono)}
+.stat-value{font-size:12px;font-family:var(--mono);font-weight:500;color:var(--ink);display:flex;align-items:center;gap:5px}
+.stat-value.live{color:var(--warm)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--warm);box-shadow:0 0 8px var(--warm);animation:neb-blink 1.4s ease-in-out infinite}
+/* 视频自预览 */
+#selfVideo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--line-strong);background:#000;transform:scaleX(-1);display:none}
+#selfVideoOff{width:100%;aspect-ratio:4/3;border-radius:10px;border:1px dashed var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:11px;font-family:var(--mono)}
+/* 流式推理行 */
+.stream-line{padding:11px 0;border-bottom:1px solid var(--line);transition:opacity .5s ease;animation:focus-conclusion-in .5s ease-out}
+.line-header{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.line-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.line-type{font-size:9px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.line-time{font-size:9px;color:var(--dim);font-family:var(--mono);margin-left:auto}
+.line-text{font-size:12px;line-height:1.6;color:var(--ink);padding-left:13px;word-break:break-word;white-space:pre-wrap}
+.line-thinking{font-size:12px;color:var(--ink2);padding-left:13px;display:flex;align-items:center;gap:3px}
+.line-thinking .d{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.35;animation:think-dot 1.2s ease-in-out infinite}
+.line-thinking .d:nth-child(2){animation-delay:.15s}
+.line-thinking .d:nth-child(3){animation-delay:.3s}
+/* TOOL 行 */
+.tool-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink2);padding:8px 0;border-top:1px solid var(--line);margin-top:auto}
+.tool-spin{width:10px;height:10px;border:1.5px solid var(--line-strong);border-top-color:var(--warm);border-radius:50%;animation:tool-spin .9s linear infinite}
+/* ===== 中央聊天 console ===== */
+.console{position:fixed;left:402px;right:402px;bottom:24px;top:20px;z-index:4;display:flex;flex-direction:column;overflow:hidden}
+#chat-messages{flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:18px 20px 10px;overflow-y:auto;-webkit-mask:linear-gradient(180deg,transparent,#000 12%)}
+#chat-messages::-webkit-scrollbar{width:6px}
+#chat-messages::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+.msg{max-width:82%;padding:9px 13px;border-radius:10px;font-size:12.5px;line-height:1.55;border:1px solid var(--line);user-select:text;animation:msg-in .3s cubic-bezier(.2,.8,.2,1)}
+.msg-user{align-self:flex-end;color:var(--warm);border-color:color-mix(in srgb,var(--warm) 25%,transparent);background:color-mix(in srgb,var(--warm) 7%,transparent)}
+.msg-noe{align-self:flex-start;color:var(--cool);border-color:color-mix(in srgb,var(--cool) 25%,transparent);background:color-mix(in srgb,var(--cool) 6%,transparent)}
+.msg-label{display:block;margin-bottom:3px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.msg-sys{align-self:center;color:var(--dim);font-family:var(--mono);font-size:10px;border:none;background:none;letter-spacing:.04em}
+.task-card{align-self:center;width:min(640px,92%);max-width:92%;border:1px solid var(--line-strong);background:rgba(11,18,26,.66);color:var(--ink2);font-family:var(--sans);font-size:12px;letter-spacing:0;text-align:left}
+.task-card::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;background:var(--warm);box-shadow:0 0 10px var(--warm);animation:neb-blink 1.4s ease-in-out infinite}
+.task-card[data-status="done"]::before{background:var(--cool);box-shadow:0 0 10px var(--cool);animation:none}
+.task-card[data-status="failed"]::before,.task-card[data-status="blocked"]::before{background:var(--bad);box-shadow:0 0 10px var(--bad);animation:none}
+.task-card .task-title{display:block;color:var(--ink);font-weight:600;margin-bottom:3px;word-break:break-word}
+.task-card .task-meta{display:block;color:var(--ink2);line-height:1.45;word-break:break-word}
+/* 输入行 */
+#input-row{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid var(--line-strong);border-radius:14px;background:var(--console-bg);backdrop-filter:blur(16px);margin-top:10px;min-width:0}
+.prompt-mark{font-family:var(--mono);font-size:13px;color:var(--warm);animation:neb-blink 1.6s ease-in-out infinite}
+#chat-input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--ink);font-family:var(--sans);font-size:13px;resize:none;max-height:80px;line-height:1.5}
+#chat-input::placeholder{color:var(--dim)}
+.cbtn{min-height:36px;padding:8px 14px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink2);font-size:11px;font-family:var(--mono);letter-spacing:0;white-space:nowrap;cursor:pointer;transition:transform .18s,background .18s,color .18s}
+.cbtn:hover{transform:translateY(-1px);color:var(--ink)}
+.cbtn.live{background:var(--warm);color:var(--bg0);border-color:var(--warm);font-weight:700}
+.cbtn.on{color:var(--warm);border-color:color-mix(in srgb,var(--warm) 48%,transparent)}
+#send-btn{min-height:36px;padding:8px 18px;border-radius:10px;border:0;background:var(--warm);color:var(--bg0);font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:0;white-space:nowrap;cursor:pointer;transition:transform .18s,opacity .18s}
+#send-btn:hover{transform:translateY(-1px)}
+/* 顶部中：认知图风格切换 */
+#themeBtn{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:6;padding:6px 15px;border-radius:20px;border:1px solid var(--line-strong);background:var(--panel);backdrop-filter:blur(10px);color:var(--ink2);font-size:11px;font-family:var(--mono);letter-spacing:.05em;cursor:pointer;transition:color .2s,border-color .2s}
+#themeBtn:hover{color:var(--ink);border-color:var(--cool)}
+/* 顶部右：设置齿轮 */
+#gear{position:fixed;right:30px;bottom:28px;z-index:20;width:38px;height:38px;border-radius:50%;border:1px solid var(--line-strong);background:var(--panel);backdrop-filter:blur(10px);color:var(--ink2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .3s,color .2s}
+#gear:hover{transform:rotate(45deg);color:var(--ink)}
+/* 设置抽屉 */
+#drawer{position:fixed;top:0;right:0;bottom:0;width:340px;z-index:50;background:linear-gradient(160deg,var(--bg1),var(--bg-deep));border-left:1px solid var(--line-strong);transform:translateX(110%);transition:transform .32s cubic-bezier(.2,.8,.2,1);padding:24px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+#drawer h3{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:18px 0 8px}
+.drawer-item{display:block;padding:10px 12px;border-radius:8px;border:1px solid var(--line);color:var(--ink2);font-size:12.5px;text-decoration:none;margin-bottom:6px;cursor:pointer;transition:background .15s,color .15s}
+.drawer-item:hover{background:var(--panel);color:var(--ink)}
+.drawer-close{position:absolute;top:18px;right:20px;color:var(--dim);cursor:pointer;font-size:18px}
+/* ===== 动画 ===== */
+@keyframes neb-blink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes neb-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.78)}}
+@keyframes think-dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
+@keyframes tool-spin{to{transform:rotate(360deg)}}
+@keyframes focus-conclusion-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes msg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1100px){.panel{display:none}.console{left:16px;right:16px}}
+</style>
+</head>
+<body>
+<video id="cogBg" autoplay loop muted playsinline preload="auto"><source src="/assets/cog-bg-loop.mp4" type="video/mp4"></video>
+<canvas id="graph"></canvas>
+<button id="themeBtn" title="切换认知图风格：暖核神经网 / 冷蓝全息 / 深空星云">◑ 暖核神经网</button>
+
+<!-- 左栏 L1 · 感知 -->
+<aside class="panel" id="panel-l1">
+  <div class="panel-identity">
+    <div class="brand-mark"></div>
+    <div><div class="eyebrow">Cognitive Surface</div><div class="brand-title">Neo 贾维斯 · 感知 L1</div></div>
+  </div>
+  <div class="panel-section-label">实时视频 · 你</div>
+  <video id="selfVideo" autoplay playsinline muted></video>
+  <div id="selfVideoOff">📷 摄像头未开 · 点下方「看摄像头」</div>
+  <div class="panel-section-label">此刻看到</div><div class="panel-body perception-box" id="perceptionText">（还没看 · 开摄像头或看屏幕后这里显示我看到的）</div><div class="panel-section-label">人物识别</div><div class="panel-body perception-box identity-box" id="identityPerceptionText">（人物库还没识别 · 摄像头识别结果会显示在这里）</div>
+  <div class="tool-row" id="toolRow" style="display:none"><span class="tool-spin"></span><span id="toolText">working…</span></div>
+</aside>
+
+<!-- 右栏 L2 · 推理 -->
+<aside class="panel" id="panel-l2">
+  <div class="panel-stats">
+    <div class="stat"><span class="stat-label">状态</span><span class="stat-value live" id="stState"><span class="live-dot"></span>待命</span></div>
+    <div class="stat"><span class="stat-label">Brain</span><span class="stat-value" id="stBrain">…</span></div>
+    <div class="stat"><span class="stat-label">轮次</span><span class="stat-value" id="stTurns">0</span></div>
+  </div>
+  <div class="panel-section-label">工作流 · 进度提示</div>
+  <div id="streamHost"></div>
+</aside>
+
+<!-- 中央聊天 -->
+<section class="console">
+  <div id="chat-messages">
+    <div class="msg msg-sys">— Neo 贾维斯认知界面 · 直接打字或点「实时对话」说话 —</div>
+  </div>
+  <div id="input-row">
+    <span class="prompt-mark">›</span>
+    <textarea id="chat-input" rows="1" placeholder="对 Neo 贾维斯说点什么…"></textarea>
+    <button class="cbtn" id="btnVision" title="看屏幕/看摄像头（点开选屏幕/摄像头）">👁 看</button>
+    <button class="cbtn" id="btnLive" title="免按钮连续语音+打断">🎙 实时对话</button>
+    <button id="send-btn">发送</button>
+  </div>
+</section>
+
+<button id="gear" title="设置">⚙</button>
+<aside id="drawer">
+  <span class="drawer-close" id="drawerClose">✕</span>
+  <h3>视觉 / 主动</h3>
+  <div class="drawer-item" data-vmode="screen">👁 看屏幕</div>
+  <div class="drawer-item" data-vmode="camera">📷 看摄像头</div>
+  <div class="drawer-item" data-vmode="both">🖥️+📷 屏幕+摄像头</div>
+  <div class="drawer-item" data-vmode="off">🚫 关闭视觉</div>
+  <div class="drawer-item" id="dProactive">🔔 主动陪伴：关</div>
+  <div class="drawer-item" id="dHideRepair" title="隐藏并静音 system_repair 类自修复汇报">🔕 隐藏系统自修复汇报：关</div>
+  <h3>外观</h3>
+  <div class="drawer-item" id="dVideoBg">🎬 视频背景：开</div>
+  <h3>工作台 / 管理（回主面板）</h3>
+  <a class="drawer-item" id="lkRooms">💬 多 AI 房间</a>
+  <a class="drawer-item" id="lkBrain">🧠 Neo 贾维斯 · Noe Runtime 仪表盘</a>
+  <a class="drawer-item" id="lkMain">🗂 经典主面板（全部功能）</a>
+</aside>
+
+<script>
+// ===== 鉴权 token =====
+const TOK = new URLSearchParams(location.search).get('t') || localStorage.getItem('panel-owner-token') || sessionStorage.getItem('panel-owner-token') || '';
+if (TOK) { try { localStorage.setItem('panel-owner-token', TOK); } catch {} }
+const api = (path, body) => fetch(path, { method:'POST', headers:{'Content-Type':'application/json','X-Panel-Owner-Token':TOK}, body: body?JSON.stringify(body):'{}' }).then(r=>r.json()).catch(()=>({}));
+const $ = s => document.querySelector(s);
+// 视频背景：加载成功渐显，失败/无文件则隐藏（canvas 渐变兜底）
+(function(){ const bg=$('#cogBg'); if(!bg) return; const show=()=>{bg.style.opacity='.5'}; const hide=()=>{bg.style.display='none'};
+  bg.addEventListener('loadeddata',show); bg.addEventListener('error',hide); bg.querySelector('source')?.addEventListener('error',hide); })();
+
+// ===== 中央认知图 · 科技感神经网络 · 三风格可切（自包含 canvas，DPR 锐利，~60fps）=====
+(function cognitiveGraph(){
+  const cv = $('#graph'), ctx = cv.getContext('2d');
+  let W=0,H=0,DPR=1;
+  function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=W*DPR; cv.height=H*DPR; cv.style.width=W+'px'; cv.style.height=H+'px'; ctx.setTransform(DPR,0,0,DPR,0,0); }
+  resize(); addEventListener('resize',resize);
+  const cx=()=>W/2, cy=()=>H/2-10;
+  // 三种风格：暖核神经网 / 冷蓝全息 HUD / 深空星云
+  const THEMES=[
+    {name:'暖核神经网',node:'143,182,216',hot:'205,230,255',ping:'180,222,255',pingWarm:'231,182,134',link:'143,182,216',core:'231,182,134',core2:'211,152,114',lit:'255,242,228',ringA:.055,dust:70,dustCol:'159,192,224',neb:0,scan:.06,grid:0,cross:0,coreStyle:'orb'},
+    {name:'冷蓝全息',node:'150,205,245',hot:'225,248,255',ping:'170,232,255',pingWarm:'120,210,255',link:'120,185,235',core:'130,205,255',core2:'90,170,235',lit:'235,250,255',ringA:.075,dust:36,dustCol:'150,200,240',neb:0,scan:.11,grid:1,cross:1,coreStyle:'ring'},
+    {name:'深空星云',node:'196,184,236',hot:'240,232,255',ping:'214,196,255',pingWarm:'255,206,178',link:'168,156,214',core:'200,168,255',core2:'150,120,220',lit:'248,240,255',ringA:.02,dust:170,dustCol:'186,172,224',neb:1,scan:0,grid:0,cross:0,coreStyle:'soft'},
+  ];
+  let theme=((parseInt(localStorage.getItem('cog_theme'),10)||0)%THEMES.length+THEMES.length)%THEMES.length; const T=()=>THEMES[theme];
+  const N=44, nodes=[], links=[], pings=[], dust=[], ripples=[];
+  for(let i=0;i<N;i++){ const core=i===0; nodes.push({ x:cx()+(Math.random()-.5)*440, y:cy()+(Math.random()-.5)*340, vx:0,vy:0, core, r:core?10:2.4+Math.random()*3.4, glow:0, ph:Math.random()*6.283 }); }
+  for(let i=1;i<N;i++){ links.push({a:i,b:Math.floor(Math.random()*i)}); if(Math.random()<.45) links.push({a:i,b:0}); }
+  function rebuildDust(){ dust.length=0; const n=T().dust; for(let i=0;i<n;i++) dust.push({ x:Math.random()*W, y:Math.random()*H, z:.3+Math.random()*.7, r:Math.random()*1.2+.3 }); }
+  rebuildDust();
+  function emitPing(){ if(pings.length>42||!links.length)return; const l=links[(Math.random()*links.length)|0]; pings.push({ l, p:0, sp:.006+Math.random()*.013, warm:Math.random()<.16 }); }
+  let now=0;
+  function step(dt){
+    now+=dt; const CX=cx(), CY=cy();
+    for(let i=0;i<N;i++){ const n=nodes[i];
+      if(n.core){ n.x+=(CX-n.x)*.06; n.y+=(CY-n.y)*.06; continue; }
+      const dx=n.x-CX, dy=n.y-CY, d=Math.hypot(dx,dy)||1, target=168+Math.sin(now/2600+n.ph)*26;
+      n.vx+=(dx/d)*(target-d)*0.0017; n.vy+=(dy/d)*(target-d)*0.0017;
+      for(let j=0;j<N;j++){ if(j===i)continue; const m=nodes[j], ex=n.x-m.x, ey=n.y-m.y, e2=ex*ex+ey*ey; if(e2<5000&&e2>0){ const f=20/e2; n.vx+=ex*f; n.vy+=ey*f; } }
+      n.vx*=.90; n.vy*=.90; n.x+=n.vx; n.y+=n.vy; n.glow*=.95;
+    }
+    for(let i=pings.length-1;i>=0;i--){ const p=pings[i]; p.p+=p.sp*(dt/16.7); if(p.p>=1){ const tn=nodes[p.l.b]; if(tn) tn.glow=Math.min(1,tn.glow+.45); pings.splice(i,1); } }
+    if(Math.random()<.09) emitPing();
+    for(let i=ripples.length-1;i>=0;i--){ ripples[i].t+=dt; if(ripples[i].t>ripples[i].life) ripples.splice(i,1); }
+    const dsp=T().neb?.05:.16; for(const u of dust){ u.x-=u.z*dsp; if(u.x<-40){ u.x=W+40; u.y=Math.random()*H; } }
+  }
+  function draw(){
+    const t=T(), CX=cx(), CY=cy(); ctx.clearRect(0,0,W,H);
+    // 星云柔光雾（仅深空）
+    if(t.neb){ for(let i=0;i<4;i++){ const nx=CX+Math.cos(now/7000+i*1.7)*240, ny=CY+Math.sin(now/9000+i*2.1)*180, rr=180+i*40;
+      const ng=ctx.createRadialGradient(nx,ny,0,nx,ny,rr); ng.addColorStop(0,'rgba('+(i%2?'150,120,210':'120,150,210')+',.05)'); ng.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=ng; ctx.beginPath(); ctx.arc(nx,ny,rr,0,6.283); ctx.fill(); } }
+    // 星尘景深
+    for(const u of dust){ ctx.globalAlpha=.08+u.z*.16; ctx.fillStyle='rgb('+t.dustCol+')'; ctx.beginPath(); ctx.arc(u.x,u.y,u.r,0,6.283); ctx.fill(); }
+    ctx.globalAlpha=1;
+    // HUD 同心环 + 旋转刻度
+    ctx.save(); ctx.translate(CX,CY);
+    const rings=t.grid?6:4; for(let ring=0;ring<rings;ring++){ ctx.strokeStyle='rgba('+t.link+','+(t.ringA-ring*.008)+')'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(0,0,60+ring*44,0,6.283); ctx.stroke(); }
+    ctx.rotate(now/9000); ctx.strokeStyle='rgba('+t.node+',.10)';
+    const ticks=t.grid?48:24; for(let a=0;a<ticks;a++){ const ang=a/ticks*6.283, r2=a%6===0?216:225; ctx.beginPath(); ctx.moveTo(Math.cos(ang)*232,Math.sin(ang)*232); ctx.lineTo(Math.cos(ang)*r2,Math.sin(ang)*r2); ctx.stroke(); }
+    ctx.restore();
+    // 中心十字准星 + 角标（仅全息）
+    if(t.cross){ ctx.save(); ctx.translate(CX,CY); ctx.strokeStyle='rgba('+t.node+',.18)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(-40,0); ctx.lineTo(-12,0); ctx.moveTo(12,0); ctx.lineTo(40,0); ctx.moveTo(0,-40); ctx.lineTo(0,-12); ctx.moveTo(0,12); ctx.lineTo(0,40); ctx.stroke();
+      for(const s of [[-1,-1],[1,-1],[-1,1],[1,1]]){ const bx=s[0]*250, by=s[1]*150; ctx.beginPath(); ctx.moveTo(bx,by-s[1]*14); ctx.lineTo(bx,by); ctx.lineTo(bx-s[0]*14,by); ctx.stroke(); } ctx.restore(); }
+    // 雷达扫描扇
+    if(t.scan>0){ ctx.save(); ctx.translate(CX,CY); ctx.rotate(-now/2200);
+      const grad=ctx.createLinearGradient(0,0,232,0); grad.addColorStop(0,'rgba('+t.node+',0)'); grad.addColorStop(1,'rgba('+t.node+','+t.scan+')');
+      ctx.fillStyle=grad; ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,232,-.34,0); ctx.closePath(); ctx.fill(); ctx.restore(); }
+    // 连线
+    for(const l of links){ const a=nodes[l.a], b=nodes[l.b], dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy), op=Math.max(0,.30-d/2100); if(op<=0)continue; ctx.strokeStyle='rgba('+t.link+','+op+')'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+    // 数据流粒子 + 拖尾
+    for(const p of pings){ const a=nodes[p.l.a], b=nodes[p.l.b], x=a.x+(b.x-a.x)*p.p, y=a.y+(b.y-a.y)*p.p, col=p.warm?t.pingWarm:t.ping, q=Math.max(0,p.p-.07), tx=a.x+(b.x-a.x)*q, ty=a.y+(b.y-a.y)*q;
+      ctx.strokeStyle='rgba('+col+',.22)'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(x,y); ctx.stroke();
+      ctx.shadowColor='rgba('+col+',.9)'; ctx.shadowBlur=8; ctx.fillStyle='rgba('+col+',.95)'; ctx.beginPath(); ctx.arc(x,y,1.7,0,6.283); ctx.fill(); ctx.shadowBlur=0; }
+    // 激活波纹
+    for(const r of ripples){ const k=r.t/r.life; ctx.strokeStyle='rgba('+(r.warm?t.pingWarm:t.node)+','+((1-k)*.5)+')'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(r.x,r.y,6+k*36,0,6.283); ctx.stroke(); }
+    // 节点 + halo
+    for(let i=1;i<N;i++){ const n=nodes[i], hot=n.glow>.3, br=Math.min(1,.32+n.glow*.6+Math.sin(now/1400+n.ph)*.08);
+      ctx.shadowColor='rgba('+t.node+',.8)'; ctx.shadowBlur=6+n.glow*16; ctx.fillStyle='rgba('+(hot?t.hot:t.node)+','+br+')';
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r*(1+n.glow*.5),0,6.283); ctx.fill(); }
+    ctx.shadowBlur=0;
+    // 中心能量核心（按风格切换形态）
+    const core=nodes[0], pul=1+Math.sin(now/620)*.10, big=t.coreStyle==='soft'?68:48;
+    const cg=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,big); cg.addColorStop(0,'rgba('+t.core+','+(t.coreStyle==='soft'?.30:.40)+')'); cg.addColorStop(.5,'rgba('+t.core2+',.12)'); cg.addColorStop(1,'rgba('+t.core2+',0)');
+    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(core.x,core.y,big,0,6.283); ctx.fill();
+    if(t.coreStyle==='orb'){
+      ctx.save(); ctx.translate(core.x,core.y); ctx.rotate(now/1500); ctx.strokeStyle='rgba('+t.core+',.5)'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(0,0,17,.5,3.2); ctx.stroke();
+      ctx.rotate(-now/780); ctx.strokeStyle='rgba('+t.core2+',.32)'; ctx.beginPath(); ctx.arc(0,0,23,2.0,4.7); ctx.stroke(); ctx.restore();
+      ctx.shadowColor='rgba('+t.core+',.9)'; ctx.shadowBlur=22; ctx.fillStyle='rgb('+t.core+')'; ctx.beginPath(); ctx.arc(core.x,core.y,core.r*pul,0,6.283); ctx.fill(); ctx.shadowBlur=0;
+      ctx.fillStyle='rgba('+t.lit+',.92)'; ctx.beginPath(); ctx.arc(core.x-2,core.y-2.5,core.r*pul*.38,0,6.283); ctx.fill();
+    } else if(t.coreStyle==='ring'){
+      ctx.save(); ctx.translate(core.x,core.y);
+      ctx.rotate(now/1300); ctx.strokeStyle='rgba('+t.core+',.6)'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.arc(0,0,14,0,4.6); ctx.stroke();
+      ctx.rotate(-now/900); ctx.strokeStyle='rgba('+t.core+',.4)'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(0,0,21,1,5.2); ctx.stroke();
+      ctx.rotate(now/600); ctx.strokeStyle='rgba('+t.lit+',.3)'; ctx.beginPath(); ctx.arc(0,0,27,3,5.8); ctx.stroke(); ctx.restore();
+      ctx.shadowColor='rgba('+t.core+',1)'; ctx.shadowBlur=18; ctx.fillStyle='rgb('+t.lit+')'; ctx.beginPath(); ctx.arc(core.x,core.y,core.r*pul*.55,0,6.283); ctx.fill(); ctx.shadowBlur=0;
+    } else {
+      ctx.shadowColor='rgba('+t.core+',.9)'; ctx.shadowBlur=30; ctx.fillStyle='rgba('+t.core+',.55)'; ctx.beginPath(); ctx.arc(core.x,core.y,core.r*pul*1.1,0,6.283); ctx.fill();
+      ctx.shadowBlur=14; ctx.fillStyle='rgba('+t.lit+',.85)'; ctx.beginPath(); ctx.arc(core.x,core.y,core.r*pul*.5,0,6.283); ctx.fill(); ctx.shadowBlur=0;
+    }
+  }
+  let last=performance.now();
+  function frame(ts){ const dt=Math.min(50,ts-last); last=ts; step(dt); draw(); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+  // 外部触发：思考脉冲 = 节点激活 + 波纹 + 数据流爆发 + 神经冲动逐跳传导
+  window.pulseGraph = (k=6)=>{
+    for(let i=0;i<k;i++){ const n=nodes[1+((Math.random()*(N-1))|0)]; n.glow=1; ripples.push({x:n.x,y:n.y,t:0,life:900,warm:Math.random()<.2}); }
+    for(let i=0;i<k*2;i++) emitPing();
+    let cur=0, delay=0; const hops=3+((Math.random()*3)|0);
+    for(let h=0;h<hops;h++){ const out=links.filter(l=>l.a===cur||l.b===cur); if(!out.length)break; const l=out[(Math.random()*out.length)|0], nx=l.a===cur?l.b:l.a;
+      setTimeout(((node)=>()=>{ const n=nodes[node]; if(n){ n.glow=1; ripples.push({x:n.x,y:n.y,t:0,life:800,warm:false}); } })(nx), delay); cur=nx; delay+=120; }
+  };
+  // 风格切换（顶部按钮调用）：循环 暖核 → 冷蓝全息 → 深空星云
+  window.cogCycleTheme = ()=>{ theme=(theme+1)%THEMES.length; try{localStorage.setItem('cog_theme',theme)}catch{} rebuildDust(); window.pulseGraph(6); return T().name; };
+  window.cogThemeName = ()=>T().name;
+})();
+
+// ===== 聊天 + 推理流 =====
+let turns=0;
+function safeStreamColor(value){
+  const color=String(value||'').trim();
+  return /^(?:var\(--[a-z0-9-]+\)|#[0-9a-f]{3,8}|rgba?\([0-9.,% ]+\)|hsla?\([0-9.,% ]+\)|[a-z]+)$/i.test(color) ? color : 'var(--cool)';
+}
+function addMsg(role, text){ // role: user|noe|sys
+  const m=document.createElement('div'); m.className='msg msg-'+role;
+  if(role!=='sys'){ const lb=document.createElement('span'); lb.className='msg-label'; lb.textContent=role==='user'?'用户':'Neo 贾维斯'; m.appendChild(lb); }
+  const t=document.createElement('span'); t.textContent=text; m.appendChild(t);
+  $('#chat-messages').appendChild(m); $('#chat-messages').scrollTop=1e9;
+}
+function addStream(type, text, color){
+  const l=document.createElement('div'); l.className='stream-line';
+  const h=document.createElement('div'); h.className='line-header';
+  const c=safeStreamColor(color);
+  const dot=document.createElement('span'); dot.className='line-dot'; dot.style.background=c;
+  const ty=document.createElement('span'); ty.className='line-type'; ty.style.color=c; ty.textContent=type;
+  const tm=document.createElement('span'); tm.className='line-time'; tm.textContent=new Date().toTimeString().slice(0,8);
+  const body=document.createElement('div'); body.className='line-text'; body.textContent=text;
+  h.append(dot,ty,tm); l.append(h,body);
+  $('#streamHost').prepend(l);
+  while($('#streamHost').children.length>14) $('#streamHost').lastChild.remove();
+}
+const taskCards=new Map(),taskSpoken=new Set(),taskSpeechInFlight=new Set(),taskSpeechQueued=new Set(),taskSpeechQueue=[];
+// 隐藏+静音「系统自修复」类汇报（owner 开关，localStorage 持久化）：开启后这类 task 卡片不渲染、不进左侧流、也不语音播报。
+let hideSysRepair=(()=>{try{return localStorage.getItem('cog_hide_sysrepair')==='1'}catch{return false}})();
+const INTERNAL_RE=/系统自修复|system_repair|观察门|系统运行|自修复|self_repair|目标执行链路|只读诊断|我为目标动了手|我上网研究了|我给自己立了个目标|从失败中提取教训/;
+function isSysRepairItem(item){return INTERNAL_RE.test(String((item&&(item.title||item.task))||''));}
+let taskSpeechDraining=false;
+function taskKey(item){return String(item?.taskId||item?.goalId||item?.id||item?.title||'task');}
+function shortTaskId(item){const id=String(item?.goalId||item?.taskId||item?.id||'');return id?id.slice(0,8):'local';}
+// 诚实状态：summary 含 exit≠0 / Unknown command 时禁止显示「已完成」（P0 假绿）
+function evidenceContradictsSuccess(text){
+  const t=String(text||'');
+  if(!t)return false;
+  if(/\bexit\s*[=:]\s*(?!0\b)\d+/i.test(t))return true;
+  if(/\bUnknown command\b/i.test(t))return true;
+  if(/\bcommand not found\b/i.test(t))return true;
+  if(/执行失败|测试失败|门禁失败|gate failed|verify failed/i.test(t))return true;
+  return false;
+}
+function normalizeTaskStatus(item){
+  let status=String(item?.status||'running').toLowerCase()||'running';
+  const blob=[item?.title,item?.summary,item?.nextStep].filter(Boolean).join(' · ');
+  if((status==='done'||status==='completed')&&evidenceContradictsSuccess(blob)) status='failed';
+  if(Number.isFinite(Number(item?.exitCode))&&Number(item.exitCode)!==0&&(status==='done'||status==='completed')) status='failed';
+  return status;
+}
+function taskLabel(status){
+  return ({accepted:'已接单 · 执行中',queued:'排队中',running:'执行中',done:'已成功',completed:'已成功',failed:'已失败',blocked:'已阻塞',awaiting_approval:'等待你确认'}[status]||'执行中');
+}
+function taskColor(status){return (status==='done'||status==='completed')?'var(--cool)':(status==='failed'||status==='blocked')?'var(--bad)':'var(--warm)';}
+function taskIsTerminal(status){return /^(done|completed|failed|blocked|awaiting_approval)$/.test(String(status||''));}
+function taskLine(item){
+  const status=normalizeTaskStatus(item||{});
+  const title=String(item?.title||item?.task||'Neo 贾维斯任务').replace(/^主人委托：/,'');
+  const sum=String(item?.summary||item?.nextStep||'').trim();
+  return `${taskLabel(status)} #${shortTaskId(item)}：${title}${sum?`｜${sum}`:''}`;
+}
+function upsertTaskCard(item,{allowSpeak=false,stream=true}={}){
+  if(!item)return;
+  // 开关开启 + 系统自修复类 → 移除已有卡片并直接返回：不渲染、不进流、不语音（下方 addStream / enqueueTaskSpeech 都被跳过）。
+  if(hideSysRepair&&isSysRepairItem(item)){const k=taskKey(item);const ex=taskCards.get(k);if(ex){ex.remove();taskCards.delete(k);}return;}
+  const key=taskKey(item);let card=taskCards.get(key);
+  if(!card){card=document.createElement('div');card.className='msg msg-sys task-card';card.innerHTML='<span class="task-title"></span><span class="task-meta"></span>';taskCards.set(key,card);$('#chat-messages').appendChild(card);}
+  const status=normalizeTaskStatus(item);card.dataset.status=status;
+  card.querySelector('.task-title').textContent=`${taskLabel(status)} · ${String(item.title||item.task||'Neo 贾维斯任务').slice(0,120)}`;
+  card.querySelector('.task-meta').textContent=`#${shortTaskId(item)}${item.kind?` · ${item.kind}`:''}${item.summary?` · ${String(item.summary).slice(0,220)}`:''}`;
+  $('#chat-messages').scrollTop=1e9;
+  if(stream) addStream('task',taskLine({...item,status}),taskColor(status));
+  if(allowSpeak&&item.speak!==false&&taskIsTerminal(status)) enqueueTaskSpeech({...item,status});
+}
+function renderTaskReceipt(receipt){
+  if(!receipt)return;
+  upsertTaskCard({...receipt,status:receipt.status||'accepted',speak:false},{allowSpeak:false});
+}
+function taskSpeechKey(item){return `${item?.id||taskKey(item)}:${item?.status}`;}
+function enqueueTaskSpeech(item){
+  const speakKey=taskSpeechKey(item);
+  if(item?.spokenAt||item?.speechFailedAt||item?.systemSpeechFallbackAt){taskSpoken.add(speakKey);return;}
+  if(taskSpoken.has(speakKey)||taskSpeechInFlight.has(speakKey)||taskSpeechQueued.has(speakKey))return;
+  taskSpeechQueued.add(speakKey);taskSpeechQueue.push(item);drainTaskSpeechQueue();
+}
+async function drainTaskSpeechQueue(){
+  if(taskSpeechDraining)return;
+  taskSpeechDraining=true;
+  try{
+    while(taskSpeechQueue.length){
+      const item=taskSpeechQueue.shift(),speakKey=taskSpeechKey(item);
+      taskSpeechQueued.delete(speakKey);
+      await speakTaskReport(item);
+    }
+  }finally{taskSpeechDraining=false;if(taskSpeechQueue.length)drainTaskSpeechQueue();}
+}
+async function speakTaskReport(item){
+  const speakKey=taskSpeechKey(item);
+  if(item.spokenAt||item.speechFailedAt||item.systemSpeechFallbackAt){taskSpoken.add(speakKey);return;}
+  if(taskSpoken.has(speakKey)||taskSpeechInFlight.has(speakKey))return;
+  taskSpeechInFlight.add(speakKey);
+  return new Promise(async(resolve)=>{
+    const text=`主人，${taskLine(item)}`.slice(0,420);
+    let settled=false,startTimer=null,endTimer=null;
+    const clearTimers=()=>{if(startTimer)clearTimeout(startTimer);if(endTimer)clearTimeout(endTimer);startTimer=endTimer=null;};
+    const ack=async(ok,error=null)=>{
+      if(settled)return; settled=true; clearTimers();
+      try{if(item.id)await api('/api/noe/tasks/reportbacks/speech-ack',{id:item.id,ok,error:error?String(error).slice(0,120):null});}
+      catch{}
+      finally{taskSpeechInFlight.delete(speakKey);taskSpoken.add(speakKey);resolve();}
+    };
+    try{
+      const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),45000);
+      const res=await fetch('/api/noe/voice/tts',{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Owner-Token':TOK},body:JSON.stringify({text}),signal:ctl.signal});
+      clearTimeout(tm);
+      const r=await res.json().catch(()=>({ok:false,error:'TTS 返回不可解析'}));
+      if(r&&r.ok&&r.audioBase64){
+        startTimer=setTimeout(()=>ack(false,'play_start_timeout'),15000);
+        playAudio(r.audioBase64,r.audioFormat,false,{onStarted:()=>{if(startTimer)clearTimeout(startTimer);startTimer=null;endTimer=setTimeout(()=>ack(false,'play_confirm_timeout'),120000);},onConfirmed:()=>ack(true),onFailed:e=>ack(false,e?.message||e||'play_failed')});
+      }else{
+        const msg=(r&&r.error)||'TTS 失败';
+        addMsg('sys','✗ 任务语音汇报失败：'+msg);
+        await ack(false,msg);
+      }
+    }catch(e){
+      const msg=e.name==='AbortError'?'TTS 超时':(e.message||'tts_exception');
+      addMsg('sys','✗ 任务语音汇报失败：'+msg);
+      await ack(false,msg);
+    }
+  });
+}
+async function playRestTtsText(text,allowBarge){
+  const clean=String(text||'').trim();
+  if(!clean)return;
+  try{
+    const r=await api('/api/noe/voice/tts',{text:clean});
+    if(r&&r.ok&&r.audioBase64){
+      if(liveOn){vadPhase='speak';spF=0;setState('🔊 说话可打断',true);}
+      playAudio(r.audioBase64,r.audioFormat,allowBarge);
+    }else addMsg('sys','✗ 语音续播失败：'+((r&&r.error)||'TTS 失败'));
+  }catch(e){addMsg('sys','✗ 语音续播失败：'+(e.message||''));}
+}
+function playNoeResponseAudio(r,allowBarge){
+  if(!r||!r.audioBase64)return false;
+  const rest=String(r.restTtsText||'').trim();
+  playAudio(r.audioBase64,r.audioFormat,allowBarge,{onConfirmed:()=>{if(rest)setTimeout(()=>playRestTtsText(rest,allowBarge),0);}});
+  return true;
+}
+async function pollTaskReportbacks(){
+  try{
+    const r=await api('/api/noe/tasks/reportbacks',{consume:true,current:true,limit:20,currentLimit:12});
+    if(r&&r.ok){
+      (Array.isArray(r.current)?r.current:[]).forEach(it=>upsertTaskCard(it,{allowSpeak:false,stream:false}));
+      (Array.isArray(r.items)?r.items:[]).forEach(it=>upsertTaskCard(it,{allowSpeak:true,stream:true}));
+    }
+  }catch{}
+}
+function thinking(on){
+  let t=$('#thinkLine');
+  if(on && !t){ t=document.createElement('div'); t.id='thinkLine'; t.className='line-thinking'; t.innerHTML='思考中<span class="d"></span><span class="d"></span><span class="d"></span>'; $('#streamHost').prepend(t); }
+  if(!on && t) t.remove();
+}
+function setState(s,live){ const el=$('#stState'); el.innerHTML=(live?'<span class="live-dot"></span>':'')+s; el.className='stat-value'+(live?' live':''); }
+
+// 文字发送：后端 voice/chat 的 {text} 分支（跳过 STT，默认不出声省配额）
+async function sendText(){
+  window.cogUnlockAudio?.();
+  const inp=$('#chat-input'); const text=(window.cogAttachText?.(inp.value)||inp.value).trim(); if(!text) return;
+  inp.value=''; window.cogAttachSent?.(); addMsg('user',text); turns++; $('#stTurns').textContent=turns;
+  setState('处理中',true); thinking(true); window.pulseGraph(8);
+  let handled=false;
+  try{
+    // ① 有待确认的派活 + 用户说确认词 → 只创建待启动房间，不启动 CLI
+    if(window.__noePendingDelegate && /^(确认|执行|好的?|同意|可以|就这样|动手|开始|嗯+)/.test(text)){
+      const p=window.__noePendingDelegate; window.__noePendingDelegate=null; handled=true;
+      const r=await api(p.confirmEndpoint||'/api/noe/delegate/confirm',{ plan:p.plan, text:p.text, confirm:true });
+      const m=(r&&r.ok)?(r.reply||`✅ 已创建待启动房间：${(r.room&&r.room.name)||''}`):('派活失败：'+((r&&r.error)||'未知错误'));
+      addMsg('noe',m); addStream('reply',m);
+    }
+    // ② 有待确认的整理 + 用户说确认词 → 真执行
+    else if(window.__noePending && /^(确认|执行|好的?|同意|可以|就这样|动手|开始|嗯+)/.test(text)){
+      const r=await api('/api/noe/do',{ text:window.__noePending, confirm:true }); window.__noePending=null; handled=true;
+      const m = (r&&r.executed)? `✅ 已整理 ${r.moved} 个文件。${r.undoHint||'后悔说"撤销"'}` : ('执行：'+String((r&&(r.reason||r.result))||'').slice(0,400));
+      addMsg('noe',m); addStream('reply',m);
+    } else {
+      // ③ 文件/搜索/派活编排；不匹配再走聊天
+      const doR=await api('/api/noe/do',{ text });
+      if(doR&&doR.ok&&doR.matched){
+        handled=true; let msg='';
+        if(doR.intent==='delegate_task'){ msg=(doR.reply||'已生成派活计划')+'\n\n说一句"确认"我就创建待启动房间；不会启动 CLI。'; window.__noePendingDelegate={ text, plan:doR.plan, confirmEndpoint:doR.confirmEndpoint }; }
+        else if(doR.needConfirm){ msg=`📋 整理计划：识别到 ${doR.opsCount} 个文件可移动。\n说一句"确认"我就执行（移动可"撤销"还原、删除进废纸篓）。`; window.__noePending=text; }
+        else if(doR.kind==='撤销'){ msg= doR.undone? '↩️ 已撤销上次整理，文件还原了。' : ('撤销：'+(doR.reason||'')); }
+        else { msg=`【${doR.kind}】\n`+String(doR.reply||doR.result||doR.hint||'').slice(0,1200); }
+        addMsg('noe',msg); addStream('reply',msg);
+      }
+    }
+  }catch{}
+  // ③ 非文件操作 → 正常聊天
+  if(!handled){
+    const r=await api('/api/noe/voice/chat',{ text, voice:true, profileId:window.cogChatProfileId?.()||'default' });
+    if(r&&r.taskReceipt) renderTaskReceipt(r.taskReceipt);
+    if(r&&r.ok&&r.reply){ addMsg('noe',r.reply); addStream('reply',r.reply); if(r.audioBase64) playNoeResponseAudio(r,false); else if(r.ttsError) addMsg('sys','✗ 语音合成失败：'+r.ttsError); }
+    else { addMsg('sys','✗ '+((r&&r.error)||'没有回复')); }
+  }
+  thinking(false); setState('待命',true);
+}
+let sharedAudio=null,sharedSource=null,sharedCtx=null,lastAudioSig='',lastAudioAt=0; const audioSig=b64=>String(b64||'').length+':'+String(b64||'').slice(0,80);
+function unlockSharedAudio(){
+  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC&&!sharedCtx)sharedCtx=new AC();sharedCtx?.resume?.();if(!sharedAudio)sharedAudio=new Audio();}catch{}
+}
+window.cogUnlockAudio=unlockSharedAudio;
+document.addEventListener('pointerdown',unlockSharedAudio,{passive:true});
+document.addEventListener('keydown',unlockSharedAudio,{passive:true});
+function playAudio(b64,fmt,allowBarge,opts){
+  const confirm=()=>{try{opts?.onConfirmed?.()}catch{}};
+  const start=()=>{try{opts?.onStarted?.()}catch{}};
+  const fail=e=>{try{opts?.onFailed?.(e)}catch{}};
+  try{
+    let confirmed=false;
+    const done=()=>{playGuard=0;if(!confirmed){confirmed=true;confirm();}if(liveOn&&vadPhase==='speak'){vadPhase='listen';spF=0;setState('聆听中',true)}};
+    const sig=audioSig(b64),now=Date.now(); if(sig===lastAudioSig&&now-lastAudioAt<1800){start();return;}
+    lastAudioSig=sig; lastAudioAt=now; try{sharedSource?.stop?.()}catch{} sharedSource=null;
+    if(!sharedAudio)sharedAudio=new Audio();
+    try{sharedAudio.pause();sharedAudio.removeAttribute('src');sharedAudio.load&&sharedAudio.load()}catch{}
+    playGuard=now+(allowBarge?4200:600000); sharedAudio.onended=done; sharedAudio.src=`data:audio/${fmt||'mp3'};base64,${b64}`;
+    sharedAudio.play().then(start).catch(async e=>{
+      try{
+        const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw e;if(!sharedCtx)sharedCtx=new AC();if(sharedCtx.state==='suspended')await sharedCtx.resume();if(sharedCtx.state!=='running')throw e;
+        const bin=atob(String(b64||'')),ab=new ArrayBuffer(bin.length),u8=new Uint8Array(ab);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+        const dec=await sharedCtx.decodeAudioData(ab),src=sharedCtx.createBufferSource();sharedSource=src;src.buffer=dec;src.connect(sharedCtx.destination);src.onended=()=>{if(sharedSource===src)sharedSource=null;done()};src.start(0);start();
+      }catch(e2){fail(e2);addMsg('sys','✗ 播放被浏览器拦截：请点一次页面后重试')}
+    });
+  }catch(e){ fail(e); addMsg('sys','✗ 播放失败：'+(e.message||'')); }
+}
+$('#send-btn').onclick=sendText;
+$('#chat-input').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendText(); } });
+
+// ===== 视觉：自预览 + 模式 + glance =====
+let visionMode='off', camStream=null, camTimer=null, glanceTimer=null;
+async function startCam(){
+  if(camStream) return true;
+  if(!navigator.mediaDevices?.getUserMedia){ addMsg('sys','✗ 当前浏览器不支持摄像头访问：Safari 请使用 http://127.0.0.1:51835 或 HTTPS，并允许摄像头权限'); return false; }
+  const constraints=[
+    {video:{width:{ideal:640},height:{ideal:480},facingMode:'user'},audio:false},
+    {video:true,audio:false},
+  ];
+  let lastErr=null;
+  for(const c of constraints){
+    try{ camStream=await navigator.mediaDevices.getUserMedia(c); break; }
+    catch(e){ lastErr=e; }
+  }
+  if(!camStream){
+    const name=lastErr?.name||'unknown';
+    const hint= name==='NotAllowedError' ? '请在 Safari 地址栏/设置里允许此网站使用摄像头'
+      : name==='NotFoundError' ? '系统没有找到可用摄像头'
+      : name==='NotReadableError' ? '摄像头可能正被其他应用占用'
+      : name==='OverconstrainedError' ? '摄像头不支持当前分辨率约束'
+      : (lastErr?.message||name);
+    addMsg('sys','✗ 摄像头不可用：'+hint);
+    return false;
+  }
+  const v=$('#selfVideo');
+  v.muted=true; v.autoplay=true; v.playsInline=true; v.setAttribute('playsinline',''); v.srcObject=camStream;
+  v.style.display='block'; $('#selfVideoOff').style.display='none';
+  try{ v.play()?.catch?.(()=>{}); }catch{}
+  const cvs=document.createElement('canvas'); cvs.width=640; cvs.height=480; const cx=cvs.getContext('2d');
+  camTimer=setInterval(async()=>{ if(v.readyState<2)return; cx.drawImage(v,0,0,640,480); const b64=cvs.toDataURL('image/jpeg',.6).split(',')[1]; await api('/api/noe/vision/frame',{frame:b64,format:'jpeg'}); },4000);
+  return true;
+}
+function stopCam(){ clearInterval(camTimer); camTimer=null; try{camStream&&camStream.getTracks().forEach(t=>t.stop())}catch{} camStream=null; $('#selfVideo').style.display='none'; $('#selfVideoOff').style.display='flex'; }
+async function setVision(m){
+  const need=(m==='camera'||m==='both');
+  if(need && !camStream){
+    // Safari 会要求 getUserMedia 尽量贴近用户点击；不要先 await 后端接口。
+    const ok=await startCam();
+    if(!ok){ visionMode='screen'; await api('/api/noe/vision/ambient',{enabled:true,mode:'screen',screenSampleMs:10000,cameraFrameMs:4000,source:'cognitive-panel'}); return; }
+  }
+  visionMode=m; await api('/api/noe/vision/ambient',{enabled:m!=='off',mode:m,screenSampleMs:10000,cameraFrameMs:4000,source:'cognitive-panel'});
+  await window.cogSetIdentityModels?.({faceEnabled:m!=='off'});
+  if(m==='off'){
+    stopCam();
+    if(glanceTimer){ clearInterval(glanceTimer); glanceTimer=null; }
+    $('#perceptionText').textContent='（视觉已关闭 · 我不再看屏幕和摄像头）';
+    addStream('vision','视觉已关闭 · 我不再看屏幕/摄像头了','var(--dim)');
+    return;
+  }
+  if(!need) stopCam();
+  if(!glanceTimer) glanceTimer=setInterval(()=>glance(true),10000); // 重新开视觉→恢复定时刷新
+  addStream('vision','视觉源 → '+({screen:'看屏幕',camera:'看摄像头',both:'屏幕+摄像头'}[m]),'var(--warm)');
+  glance();
+}
+window.startCam = startCam;
+window.setVision = setVision;
+let _glancing=false;
+async function glance(silent){
+  if(_glancing) return;                                   // 防重入：上一次没看完不叠加
+  _glancing=true;
+  if(!silent){ $('#toolRow').style.display='flex'; $('#toolText').textContent='看一眼…'; }
+  window.pulseGraph(5);
+  try{
+    const r=await api('/api/noe/vision/glance',{force:true});
+    if(r&&r.ok&&r.summary){ $('#perceptionText').textContent=r.summary; if(!silent)addStream('perceive',r.summary,'var(--warm)'); }
+    else if(r&&r.error){ $('#perceptionText').textContent='✗ '+r.error; }
+  } finally { if(!silent)$('#toolRow').style.display='none'; _glancing=false; }
+}
+$('#btnVision').onclick=()=>glance(false);
+// 默认不自动看（视觉默认关闭、不加载 VLM 省内存）；用户点「看屏幕/看摄像头」后由 setVision 启动定时刷新
+// Brain 显示：动态读当前真实大脑，不再写死 qwen3.5
+async function refreshBrain(){
+  try{ const live=window.cogActiveModelLabel?.(); if(live){ $('#stBrain').textContent=live; return; } const r=await api('/api/noe/brain'); if(r&&r.ok){ const m=(r.model||r.adapterId||'').replace(/^huihui[_-]/i,'').replace(/[-_]?heretic.*$/i,'').replace(/:.*$/,'').replace(/[-_]instruct.*$/i,'')||r.adapterId; $('#stBrain').textContent=m; } }catch{} }
+refreshBrain(); setInterval(refreshBrain, 15000);
+
+// ===== 实时对话（VAD 免按钮 + barge-in，自包含）=====
+let liveOn=false, vadCtx,vadAna,vadStream,vadTimer,vadRec,vadChunks=[],vadPhase='idle',spF=0,siF=0,capAt=0,liveAbort,playGuard=0;
+const vadNum=(k,d,min,max)=>Math.min(max,Math.max(min,Number(localStorage.getItem(k))||d)); const bargeThreshold=()=>vadNum('noe-barge-threshold',.12,.05,.30); const VAD={get start(){return vadNum('noe-vad-start-threshold',.015,.005,.08)},get stop(){return vadNum('noe-vad-stop-threshold',.008,.003,.05)},sf:3,silMs:900,fr:50,maxMs:15000};
+function wav16(f32,sr){ const n=f32.length,buf=new ArrayBuffer(44+n*2),v=new DataView(buf),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  let o=44;for(let i=0;i<n;i++){const x=Math.max(-1,Math.min(1,f32[i]));v.setInt16(o,x<0?x*0x8000:x*0x7FFF,true);o+=2;} return new Uint8Array(buf); }
+async function blob16k(blob){ const ar=await blob.arrayBuffer(),AC=window.AudioContext||window.webkitAudioContext,ac=new AC(); let dec; try{dec=await ac.decodeAudioData(ar)}finally{try{await ac.close()}catch{}}
+  const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(dec.duration*16000)),16000),s=off.createBufferSource(); s.buffer=dec; s.connect(off.destination); s.start(); const rd=await off.startRendering(); return wav16(rd.getChannelData(0),16000); }
+function b64of(u8){ let s='';const c=0x8000; for(let i=0;i<u8.length;i+=c)s+=String.fromCharCode.apply(null,u8.subarray(i,i+c)); return btoa(s); }
+function stopPlay(force){ if(!force&&Date.now()<playGuard)return false; playGuard=0; try{sharedSource?.stop?.()}catch{} sharedSource=null; try{if(sharedAudio){sharedAudio.pause();sharedAudio.src='';}}catch{} return true; }
+async function startLive(){
+  if(liveOn)return;
+  await window.cogSetIdentityModels?.({voiceEnabled:true});
+  try{ vadStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }catch(e){ await window.cogSetIdentityModels?.({voiceEnabled:false}); addMsg('sys','✗ 麦克风不可用'); return; }
+  const AC=window.AudioContext||window.webkitAudioContext; vadCtx=new AC(); const src=vadCtx.createMediaStreamSource(vadStream); vadAna=vadCtx.createAnalyser(); vadAna.fftSize=1024; src.connect(vadAna);
+  liveOn=true; vadPhase='listen'; spF=0; siF=0; $('#btnLive').classList.add('live'); $('#btnLive').textContent='⏹ 停止'; setState('聆听中',true);
+  addMsg('sys','🟢 实时对话开启 · 直接说话 · 说话时下方蓝条会跳动，过黄线就开始录（条不跳=麦克风没选对/太小声）');
+  // 麦克风电平条（诊断：看得见说话信号 + 触发阈值线）
+  if(!$('#micMeter')){ const m=document.createElement('div'); m.id='micMeter'; m.style.cssText='position:fixed;left:412px;right:412px;bottom:92px;height:5px;border-radius:3px;background:rgba(143,182,216,.12);z-index:6;overflow:hidden;pointer-events:none'; m.innerHTML='<div id="micLevel" style="height:100%;width:0;background:var(--cool);transition:width .05s linear,background .1s"></div><div title="停说线" style="position:absolute;left:'+Math.min(95,VAD.stop*600)+'%;top:-2px;bottom:-2px;width:2px;background:#789;opacity:.7"></div><div title="起说线" style="position:absolute;left:'+Math.min(95,VAD.start*600)+'%;top:-2px;bottom:-2px;width:2px;background:var(--warm);opacity:.7"></div><div title="打断线" style="position:absolute;left:'+Math.min(95,bargeThreshold()*600)+'%;top:-2px;bottom:-2px;width:2px;background:#ff8aa0;opacity:.7"></div>'; document.body.appendChild(m); }
+  const buf=new Uint8Array(vadAna.fftSize);
+  vadTimer=setInterval(()=>{ if(!vadAna)return; vadAna.getByteTimeDomainData(buf); let s=0; for(let i=0;i<buf.length;i++){const x=(buf[i]-128)/128;s+=x*x;} vadTick(Math.sqrt(s/buf.length)); },VAD.fr);
+}
+function stopLive(){ liveOn=false; clearInterval(vadTimer); try{vadRec&&vadRec.state!=='inactive'&&vadRec.stop()}catch{} vadRec=null; try{liveAbort&&liveAbort.abort()}catch{} stopPlay(true);
+  window.cogSetIdentityModels?.({voiceEnabled:false}).catch(()=>{});
+  try{vadStream&&vadStream.getTracks().forEach(t=>t.stop())}catch{} try{vadCtx&&vadCtx.close()}catch{} vadStream=vadCtx=vadAna=null; vadPhase='idle';
+  $('#micMeter')?.remove(); $('#btnLive').classList.remove('live'); $('#btnLive').textContent='🎙 实时对话'; setState('待命',true); }
+function vadTick(rms){
+  if(!liveOn)return;
+  const lvl=$('#micLevel'); if(lvl){ lvl.style.width=Math.min(100,rms*600)+'%'; lvl.style.background=rms>VAD.start?'var(--warm)':'var(--cool)'; }
+  if(vadPhase==='listen'){ if(rms>VAD.start){ if(++spF>=VAD.sf) begin(); } else spF=0; }
+  else if(vadPhase==='capture'){ if(rms<VAD.stop){ siF++; if(siF*VAD.fr>=VAD.silMs) endSend(); } else siF=0; if(Date.now()-capAt>VAD.maxMs) endSend(); }
+  else if(vadPhase==='speak'){ const barge=bargeThreshold(); if(rms>barge){ if(++spF>=VAD.sf){ if(!stopPlay()){spF=0;return;} try{liveAbort&&liveAbort.abort()}catch{} begin(); } } else spF=0; }
+}
+function begin(){ if(!vadStream)return; vadPhase='capture'; spF=0; siF=0; capAt=Date.now(); vadChunks=[];
+  try{ vadRec=new MediaRecorder(vadStream); vadRec.ondataavailable=e=>{if(e.data&&e.data.size)vadChunks.push(e.data)}; vadRec.start(200); }catch(e){ addMsg('sys','✗ 录音启动失败：'+(e.message||e.name)); vadPhase='listen'; return; }
+  setState('🎤 听你说…',true); }
+async function endSend(){
+  if(vadPhase!=='capture')return; vadPhase='think'; setState('转写…',true); thinking(true); window.pulseGraph(8);
+  await new Promise(r=>{let d=0;const f=()=>{if(!d){d=1;r()}};if(vadRec)vadRec.onstop=f;try{vadRec&&vadRec.stop()}catch{f()}setTimeout(f,2500)});
+  const ch=vadChunks; vadChunks=[]; vadRec=null; // 关键：录音数据只在 stop() 后由 ondataavailable 产出，必须 stop 完再取（否则永远空=没录到声音）
+  const back=()=>{ thinking(false); if(liveOn){vadPhase='listen';spF=0;setState('聆听中',true);} };
+  if(!ch.length){ addMsg('sys','✗ 没录到声音（电平太低？说大声点或在系统设置选对麦克风）'); back(); return; }
+  try{
+    const wav=await blob16k(new Blob(ch)); const b64=b64of(wav); liveAbort=new AbortController();
+    const res=await fetch('/api/noe/voice/chat',{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Owner-Token':TOK},body:JSON.stringify({audio:b64,profileId:window.cogChatProfileId?.()||'default'}),signal:liveAbort.signal});
+    const d=await res.json().catch(()=>({})); if(!liveOn)return; thinking(false);
+    if(d.transcript) addMsg('user',d.transcript);
+    if(d.taskReceipt) renderTaskReceipt(d.taskReceipt);
+    if(d.ok&&d.audioBase64){ addMsg('noe',d.reply||''); addStream('reply',d.reply||''); turns++; $('#stTurns').textContent=turns; vadPhase='speak'; spF=0; setState('🔊 说话可打断',true); playNoeResponseAudio(d,true); return; }
+    if(d.ok) addMsg('noe',d.reply||''); else addMsg('sys','✗ '+(d.error||'失败'));
+  }catch(e){ if(e.name!=='AbortError') addMsg('sys','✗ '+(e.message||'')); thinking(false); }
+  back();
+}
+$('#btnLive').onclick=()=>{ window.cogUnlockAudio?.(); try{const AC=window.AudioContext||window.webkitAudioContext; if(AC&&!sharedCtx)sharedCtx=new AC(); sharedCtx?.resume?.()}catch{} liveOn?stopLive():startLive(); };
+// ===== 主动陪伴轮询 =====
+let proactiveOn=false, proTimer=null;
+async function ackSelfTalkDeliveries(items,status,error){
+  for(const it of (Array.isArray(items)?items:[])){
+    if(!it?.proposalId)continue;
+    try{await api('/api/noe/p6/self-talk/delivery-ack',{proposalId:it.proposalId,status,type:'commitment',targetId:it.targetId||null,confirmationSource:'telemetry',error:error?String(error.message||error).slice(0,120):null});}catch{}
+  }
+}
+async function proTick(){ if(!liveOn&&!(sharedAudio&&!sharedAudio.paused&&!sharedAudio.ended)){ const r=await api('/api/noe/proactive/tick',{}); if(r&&r.ok&&r.spoke){ addMsg('noe',r.text||''); addStream('proactive',r.text||'','var(--warm)');
+  // 开关开启 + 这条 proactive 是内部活动碎碎念(观察门/自修复/感知…) → 只显示文字、不念出来；真陪伴/对话不受影响。
+  const mutedInternal=hideSysRepair&&INTERNAL_RE.test(r.text||'');
+  if(r.audioBase64&&!mutedInternal)playAudio(r.audioBase64,r.audioFormat,false,{onConfirmed:()=>ackSelfTalkDeliveries(r.selfTalkDeliveries,'played_to_user_confirmed'),onFailed:e=>ackSelfTalkDeliveries(r.selfTalkDeliveries,'play_failed',e)}); } } }
+function toggleProactive(){ proactiveOn=!proactiveOn; $('#dProactive').textContent='🔔 主动陪伴：'+(proactiveOn?'开':'关');
+  if(proactiveOn){ proTick(); proTimer=setInterval(proTick,45000); addStream('system','主动陪伴已开 · 我会偶尔看你一眼','var(--warm)'); } else { clearInterval(proTimer); } }
+function toggleHideRepair(){ hideSysRepair=!hideSysRepair; try{localStorage.setItem('cog_hide_sysrepair',hideSysRepair?'1':'0')}catch{}
+  $('#dHideRepair').textContent='🔕 隐藏系统自修复汇报：'+(hideSysRepair?'开':'关');
+  if(hideSysRepair){ taskCards.forEach((card,k)=>{ if(/系统自修复|system_repair/.test(card.querySelector('.task-title')?.textContent||'')){ card.remove(); taskCards.delete(k); } }); addStream('system','已隐藏并静音「系统自修复」汇报 · 再点一次恢复','var(--dim)'); } else { addStream('system','已恢复「系统自修复」汇报的显示与语音','var(--dim)'); } }
+// ===== 风格切换 + 设置抽屉 =====
+$('#themeBtn').onclick=()=>{ const n=window.cogCycleTheme(); $('#themeBtn').textContent='◑ '+n; };
+if(window.cogThemeName) $('#themeBtn').textContent='◑ '+window.cogThemeName();
+$('#gear').onclick=()=>$('#drawer').classList.toggle('open');
+$('#drawerClose').onclick=()=>$('#drawer').classList.remove('open');
+document.querySelectorAll('[data-vmode]').forEach(el=>el.onclick=()=>setVision(el.dataset.vmode));
+$('#dProactive').onclick=toggleProactive;
+$('#dHideRepair').onclick=toggleHideRepair;
+if(hideSysRepair)$('#dHideRepair').textContent='🔕 隐藏系统自修复汇报：开';
+$('#lkRooms').onclick=()=>location.href='/?t='+TOK+'#rooms';
+$('#lkBrain').onclick=()=>location.href='/?t='+TOK+'#brain';
+$('#lkMain').onclick=()=>location.href='/?t='+TOK;
+
+// 视频背景开关（默认开，localStorage 记住）
+(function(){ const item=$('#dVideoBg'), bg=$('#cogBg'); if(!item||!bg) return;
+  let on = localStorage.getItem('cog_video')!=='0';
+  const apply=()=>{ bg.style.display=on?'':'none'; if(on){ try{bg.play()}catch{} if(bg.readyState>=2) bg.style.opacity='.5'; } item.textContent='🎬 视频背景：'+(on?'开':'关'); };
+  apply();
+  item.onclick=()=>{ on=!on; localStorage.setItem('cog_video',on?'1':'0'); apply(); };
+})();
+
+// 初始问候 + 自动看一眼
+addStream('system','认知界面就绪','var(--cool)');
+pollTaskReportbacks(); setInterval(pollTaskReportbacks,8000);
+</script>
+<script src="/i18n.js?v=i18n-20260604"></script>
+<script type="module" src="/src/web/cognitive-research.js?v=identity-bridge-20260611a"></script>
+</body>
+</html>

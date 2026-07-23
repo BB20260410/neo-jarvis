@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Noe panel launchd 守护（波次5 P2）：登录自启 + 崩溃自动拉起。
+       ⚠️ 本文件只是产物，不会自动安装——安装/卸载步骤见同目录《安装说明.md》，由 owner 主动执行。 -->
+  <key>Label</key>
+  <string>com.noe.panel</string>
+
+  <!-- 用 zsh -lc 加载登录环境（nvm/PATH/代理变量），免硬编码 node 路径。
+       ⚠️ 必须经 ensure-node22 守卫启动：登录 shell 的默认 node 可能是 26（nvm default），
+       better-sqlite3 原生绑定按 22 编译，直接 node server.js 会 ERR_DLOPEN_FAILED 崩溃循环
+       （2026-06-10 首装实测踩坑）。守卫自动按 .nvmrc 定位 ~/.nvm 里的 Node 22 再拉起。 -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd "$HOME/Desktop/Neo 贾维斯" &amp;&amp; exec node scripts/ensure-node22.mjs --require-22 --exec server.js</string>
+  </array>
+
+  <!-- 想常开的能力在这里加环境变量（默认全关，与手动启动一致）：
+       NOE_DREAM=1 梦境整合 / NOE_MEMORY_GC=1 记忆GC / NOE_GEO_WEATHER=1 天气预取
+       / NOE_MEMORY_EMBED=ollama 语义双路召回 / TELEGRAM_BOT_TOKEN=… Telegram 入站 -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PORT</key>
+    <string>51835</string>
+    <!-- 代理三件套与交互 shell 对齐（2026-06-10 实损教训）：launchd 登录环境不读 .zshrc，
+         曾只带 http_proxy 而丢 HTTPS_PROXY/NO_PROXY → ①本机 LM Studio/ollama 请求被绕去走
+         代理挂死 ②spawn 的 claude 失去 https 代理会裸 IP 直连 Anthropic（封号风险）。
+         7897=Clash 固定 mixed-port（非机密）；NO_PROXY 必须含回环让本机服务直连。 -->
+    <key>HTTP_PROXY</key>
+    <string>http://127.0.0.1:7897</string>
+    <key>http_proxy</key>
+    <string>http://127.0.0.1:7897</string>
+    <key>HTTPS_PROXY</key>
+    <string>http://127.0.0.1:7897</string>
+    <key>https_proxy</key>
+    <string>http://127.0.0.1:7897</string>
+    <key>NO_PROXY</key>
+    <string>127.0.0.1,localhost,::1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,.local</string>
+    <key>no_proxy</key>
+    <string>127.0.0.1,localhost,::1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,.local</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>15</integer>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/noe-panel.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/noe-panel.launchd.err.log</string>
+</dict>
+</plist>

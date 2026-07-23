@@ -1,0 +1,430 @@
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { dirname, join, relative, resolve } from 'node:path';
+import {
+  buildCodeContextEvidence,
+  buildCodeContextEvidenceFile,
+  summarizeCodeContextEvidence,
+} from './CodeContextEvidence.js';
+import { inferCodeContextSignals } from './CodeContextSignals.js';
+import { scorePathForCodebaseQuery, tokenizeCodebaseQuery } from './CodebaseQueryEngine.js';
+import { buildSymbolGraph, summarizeSymbolGraph } from './SymbolGraph.js';
+import { CODEBASE_LIMITS } from './codebaseLimits.js';
+
+const MAX_SCAN_FILES = CODEBASE_LIMITS.maxScanFiles;
+const MAX_FOCUS_FILES = CODEBASE_LIMITS.maxFocusFiles;
+const MAX_FILE_BYTES = CODEBASE_LIMITS.maxFileBytes;
+const MAX_SNIPPET_CHARS = CODEBASE_LIMITS.maxSnippetChars;
+const MAX_SCAN_MS = CODEBASE_LIMITS.maxScanMs;
+const IGNORED_DIRS = new Set([
+  '.git',
+  '.idea',
+  '.vscode',
+  'coverage',
+  'dist',
+  'node_modules',
+  'out',
+  'output',
+  'tmp',
+]);
+const IGNORED_PREFIXES = [
+  'public/vendor/',
+];
+const TEXT_EXTENSIONS = new Set([
+  '.cjs', '.css', '.html', '.js', '.json', '.jsx', '.md', '.mjs', '.scss', '.ts', '.tsx', '.txt',
+]);
+
+function safeString(value, max = 4000) {
+  if (value === undefined || value === null) return '';
+  return String(value).slice(0, max).trim();
+}
+
+function extensionOf(path = '') {
+  const idx = path.lastIndexOf('.');
+  return idx >= 0 ? path.slice(idx).toLowerCase() : '';
+}
+
+function isTextLike(path = '') {
+  const ext = extensionOf(path);
+  return TEXT_EXTENSIONS.has(ext) || /(^|\/)(Dockerfile|LICENSE|README)$/i.test(path);
+}
+
+function normalizeRel(path = '') {
+  return String(path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+}
+
+function isIgnoredPath(rel = '') {
+  const normalized = normalizeRel(rel);
+  if (!normalized) return true;
+  if (IGNORED_PREFIXES.some((prefix) => normalized.startsWith(prefix))) return true;
+  return normalized.split('/').some((part) => IGNORED_DIRS.has(part));
+}
+
+function withinRoot(root, abs) {
+  const rel = relative(root, abs);
+  return rel && !rel.startsWith('..') && !rel.includes('\0') && !rel.startsWith('/');
+}
+
+function resolveProjectFile(root, inputPath) {
+  const rel = normalizeRel(inputPath);
+  if (!root || !rel || !isTextLike(rel)) return null;
+  const abs = resolve(root, rel);
+  if (!withinRoot(root, abs)) return null;
+  const normalizedRel = normalizeRel(relative(root, abs));
+  return normalizedRel ? { rel: normalizedRel, abs } : null;
+}
+
+function readDirEntries(readDir, absDir) {
+  try {
+    return readDir(absDir, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+}
+
+function tryStatFile(stat, abs) {
+  try {
+    return stat(abs);
+  } catch {
+    return null;
+  }
+}
+
+function processEntry(entry, relDir, root, queue, out, stat) {
+  const rel = normalizeRel(join(relDir, entry.name));
+  if (!rel || isIgnoredPath(rel)) return;
+  const abs = resolve(root, rel);
+  if (!withinRoot(root, abs)) return;
+  if (entry.isDirectory()) {
+    queue.push(rel);
+    return;
+  }
+  if (!entry.isFile() || !isTextLike(rel)) return;
+  const meta = tryStatFile(stat, abs);
+  if (!meta || !meta.isFile() || meta.size > MAX_FILE_BYTES) return;
+  out.push({ path: rel, abs, bytes: meta.size });
+}
+
+function drainCandidateQueue({ queue, root, readDir, stat, out, maxFiles, deadline }) {
+  while (queue.length > 0 && out.length < maxFiles && Date.now() < deadline) {
+    const relDir = queue.shift();
+    const entries = readDirEntries(readDir, resolve(root, relDir));
+    if (!entries) continue;
+    processDirectoryEntries(entries, relDir, root, queue, out, stat, maxFiles, deadline);
+  }
+}
+
+function processDirectoryEntries(entries, relDir, root, queue, out, stat, maxFiles, deadline) {
+  entries.sort((a, b) => a.name.localeCompare(b.name));
+  for (const entry of entries) {
+    if (Date.now() >= deadline) break;
+    processEntry(entry, relDir, root, queue, out, stat);
+    if (out.length >= maxFiles) break;
+  }
+}
+
+function collectCandidateFiles(cwd, { fsApi = {}, maxFiles = MAX_SCAN_FILES } = {}) {
+  const exists = fsApi.existsSync || existsSync;
+  const readDir = fsApi.readdirSync || readdirSync;
+  const stat = fsApi.statSync || statSync;
+  const root = resolve(cwd || '');
+  if (!cwd || !exists(root)) return [];
+  const out = [];
+  const queue = [''];
+  const deadline = Date.now() + MAX_SCAN_MS;
+  drainCandidateQueue({ queue, root, readDir, stat, out, maxFiles, deadline });
+
+  return out;
+}
+
+function priorityForPath(path = '') {
+  const lower = path.toLowerCase();
+  let score = 0;
+  if (lower.startsWith('src/agents/')) score += 9;
+  if (lower.startsWith('src/server/')) score += 7;
+  if (lower.startsWith('src/room/')) score += 7;
+  if (lower === 'server.js') score += 6;
+  if (lower === 'public/app.js') score += 6;
+  if (lower.startsWith('tests/')) score += 1;
+  if (lower.startsWith('docs/')) score += 2;
+  if (lower.endsWith('.test.js')) score += 1;
+  return score;
+}
+
+function lineNumberAt(text, idx) {
+  if (idx <= 0) return 1;
+  return String(text).slice(0, idx).split(/\r?\n/).length;
+}
+
+function scoreFile(candidate, queryTokens, { fsApi = {} } = {}) {
+  const read = fsApi.readFileSync || readFileSync;
+  const lowerPath = candidate.path.toLowerCase();
+  let score = priorityForPath(candidate.path);
+  const reasons = [];
+  const snippets = [];
+  if (score > 0) reasons.push('project priority');
+
+  let text = '';
+  try {
+    text = read(candidate.abs, 'utf8');
+  } catch {
+    text = '';
+  }
+  const lowerText = text.toLowerCase();
+  const snippetLocations = [];
+  const intent = scorePathForCodebaseQuery(candidate.path, queryTokens, text);
+  if (intent.score !== 0) {
+    score += intent.score;
+    reasons.push(...intent.reasons);
+  }
+
+  for (const token of queryTokens) {
+    if (lowerPath.includes(token)) {
+      score += 18;
+      reasons.push(`path:${token}`);
+    }
+    const idx = lowerText.indexOf(token);
+    if (idx >= 0) {
+      score += 6;
+      reasons.push(`text:${token}`);
+      const before = Math.max(0, idx - 80);
+      const after = Math.min(text.length, idx + 140);
+      const snippet = text.slice(before, after).replace(/\s+/g, ' ').trim().slice(0, MAX_SNIPPET_CHARS);
+      snippets.push(snippet);
+      snippetLocations.push({ line: lineNumberAt(text, idx), reason: `text:${token}`, text: snippet });
+    }
+  }
+
+  if (/\bexport\b|function\s+[A-Za-z_$]|class\s+[A-Za-z_$]|app\.(get|post|put|delete|patch)\(/.test(text)) {
+    score += 3;
+    reasons.push('source landmarks');
+  }
+
+  return {
+    path: candidate.path,
+    bytes: candidate.bytes,
+    score,
+    reasons: [...new Set(reasons)].slice(0, 8),
+    snippets: [...new Set(snippets)].filter(Boolean).slice(0, 3),
+    snippetLocations: snippetLocations
+      .filter((item, idx, list) => item.text && list.findIndex((entry) => entry.line === item.line && entry.reason === item.reason) === idx)
+      .slice(0, 6),
+  };
+}
+
+function resolveImportTarget(fromPath, source, availablePaths) {
+  if (!source || !source.startsWith('.')) return null;
+  const base = normalizeRel(join(dirname(fromPath), source));
+  const candidates = [
+    base,
+    `${base}.js`,
+    `${base}.mjs`,
+    `${base}.cjs`,
+    `${base}.ts`,
+    `${base}.tsx`,
+    `${base}.jsx`,
+    `${base}/index.js`,
+    `${base}/index.ts`,
+  ].map(normalizeRel);
+  return candidates.find((candidate) => availablePaths.has(candidate)) || null;
+}
+
+function buildImportGraph(evidence = []) {
+  const availablePaths = new Set(evidence.map((file) => file.path));
+  const nodes = evidence.map((file) => ({
+    path: file.path,
+    language: file.language,
+    symbols: (file.symbols || []).length,
+    anchors: (file.anchors || []).length,
+    imports: (file.imports || []).length,
+  }));
+  const edges = [];
+  for (const file of evidence) {
+    for (const item of file.imports || []) {
+      const target = resolveImportTarget(file.path, item.source, availablePaths);
+      if (!target) continue;
+      edges.push({
+        from: file.path,
+        to: target,
+        source: item.source,
+        line: item.line,
+      });
+      if (edges.length >= 120) break;
+    }
+    if (edges.length >= 120) break;
+  }
+  return { nodes, edges, nodeCount: nodes.length, edgeCount: edges.length };
+}
+
+function fileMtimeMs(meta) {
+  if (!meta) return 0;
+  if (Number.isFinite(Number(meta.mtimeMs))) return Number(meta.mtimeMs);
+  if (meta.mtime instanceof Date) return meta.mtime.getTime();
+  return 0;
+}
+
+function hashText(text = '') {
+  return createHash('sha256').update(String(text)).digest('hex').slice(0, 16);
+}
+
+function cloneEvidence(file) {
+  return file ? {
+    ...file,
+    diagnostics: (file.diagnostics || []).map((item) => ({ ...item })),
+    symbols: (file.symbols || []).map((item) => ({ ...item })),
+    imports: (file.imports || []).map((item) => ({
+      ...item,
+      specifiers: (item.specifiers || []).map((specifier) => ({ ...specifier })),
+    })),
+    exports: (file.exports || []).map((item) => ({ ...item })),
+    anchors: (file.anchors || []).map((item) => ({ ...item })),
+    snippets: (file.snippets || []).map((item) => ({ ...item })),
+    references: (file.references || []).map((item) => ({ ...item })),
+  } : null;
+}
+
+function buildEvidenceWithCache(cwd, focusFiles, { fsApi = {}, evidenceCache = null } = {}) {
+  if (!evidenceCache) {
+    const evidence = buildCodeContextEvidence({ cwd, files: focusFiles, fsApi });
+    return {
+      evidence,
+      cacheStats: {
+        enabled: false,
+        files: evidence.length,
+        hits: 0,
+        misses: evidence.length,
+        stale: 0,
+        cacheSize: 0,
+      },
+    };
+  }
+
+  const exists = fsApi.existsSync || existsSync;
+  const stat = fsApi.statSync || statSync;
+  const read = fsApi.readFileSync || readFileSync;
+  const root = resolve(cwd || '');
+  const evidence = [];
+  const stats = {
+    enabled: true,
+    files: 0,
+    hits: 0,
+    misses: 0,
+    stale: 0,
+    cacheSize: evidenceCache.size || 0,
+  };
+  const seen = new Set();
+
+  for (const file of focusFiles || []) {
+    if (evidence.length >= MAX_FOCUS_FILES) break;
+    const resolved = resolveProjectFile(root, typeof file === 'string' ? file : file?.path);
+    if (!resolved || seen.has(resolved.rel.toLowerCase())) continue;
+    seen.add(resolved.rel.toLowerCase());
+    const key = resolved.rel.toLowerCase();
+
+    try {
+      if (!exists(resolved.abs)) {
+        const fileEvidence = buildCodeContextEvidenceFile({ cwd, file: resolved.rel, fsApi });
+        if (fileEvidence) evidence.push(fileEvidence);
+        stats.misses += 1;
+        continue;
+      }
+
+      const meta = stat(resolved.abs);
+      if (!meta.isFile() || meta.size > MAX_FILE_BYTES) {
+        const fileEvidence = buildCodeContextEvidenceFile({ cwd, file: resolved.rel, fsApi, meta });
+        if (fileEvidence) evidence.push(fileEvidence);
+        stats.misses += 1;
+        continue;
+      }
+
+      const size = Number(meta.size) || 0;
+      const mtimeMs = fileMtimeMs(meta);
+      const cached = evidenceCache.get(key);
+      const text = read(resolved.abs, 'utf8');
+      const hash = hashText(text);
+      if (cached && cached.size === size && cached.mtimeMs === mtimeMs && cached.hash === hash) {
+        const fileEvidence = cloneEvidence(cached.evidence);
+        if (fileEvidence) evidence.push(fileEvidence);
+        stats.hits += 1;
+        continue;
+      }
+
+      if (cached) stats.stale += 1;
+      else stats.misses += 1;
+
+      const fileEvidence = buildCodeContextEvidenceFile({ cwd, file: resolved.rel, fsApi, text, meta });
+      if (fileEvidence) {
+        evidenceCache.set(key, {
+          path: resolved.rel,
+          size,
+          mtimeMs,
+          hash,
+          indexedAt: Date.now(),
+          evidence: cloneEvidence(fileEvidence),
+        });
+        evidence.push(fileEvidence);
+      }
+    } catch {
+      const fileEvidence = buildCodeContextEvidenceFile({ cwd, file: resolved.rel, fsApi });
+      if (fileEvidence) evidence.push(fileEvidence);
+      stats.misses += 1;
+    }
+  }
+
+  stats.files = evidence.length;
+  stats.cacheSize = evidenceCache.size || 0;
+  return { evidence, cacheStats: stats };
+}
+
+/**
+ * Builds a comprehensive codebase map by analyzing candidate files, scoring them against a query,
+ * and generating evidence, import graphs, symbol graphs, and code context signals.
+ *
+ * @param {string} cwd - The current working directory to scan.
+ * @param {Object} [options] - Configuration options.
+ * @param {string} [options.query=''] - The search query to filter and score files.
+ * @param {number} [options.limit=MAX_FOCUS_FILES] - The maximum number of focus files to include.
+ * @param {Object} [options.fsApi={}] - Custom file system API implementation.
+ * @param {Map} [options.evidenceCache=null] - Cache for storing file evidence.
+ * @returns {Object} The constructed codebase map including evidence, graphs, and statistics.
+ */
+export function buildCodebaseMap(cwd, { query = '', limit = MAX_FOCUS_FILES, fsApi = {}, evidenceCache = null } = {}) {
+  const safeLimit = Math.max(4, Math.min(MAX_FOCUS_FILES, Number(limit) || MAX_FOCUS_FILES));
+  const candidates = collectCandidateFiles(cwd, { fsApi });
+  const queryTokens = tokenizeCodebaseQuery(query);
+  const scored = candidates
+    .map((candidate) => scoreFile(candidate, queryTokens, { fsApi }))
+    .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path));
+  const focusFiles = scored.slice(0, safeLimit).filter((item) => item.score > 0 || queryTokens.length === 0);
+  const { evidence, cacheStats } = buildEvidenceWithCache(cwd, focusFiles, { fsApi, evidenceCache });
+  const evidenceSummary = summarizeCodeContextEvidence(evidence);
+  const graph = buildImportGraph(evidence);
+  const symbolGraph = buildSymbolGraph({ cwd, evidence, fsApi });
+  const symbolGraphSummary = summarizeSymbolGraph(symbolGraph);
+  const codeContextSignals = inferCodeContextSignals({ affectedFiles: focusFiles.map((file) => file.path), evidence });
+
+  return {
+    ok: true,
+    cwd,
+    query: safeString(query, 300),
+    scannedFileCount: candidates.length,
+    focusFileCount: focusFiles.length,
+    focusFiles,
+    evidence,
+    evidenceSummary,
+    indexCacheStats: cacheStats,
+    graph,
+    symbolGraph,
+    symbolGraphSummary,
+    codeContextSignals,
+    scanBudget: {
+      scannedFiles: candidates.length,
+      maxScanFiles: MAX_SCAN_FILES,
+      scanTruncated: candidates.length >= MAX_SCAN_FILES,
+      focusFiles: focusFiles.length,
+      maxFocusFiles: MAX_FOCUS_FILES,
+      maxFileBytes: MAX_FILE_BYTES,
+      maxScanMs: MAX_SCAN_MS,
+    },
+  };
+}

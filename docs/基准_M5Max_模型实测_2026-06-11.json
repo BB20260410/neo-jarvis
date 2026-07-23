@@ -1,0 +1,68 @@
+[
+  {
+    "model": "qwen3.6-35b-a3b-mlx",
+    "ctxTarget": 1000,
+    "promptTokens": 836,
+    "completionTokens": 255,
+    "warmupMs": 7184,
+    "ttftMs": null,
+    "genTps": 103.2,
+    "prefillTps": null,
+    "totalMs": 2472
+  },
+  {
+    "model": "qwen3.6-35b-a3b-mlx",
+    "ctxTarget": 8000,
+    "promptTokens": 6557,
+    "completionTokens": 255,
+    "warmupMs": 1735,
+    "ttftMs": null,
+    "genTps": 97.1,
+    "prefillTps": null,
+    "totalMs": 2626
+  },
+  {
+    "model": "gemma-4-31b-it-qat",
+    "ctxTarget": 1000,
+    "promptTokens": 842,
+    "completionTokens": 34,
+    "warmupMs": 10061,
+    "ttftMs": 605,
+    "genTps": 19.4,
+    "prefillTps": 1391,
+    "totalMs": 2304
+  },
+  {
+    "model": "gemma-4-31b-it-qat",
+    "ctxTarget": 8000,
+    "promptTokens": 6563,
+    "completionTokens": 35,
+    "warmupMs": 9559,
+    "ttftMs": 1032,
+    "genTps": 17.8,
+    "prefillTps": 6359,
+    "totalMs": 2942
+  },
+  {
+    "model": "gemma-4-26b-a4b-it-qat-mlx",
+    "ctxTarget": 1000,
+    "promptTokens": 842,
+    "completionTokens": 34,
+    "warmupMs": 443,
+    "ttftMs": 106,
+    "genTps": 156.7,
+    "prefillTps": 7951,
+    "totalMs": 317
+  },
+  {
+    "model": "gemma-4-26b-a4b-it-qat-mlx",
+    "ctxTarget": 8000,
+    "promptTokens": 6563,
+    "completionTokens": 37,
+    "warmupMs": 1762,
+    "ttftMs": 282,
+    "genTps": 135.5,
+    "prefillTps": 23252,
+    "totalMs": 548
+  }
+]

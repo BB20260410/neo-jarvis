@@ -1,0 +1,201 @@
+
+/* ───── Main ───── */
+.main {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-main);
+}
+.main-header {
+  padding: 24px 32px;
+  min-height: 60px;
+  display: flex; align-items: center;
+}
+.empty-state {
+  /* v0.56 U13：从 80px 上 padding 改 48px 给 CTA 卡片留垂直空间 */
+  text-align: center; width: 100%; padding: 48px 20px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.empty-state .empty-icon {
+  font-size: 48px; color: var(--orange);
+  opacity: 0.3; margin-bottom: 16px;
+}
+.empty-state h2 { margin: 0 0 8px; font-size: 22px; font-weight: 500; }
+.empty-state p { margin: 0 0 6px; color: var(--gray-mid); }
+.hint-text { font-size: 12px; opacity: 0.75; margin-top: 14px; }
+.hint-text kbd {
+  background: var(--bg-top, #f5f3ee);
+  border: 1px solid var(--color-border-light, #ddd);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  margin: 0 2px;
+}
+
+/* v0.56 U13：欢迎页 CTA，认知界面优先，其余按真实任务类型收敛 */
+.empty-cta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 22px auto 14px;
+  max-width: 760px;
+  width: min(100%, 760px);
+}
+.cta-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--color-border-light, #ddd);
+  border-radius: 10px;
+  padding: 20px 14px 16px;
+  cursor: pointer;
+  text-align: center;
+  font: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  color: inherit;
+}
+.cta-card-primary {
+  grid-column: 1 / -1;
+  min-height: 124px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  align-content: center;
+  align-items: center;
+  text-align: left;
+  padding: 22px 24px;
+  border-color: color-mix(in oklab, var(--orange, #C15F3C) 45%, var(--color-border-light, #ddd));
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--orange, #C15F3C) 8%, var(--card, #fff)),
+      var(--card, #fff) 58%);
+}
+.cta-card:hover {
+  border-color: var(--orange, #C15F3C);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--orange, #C15F3C) 18%, transparent);
+}
+.cta-card:active { transform: translateY(0); }
+.cta-icon { font-size: 28px; margin-bottom: 8px; line-height: 1; }
+.cta-card-primary .cta-icon {
+  grid-row: 1 / 3;
+  font-size: 34px;
+  margin: 0;
+}
+.cta-title { font-weight: 600; font-size: 14px; margin-bottom: 5px; color: var(--color-text-foreground-primary, inherit); }
+.cta-card-primary .cta-title {
+  font-size: 17px;
+  margin-bottom: 3px;
+}
+.cta-desc {
+  font-size: 11.5px; color: var(--color-text-foreground-tertiary, var(--gray-mid));
+  line-height: 1.5;
+  min-width: 0; word-break: break-word;
+}
+@media (max-width: 1100px) {
+  .empty-cta-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+}
+@media (max-width: 760px) {
+  .empty-cta-grid { grid-template-columns: 1fr; max-width: 320px; }
+  .cta-card-primary {
+    grid-column: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 20px 14px 16px;
+  }
+  .cta-card-primary .cta-icon {
+    grid-row: auto;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .cta-card-primary .cta-title { font-size: 14px; }
+  .room-advanced-panel {
+    position: static;
+    margin-top: 6px;
+  }
+}
+
+.chat {
+  display: flex; flex-direction: column;
+  height: 100%;
+}
+.chat-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap; /* v0.46: 允许按钮组在窄屏换行，避免文字被压成纵向 */
+}
+.chat-header-text { min-width: 180px; }
+.chat-header-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+.chat-header-actions .btn-icon,
+.chat-header-actions .cxbtn-sm {
+  white-space: nowrap;   /* 按钮文字不换行 */
+  padding: 5px 8px;
+  font-size: var(--text-xs);
+}
+.btn-icon {
+  background: var(--btn-ter);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-cx-md);
+  padding: 6px 10px;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  color: var(--color-text-foreground-secondary);
+  transition: background 100ms, color 100ms, border-color 100ms, transform 80ms;
+}
+.btn-icon:hover {
+  background: color-mix(in oklab, var(--orange) 8%, transparent);
+  color: var(--orange);
+  border-color: color-mix(in oklab, var(--orange) 30%, transparent);
+}
+.btn-icon:active { transform: scale(0.97); }
+.btn-icon:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+/* Ctx meter（chat-header 内的上下文进度条） */
+.ctx-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+.ctx-bar {
+  width: 120px;
+  height: 6px;
+  background: var(--bg-bottom);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.ctx-fill {
+  height: 100%;
+  width: 0;
+  background: var(--gray-mid);
+  transition: width 200ms, background 200ms;
+  border-radius: 3px;
+}
+.ctx-fill.ctx-warn { background: #e8b94c; }
+.ctx-fill.ctx-danger { background: #b3322f; }
+.ctx-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--gray-mid);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+/* 上下文阈值警告 banner（chat-header 下方）*/
+.ctx-warn-banner {
+  padding: 10px 32px;
+  background: rgba(231, 184, 76, 0.12);
+  color: var(--state-warning-fg);
+  font-size: 13px;
+  border-bottom: 1px solid rgba(231, 184, 76, 0.3);
+  font-weight: 500;
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "run-schema-smoke-001",
+  "caseSet": {
+    "layer": "dev",
+    "caseRefs": [
+      "evals/neo/dev/case-memory-retrieval-smoke-001.json",
+      "evals/neo/dev/case-real-replay-smoke-001.json",
+      "evals/neo/dev/case-synthetic-guard-smoke-001.json",
+      "evals/neo/dev/case-incident-regression-smoke-001.json"
+    ],
+    "caseCount": 4
+  },
+  "candidate": {
+    "kind": "baseline",
+    "candidateRef": "git:0063d9df1ebc",
+    "diffRef": "",
+    "parentRef": ""
+  },
+  "environment": {
+    "repo": "/Users/hxx/Desktop/Neo 贾维斯",
+    "branch": "noe-main",
+    "head": "0063d9df1ebc",
+    "node": "v22.22.2",
+    "runtimeBaseUrl": "http://127.0.0.1:51835",
+    "runtimeTouched": false
+  },
+  "policy": {
+    "readOnly": true,
+    "privateHoldoutAccessibleToCandidate": false,
+    "secretValuesReturned": false,
+    "memoryV2Writes": false,
+    "liveRestart": false
+  },
+  "outputs": {
+    "rawRef": "output/noe-eval-runs/smoke-schema-v5/run-schema-smoke-001-1781890371240/raw.json",
+    "scoreRef": "output/noe-eval-runs/smoke-schema-v5/run-schema-smoke-001-1781890371240/score.json",
+    "traceRefs": []
+  }
+}

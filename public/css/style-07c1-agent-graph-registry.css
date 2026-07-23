@@ -1,0 +1,405 @@
+
+/* Agent 图谱 */
+.agent-registry-modal-body {
+  padding: var(--spacing-3) var(--spacing-4);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+.agent-registry-summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--color-text-foreground-secondary);
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-top);
+}
+.agent-registry-summary strong {
+  color: var(--color-text-foreground-primary);
+}
+.agent-registry-summary .is-warn {
+  color: var(--color-warn-alt);
+}
+.agent-registry-tabs {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 6px;
+}
+.agent-registry-tab {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-secondary);
+  padding: 6px 11px;
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.agent-registry-tab:hover {
+  background: var(--btn-ter-hover);
+}
+.agent-registry-tab.is-active {
+  border-color: color-mix(in oklab, var(--accent-blue) 45%, var(--color-border-light));
+  background: color-mix(in oklab, var(--accent-blue) 11%, var(--bg-top));
+  color: var(--color-text-foreground-primary);
+}
+.agent-registry-panel {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.agent-registry-section {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  padding: 10px;
+  flex: 1;
+}
+.agent-registry-section h3 {
+  margin: 0 0 10px;
+  font-size: var(--text-sm);
+  color: var(--color-text-foreground-primary);
+}
+.agent-registry-layout {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(340px, 1fr) minmax(260px, 0.8fr) minmax(340px, 1fr);
+  gap: var(--spacing-3);
+  flex: 1;
+}
+.agent-registry-layout-dispatch {
+  grid-template-columns: minmax(260px, 0.75fr) minmax(420px, 1.25fr);
+}
+.agent-registry-layout > section {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  padding: 10px;
+}
+.agent-registry-layout h3 {
+  margin: 0 0 10px;
+  font-size: var(--text-sm);
+  color: var(--color-text-foreground-primary);
+}
+.agent-profile-grid,
+.agent-rule-list,
+.agent-match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.agent-profile-card,
+.agent-rule-row,
+.agent-match-row {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-top);
+  padding: 9px;
+}
+.agent-profile-head,
+.agent-rule-row > div:first-child,
+.agent-preview-profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.agent-profile-head strong,
+.agent-preview-profile strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-foreground-primary);
+  font-size: var(--text-sm);
+}
+.agent-profile-head code,
+.agent-preview-profile code {
+  font-family: var(--mono);
+  color: var(--color-text-foreground-tertiary);
+  font-size: 10.5px;
+}
+.agent-profile-meta,
+.agent-governance-strip,
+.agent-skill-strip,
+.agent-rule-keywords,
+.agent-preview-skills {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+.agent-profile-meta span,
+.agent-governance-strip span,
+.agent-skill-strip span,
+.agent-rule-keywords span,
+.agent-preview-skills span {
+  border: 1px solid var(--color-border-light);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  color: var(--color-text-foreground-secondary);
+  background: var(--bg-surface);
+}
+.agent-governance-strip span {
+  border-radius: 6px;
+  color: var(--color-text-foreground-primary);
+}
+.agent-governance-strip .agent-policy-override {
+  color: var(--accent-blue);
+  border-color: color-mix(in oklab, var(--accent-blue) 35%, var(--color-border-light));
+}
+.agent-profile-card.is-policy-overridden {
+  border-color: color-mix(in oklab, var(--accent-blue) 30%, var(--color-border-light));
+}
+.agent-policy-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+.agent-policy-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  color: var(--color-text-foreground-tertiary);
+  font-size: 10.5px;
+}
+.agent-policy-editor select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 5px 6px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-primary);
+  font-size: 10.5px;
+}
+.agent-policy-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+.agent-profile-card p {
+  margin: 8px 0 0;
+  color: var(--color-text-foreground-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+.agent-skill-strip span.ok,
+.agent-preview-skills span.ok {
+  color: var(--color-success-alt);
+  border-color: color-mix(in oklab, var(--color-success-alt) 35%, var(--color-border-light));
+}
+.agent-preview-skills span em {
+  display: inline-block;
+  margin-left: 5px;
+  color: var(--color-text-foreground-tertiary);
+  font-style: normal;
+  font-family: var(--mono);
+}
+.agent-skill-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.agent-skill-diagnostic {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.35fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 8px 9px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-secondary);
+  font-size: var(--text-xs);
+}
+.agent-skill-diagnostic.warn {
+  border-color: color-mix(in oklab, var(--color-warn-alt) 35%, var(--color-border-light));
+}
+.agent-skill-diagnostic strong {
+  color: var(--color-text-foreground-primary);
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+.agent-skill-diagnostic span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.agent-skill-strip span.missing,
+.agent-preview-skills span.missing {
+  color: var(--color-warn-alt);
+  border-color: color-mix(in oklab, var(--color-warn-alt) 35%, var(--color-border-light));
+}
+.agent-model-skill-center {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agent-model-center-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.agent-model-center-head h3 {
+  margin-bottom: 3px;
+}
+.agent-model-center-head p {
+  margin: 0;
+  color: var(--color-text-foreground-secondary);
+  font-size: var(--text-xs);
+}
+.agent-model-kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.agent-model-kpis span,
+.agent-skill-matrix-summary span {
+  border: 1px solid var(--color-border-light);
+  border-radius: 7px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-secondary);
+  padding: 4px 8px;
+  font-size: var(--text-xs);
+}
+.agent-model-kpis strong {
+  color: var(--color-text-foreground-primary);
+}
+.agent-model-kpis .is-warn {
+  color: var(--color-warn-alt);
+  border-color: color-mix(in oklab, var(--color-warn-alt) 35%, var(--color-border-light));
+}
+.agent-model-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 10px;
+}
+.agent-model-panel {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  padding: 10px;
+}
+.agent-model-panel h4,
+.agent-provider-available h5,
+.agent-skill-gap-list h5 {
+  margin: 0 0 8px;
+  color: var(--color-text-foreground-primary);
+  font-size: var(--text-xs);
+}
+.agent-provider-list,
+.agent-model-recommendation-list,
+.agent-skill-matrix,
+.agent-skill-source-list,
+.agent-skill-gap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.agent-provider-row,
+.agent-model-recommendation-row,
+.agent-skill-source-row,
+.agent-skill-matrix-row {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-top);
+  padding: 9px;
+}
+.agent-provider-row.is-active {
+  border-color: color-mix(in oklab, var(--color-success-alt) 28%, var(--color-border-light));
+}
+.agent-model-recommendation-row.is-missing {
+  border-color: color-mix(in oklab, var(--color-warn-alt) 32%, var(--color-border-light));
+}
+.agent-provider-head,
+.agent-skill-matrix-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.agent-provider-head strong,
+.agent-skill-matrix-head strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-foreground-primary);
+  font-size: var(--text-sm);
+}
+.agent-provider-head code,
+.agent-skill-matrix-head code {
+  color: var(--color-text-foreground-tertiary);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+.agent-provider-meta,
+.agent-model-chip-list,
+.agent-skill-matrix-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.agent-provider-meta span,
+.agent-model-chip-list span {
+  border: 1px solid var(--color-border-light);
+  border-radius: 999px;
+  background: var(--bg-surface);
+  color: var(--color-text-foreground-secondary);
+  padding: 1px 7px;
+  font-size: 10.5px;
+}
+.agent-model-chip-list span.ok {
+  color: var(--color-success-alt);
+  border-color: color-mix(in oklab, var(--color-success-alt) 35%, var(--color-border-light));
+}
+.agent-model-chip-list span.missing {
+  color: var(--color-warn-alt);
+  border-color: color-mix(in oklab, var(--color-warn-alt) 35%, var(--color-border-light));
+}
+.agent-provider-available,
+.agent-skill-gap-list {
+  margin-top: 10px;
+}
+.agent-model-recommendation-row p {
+  margin: 7px 0 0;
+  color: var(--color-text-foreground-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
+.agent-skill-source-panel {
+  grid-column: 1 / -1;
+}
+.agent-skill-matrix-note {
+  margin-top: 7px;
+  color: var(--color-warn-alt);
+  font-size: var(--text-xs);
+}

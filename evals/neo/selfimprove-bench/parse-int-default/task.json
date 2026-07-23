@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "id": "parse-int-default",
+  "category": "boundary",
+  "title": "解析整数带兜底",
+  "summary": "边界：非法/空输入应回退 fallback，buggy 直接返回 NaN。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "parseIntOr",
+  "signature": "parseIntOr(value: string, fallback: number): number — 解析失败返回 fallback。",
+  "probes": [
+    {
+      "name": "ok",
+      "args": [
+        "42",
+        0
+      ],
+      "expect": 42
+    },
+    {
+      "name": "bad",
+      "args": [
+        "abc",
+        -1
+      ],
+      "expect": -1
+    },
+    {
+      "name": "empty",
+      "args": [
+        "",
+        7
+      ],
+      "expect": 7
+    },
+    {
+      "name": "leading",
+      "args": [
+        "10px",
+        0
+      ],
+      "expect": 10
+    }
+  ]
+}

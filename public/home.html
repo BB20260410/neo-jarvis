@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neo 贾维斯</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+  <link rel="stylesheet" href="/css/home-shell.css?v=home-20260723c" />
+</head>
+<body>
+  <div class="home-app" id="homeApp">
+    <header class="home-top">
+      <div class="home-brand">
+        <img src="/app-icon.png" alt="" width="32" height="32" />
+        <div>
+          <h1 id="appTitle">Neo 贾维斯</h1>
+          <p id="appSubtitle">说话或打字 · 本机优先 · 默认安全</p>
+        </div>
+      </div>
+      <div class="home-chips" id="statusChips" aria-live="polite">
+        <span class="chip">加载状态…</span>
+      </div>
+      <button type="button" class="chip chip-pending" id="pendingChip" hidden title="待确认高风险操作">待确认 0</button>
+    </header>
+
+    <div class="home-main">
+      <div class="home-panels home-panels-3">
+        <section class="panel panel-rail" aria-label="感知">
+          <h2>感知</h2>
+          <div id="awarenessList" class="rail-list">
+            <p class="empty-hint">加载运行状态…</p>
+          </div>
+          <p class="rail-note" id="safetyNote">进化默认 dry-run，不会默认真改你的代码。</p>
+        </section>
+        <section class="panel panel-chat" aria-label="对话">
+          <h2>对话</h2>
+          <div class="feed" id="chatFeed">
+            <div class="bubble sys">你好。直接打字发送。需要模型/权限时点「设置」。高级能力在设置里，主界面只保留最常用的。</div>
+          </div>
+        </section>
+        <section class="panel panel-memory" aria-label="记忆">
+          <div class="panel-head">
+            <h2>记忆</h2>
+            <button type="button" class="btn btn-sm" id="btnMemoryExport" title="导出记忆 JSON/Markdown">导出</button>
+          </div>
+          <div class="memory-list" id="memoryList">
+            <p class="empty-hint">正在加载记忆视图…</p>
+          </div>
+        </section>
+      </div>
+      <section class="panel panel-confirm" id="confirmPanel" hidden aria-label="待确认">
+        <h2>待确认 · 高风险</h2>
+        <div id="confirmCards" class="confirm-list"></div>
+        <div id="diffPreviewBox" class="diff-preview" hidden>
+          <h3>改文件 diff 预览</h3>
+          <pre id="diffPreviewPre" class="diff-pre"></pre>
+        </div>
+      </section>
+      <form class="home-composer" id="composerForm">
+        <input id="composerInput" type="text" autocomplete="off" placeholder="打字发送… 或说「打开设置」「记一下…」" aria-label="消息输入" />
+        <button type="button" class="btn" id="btnVoice" title="语音（本机就绪时可用）">语音</button>
+        <button type="submit" class="btn primary" id="btnSend">发送</button>
+      </form>
+    </div>
+
+    <footer class="home-bottom">
+      <span id="footerHint">主界面 · 设置里有高级功能</span>
+      <span>
+        <a href="#" id="btnOpenSettings">设置</a>
+        · <a href="/evolution.html">进化 dry-run</a>
+        · <a href="/cognitive.html">沉浸舱</a>
+        · <a href="/index.html">专家工作台</a>
+      </span>
+    </footer>
+  </div>
+
+  <div class="settings-backdrop" id="settingsBackdrop" aria-hidden="true"></div>
+  <aside class="settings-drawer" id="settingsDrawer" aria-label="设置">
+    <h2>设置</h2>
+    <p class="empty-hint" id="settingsIntro">日常只需要主界面。高级面板仍可从这里进入，功能不丢。</p>
+    <div class="settings-section">
+      <h3>安全（开源默认）</h3>
+      <p class="empty-hint" style="margin:0 0 8px">自进化 profile=safe 时真改默认关闭；需显式双开关才真改源码。详见仓库 SECURITY.md。</p>
+    </div>
+    <div class="settings-section" id="productSettingsSection">
+      <h3>模型（最少配置）</h3>
+      <p class="empty-hint" style="margin:0 0 8px">日常只改 Base URL 与模型 ID，不必手改 .env。密钥请走专家「完整模型/密钥」。</p>
+      <label class="settings-label" for="setModelBaseUrl">模型 Base URL</label>
+      <input class="settings-input" id="setModelBaseUrl" type="url" autocomplete="off" placeholder="https://… 或 http://127.0.0.1:1234/v1" />
+      <label class="settings-label" for="setModelId">模型 ID</label>
+      <input class="settings-input" id="setModelId" type="text" autocomplete="off" placeholder="例如 local-model / gpt-4o-mini" />
+      <label class="settings-check">
+        <input type="checkbox" id="setVoiceEnabled" checked />
+        语音开关（主界面）
+      </label>
+      <button type="button" class="btn primary" id="btnSaveProductSettings" style="width:100%;margin-top:10px">保存设置</button>
+      <p class="empty-hint" id="productSettingsMsg" style="margin:8px 0 0"></p>
+    </div>
+    <div class="settings-section">
+      <h3>常用</h3>
+      <div id="settingsCommon"></div>
+    </div>
+    <div class="settings-section">
+      <h3>高级（专家）</h3>
+      <div id="settingsExpert"></div>
+    </div>
+    <button type="button" class="btn" id="btnCloseSettings" style="width:100%;margin-top:16px">关闭</button>
+  </aside>
+
+  <script type="module" src="/src/web/home-shell-ui.js?v=home-20260723c"></script>
+</body>
+</html>

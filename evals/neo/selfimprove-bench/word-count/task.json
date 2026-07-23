@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "id": "word-count",
+  "category": "bug_fix",
+  "title": "分词忽略多余空格",
+  "summary": "正则错：buggy 按单空格 split 导致空串计入，应按 \\\\s+ 且去空。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "wordCount",
+  "signature": "wordCount(text: string): number — 统计词数，忽略首尾/连续空白。",
+  "probes": [
+    {
+      "name": "simple",
+      "args": [
+        "hello world"
+      ],
+      "expect": 2
+    },
+    {
+      "name": "extra-space",
+      "args": [
+        "a   b  c"
+      ],
+      "expect": 3
+    },
+    {
+      "name": "trim",
+      "args": [
+        "  lead trail  "
+      ],
+      "expect": 2
+    },
+    {
+      "name": "empty",
+      "args": [
+        ""
+      ],
+      "expect": 0
+    }
+  ]
+}

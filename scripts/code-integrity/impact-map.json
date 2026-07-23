@@ -1,0 +1,236 @@
+{
+  "schema": "neo.code-integrity.impact-map.v1",
+  "entries": [
+    {
+      "source": "scripts/code-integrity/activity-scan.mjs",
+      "invariants": [
+        { "id": "activity-clear-success", "polarity": "success", "test": "scripts/code-integrity/activity-scan.test.mjs" },
+        { "id": "activity-conflict-failure", "polarity": "failure", "test": "scripts/code-integrity/activity-scan.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/canary.mjs",
+      "invariants": [
+        { "id": "canary-ten-cases-success", "polarity": "success", "test": "scripts/code-integrity/required-artifacts.test.mjs" },
+        { "id": "canary-incomplete-failure", "polarity": "failure", "test": "scripts/code-integrity/required-artifacts.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/changed-gate.mjs",
+      "invariants": [
+        { "id": "changed-gate-worktree-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "changed-gate-missing-artifact-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:missing-artifact:3" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/checkpoint-create.mjs",
+      "invariants": [
+        { "id": "checkpoint-create-clean-success", "polarity": "success", "test": "scripts/code-integrity/checkpoint.test.mjs" },
+        { "id": "checkpoint-create-dirty-failure", "polarity": "failure", "test": "scripts/code-integrity/checkpoint.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/checkpoint-verify.mjs",
+      "invariants": [
+        { "id": "checkpoint-verify-current-success", "polarity": "success", "test": "scripts/code-integrity/checkpoint.test.mjs" },
+        { "id": "checkpoint-verify-tamper-failure", "polarity": "failure", "test": "scripts/code-integrity/checkpoint.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/diagnostic-ratchet.mjs",
+      "invariants": [
+        { "id": "diagnostic-move-success", "polarity": "success", "test": "scripts/code-integrity/diagnostics.test.mjs" },
+        { "id": "diagnostic-new-kind-failure", "polarity": "failure", "test": "scripts/code-integrity/diagnostics.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/gate-fixture-helper.mjs",
+      "invariants": [
+        { "id": "fixture-worktree-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "fixture-stale-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:worktree-current:stale:3" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/gate-integration-summary.mjs",
+      "invariants": [
+        { "id": "integration-summary-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:worktree-current:current:0" },
+        { "id": "integration-summary-tamper-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:log-tamper:stale:3" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/gate-readonly-probe.mjs",
+      "invariants": [
+        { "id": "guarded-gate-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "unguarded-gate-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "guard:unguarded-gate-refusal:0" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/artifacts.mjs",
+      "invariants": [
+        { "id": "artifacts-path-success", "polarity": "success", "test": "scripts/code-integrity/artifacts.test.mjs" },
+        { "id": "artifacts-symlink-failure", "polarity": "failure", "test": "scripts/code-integrity/artifacts.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/bundle-evidence.mjs",
+      "invariants": [
+        { "id": "bundle-evidence-chain-success", "polarity": "success", "test": "scripts/code-integrity/bundle.integration.test.mjs" },
+        { "id": "bundle-evidence-tamper-failure", "polarity": "failure", "test": "scripts/code-integrity/bundle.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/checkpoint.mjs",
+      "invariants": [
+        { "id": "checkpoint-library-success", "polarity": "success", "test": "scripts/code-integrity/checkpoint.test.mjs" },
+        { "id": "checkpoint-library-stale-failure", "polarity": "failure", "test": "scripts/code-integrity/checkpoint.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/diagnostics.mjs",
+      "invariants": [
+        { "id": "diagnostics-parse-success", "polarity": "success", "test": "scripts/code-integrity/diagnostics.test.mjs" },
+        { "id": "diagnostics-unknown-output-failure", "polarity": "failure", "test": "scripts/code-integrity/diagnostics.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/diagnostic-evidence.mjs",
+      "invariants": [
+        { "id": "diagnostic-evidence-bound-success", "polarity": "success", "test": "scripts/code-integrity/diagnostics.test.mjs" },
+        { "id": "diagnostic-evidence-tamper-failure", "polarity": "failure", "test": "scripts/code-integrity/diagnostics.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/gate.mjs",
+      "invariants": [
+        { "id": "gate-policy-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "gate-unmapped-source-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:no-test-map:3" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/guard-context.mjs",
+      "invariants": [
+        { "id": "guard-context-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "guard-context-direct-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "guard:unguarded-gate-refusal:0" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/impact-map.mjs",
+      "invariants": [
+        { "id": "impact-map-covered-success", "polarity": "success", "test": "scripts/code-integrity/impact-map.test.mjs" },
+        { "id": "impact-map-unmapped-failure", "polarity": "failure", "test": "scripts/code-integrity/impact-map.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/impact-map.json",
+      "invariants": [
+        { "id": "impact-map-data-success", "polarity": "success", "test": "scripts/code-integrity/impact-map.test.mjs" },
+        { "id": "impact-map-data-failure", "polarity": "failure", "test": "scripts/code-integrity/impact-map.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/integration-evidence.mjs",
+      "invariants": [
+        { "id": "integration-evidence-current-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:worktree-current:current:0" },
+        { "id": "integration-evidence-log-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:log-tamper:stale:3" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/mechanical.mjs",
+      "invariants": [
+        { "id": "mechanical-clean-success", "polarity": "success", "test": "scripts/code-integrity/mechanical.test.mjs" },
+        { "id": "mechanical-bypass-failure", "polarity": "failure", "test": "scripts/code-integrity/mechanical.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/policy.mjs",
+      "invariants": [
+        { "id": "policy-static-success", "polarity": "success", "test": "scripts/code-integrity/policy.test.mjs" },
+        { "id": "policy-protected-overlap-failure", "polarity": "failure", "test": "scripts/code-integrity/policy.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/lib/required-artifacts.mjs",
+      "invariants": [
+        { "id": "typed-artifact-success", "polarity": "success", "test": "scripts/code-integrity/required-artifacts.test.mjs" },
+        { "id": "typed-artifact-unknown-failure", "polarity": "failure", "test": "scripts/code-integrity/required-artifacts.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/mechanical-check.mjs",
+      "invariants": [
+        { "id": "mechanical-cli-success", "polarity": "success", "test": "scripts/code-integrity/mechanical.test.mjs" },
+        { "id": "mechanical-cli-failure", "polarity": "failure", "test": "scripts/code-integrity/mechanical.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/multimodel-preflight.mjs",
+      "invariants": [
+        { "id": "multimodel-preflight-ok-success", "polarity": "success", "test": "scripts/code-integrity/multimodel-preflight.test.mjs" },
+        { "id": "multimodel-preflight-missing-repo-failure", "polarity": "failure", "test": "scripts/code-integrity/multimodel-preflight.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/patch-bundle.mjs",
+      "invariants": [
+        { "id": "bundle-create-success", "polarity": "success", "test": "scripts/code-integrity/bundle.integration.test.mjs" },
+        { "id": "bundle-outside-slice-failure", "polarity": "failure", "test": "scripts/code-integrity/bundle.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/probe.mjs",
+      "invariants": [
+        { "id": "probe-allowed-success", "polarity": "success", "test": "scripts/code-integrity/policy.test.mjs" },
+        { "id": "probe-denied-failure", "polarity": "failure", "test": "scripts/code-integrity/policy.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/safe-run.mjs",
+      "invariants": [
+        { "id": "safe-run-gate-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "gate:worktree-current:0" },
+        { "id": "safe-run-guard-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "guard:unguarded-gate-refusal:0" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/snapshot-verify.mjs",
+      "invariants": [
+        { "id": "snapshot-verify-success", "polarity": "success", "test": "scripts/code-integrity/snapshot.integration.test.mjs" },
+        { "id": "snapshot-verify-stale-failure", "polarity": "failure", "test": "scripts/code-integrity/snapshot.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/snapshot.mjs",
+      "invariants": [
+        { "id": "snapshot-capture-success", "polarity": "success", "test": "scripts/code-integrity/snapshot.integration.test.mjs" },
+        { "id": "snapshot-drift-failure", "polarity": "failure", "test": "scripts/code-integrity/snapshot.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/typescript-diagnostic-capture.mjs",
+      "invariants": [
+        { "id": "typescript-capture-stable-success", "polarity": "success", "test": "scripts/code-integrity/diagnostics.test.mjs" },
+        { "id": "typescript-capture-tamper-failure", "polarity": "failure", "test": "scripts/code-integrity/diagnostics.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/verify-bundle-set.mjs",
+      "invariants": [
+        { "id": "bundle-set-order-success", "polarity": "success", "test": "scripts/code-integrity/bundle.integration.test.mjs" },
+        { "id": "bundle-set-order-failure", "polarity": "failure", "test": "scripts/code-integrity/bundle.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/verify-bundle.mjs",
+      "invariants": [
+        { "id": "bundle-preimage-success", "polarity": "success", "test": "scripts/code-integrity/bundle.integration.test.mjs" },
+        { "id": "bundle-preimage-failure", "polarity": "failure", "test": "scripts/code-integrity/bundle.integration.test.mjs" }
+      ]
+    },
+    {
+      "source": "scripts/code-integrity/verify-gate-receipt.mjs",
+      "invariants": [
+        { "id": "gate-receipt-current-success", "polarity": "success", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:worktree-current:current:0" },
+        { "id": "gate-receipt-stale-failure", "polarity": "failure", "test": "scripts/code-integrity/gate.integration.test.mjs", "scenarioId": "verify:worktree-current:stale:3" }
+      ]
+    }
+  ]
+}

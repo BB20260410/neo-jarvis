@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "id": "first-or-default",
+  "category": "boundary",
+  "title": "空数组取首元素",
+  "summary": "边界：空/非数组应回退 fallback，buggy 直接 arr[0] 得 undefined。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "firstOrDefault",
+  "signature": "firstOrDefault(arr: any[], fallback: any): any — 非数组/空返回 fallback，否则首元素。",
+  "probes": [
+    {
+      "name": "has",
+      "args": [
+        [
+          7,
+          8
+        ],
+        0
+      ],
+      "expect": 7
+    },
+    {
+      "name": "empty",
+      "args": [
+        [],
+        42
+      ],
+      "expect": 42
+    },
+    {
+      "name": "not-array",
+      "args": [
+        null,
+        "x"
+      ],
+      "expect": "x"
+    },
+    {
+      "name": "zero-elem",
+      "args": [
+        [
+          0
+        ],
+        99
+      ],
+      "expect": 0
+    }
+  ]
+}

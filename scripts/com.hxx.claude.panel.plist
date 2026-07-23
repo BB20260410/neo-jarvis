@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Noe 面板保活 LaunchAgent。
+  装：cp 本文件到 ~/Library/LaunchAgents/ 后 launchctl load（见 scripts/README-保活.md）。
+  KeepAlive=true 配合面板「崩溃即 exit」设计自动重启；RunAtLoad 开机自启；ThrottleInterval 防崩溃循环。
+  端口 51835，仅 127.0.0.1。
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.hxx.claude.panel</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/hxx/.nvm/versions/node/v22.22.2/bin/node</string>
+    <string>/Users/hxx/Desktop/00_项目/05_Claude可视化面板/server.js</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/hxx/Desktop/00_项目/05_Claude可视化面板</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/hxx/.nvm/versions/node/v22.22.2/bin:/Users/hxx/.npm-global/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>CLAUDE_BIN</key>
+    <string>/Users/hxx/.npm-global/bin/claude</string>
+    <key>PANEL_NO_OPEN</key>
+    <string>1</string>
+    <key>HOME</key>
+    <string>/Users/hxx</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+
+  <key>StandardOutPath</key>
+  <string>/Users/hxx/Backups/claude/panel.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/hxx/Backups/claude/panel.err.log</string>
+</dict>
+</plist>

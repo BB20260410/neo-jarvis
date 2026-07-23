@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "id": "avg",
+  "category": "boundary",
+  "title": "平均值空集保护",
+  "summary": "边界：空数组应返回 0 而非 NaN（0/0），buggy 未防。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "average",
+  "signature": "average(nums: number[]): number — 算术平均；空集返回 0。",
+  "probes": [
+    {
+      "name": "basic",
+      "args": [
+        [
+          2,
+          4,
+          6
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "name": "single",
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expect": 5
+    },
+    {
+      "name": "empty",
+      "args": [
+        []
+      ],
+      "expect": 0
+    },
+    {
+      "name": "neg",
+      "args": [
+        [
+          -2,
+          2
+        ]
+      ],
+      "expect": 0
+    }
+  ]
+}

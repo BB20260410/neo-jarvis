@@ -1,0 +1,33 @@
+import { describe, expect, it } from 'vitest';
+import { firstAvailableChatAdapter, parseForegroundChatRoutingEnv, resolveForegroundChatChain } from '../../src/room/ForegroundChatRouting.js';
+
+describe('ForegroundChatRouting', () => {
+  it('默认前台云端链云脑优先，末尾保留本地兜底（owner 2026-07-22 起链首 xai/Grok 4.5）', () => {
+    const policy = parseForegroundChatRoutingEnv({});
+    const chain = resolveForegroundChatChain({
+      decision: { adapterId: 'ollama', fallbacks: ['lmstudio'] },
+      profileChain: ['lmstudio'],
+      ...policy,
+    });
+    expect(policy.cloudOnly).toBe(true);
+    // 云脑优先：链首为 xai（Grok 4.5），其后 highspeed/minimax 等；正常秒回
+    expect(chain[0]).toBe('xai');
+    expect(chain).toContain('minimax');
+    expect(chain.indexOf('minimax')).toBeGreaterThan(chain.indexOf('xai'));
+    expect(chain).not.toContain('ollama'); // abliterated 已卸载，不进兜底
+    // 云脑全挂时本地 lmstudio 兜底让 Neo 不哑；但排在所有云脑之后，正常永远轮不到
+    expect(chain[chain.length - 1]).toBe('lmstudio');
+    expect(chain.indexOf('lmstudio')).toBeGreaterThan(chain.indexOf('litellm'));
+  });
+
+  it('选择第一个可用云端 adapter，不回落本地后台模型', () => {
+    const chain = resolveForegroundChatChain({
+      profileChain: ['ollama'],
+      cloudOnly: true,
+      cloudAdapterChain: ['minimax', 'claude'],
+      localAdapterIds: ['ollama', 'lmstudio'],
+    });
+    const picked = firstAvailableChatAdapter(chain, (id) => id === 'claude' || id === 'lmstudio');
+    expect(picked).toBe('claude');
+  });
+});

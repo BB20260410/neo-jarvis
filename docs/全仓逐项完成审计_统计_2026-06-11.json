@@ -1,0 +1,63 @@
+{
+  "totalPhysicalCodeMd": 5363,
+  "primaryProductPhysical": 1238,
+  "trackedCodeMd": 1272,
+  "trackedPrimaryCodeMd": 1220,
+  "deepReadEvidenced": 72,
+  "primaryPendingDeepRead": 1166,
+  "byTop": {
+    "(root)": 86,
+    "BaiLongma-audit": 159,
+    "_archive": 52,
+    "docs": 137,
+    "knowledge": 13,
+    "out-noe": 3914,
+    "public": 127,
+    "scripts": 66,
+    "src": 400,
+    "tests": 407,
+    "website": 1,
+    "worker": 1
+  },
+  "byDomain": {
+    "root": 86,
+    "external_or_generated": 4125,
+    "docs": 137,
+    "knowledge": 13,
+    "frontend": 127,
+    "scripts": 66,
+    "core:src-other": 94,
+    "core:agents": 22,
+    "core:capabilities": 7,
+    "core:cognition": 14,
+    "core:context": 15,
+    "core:loop": 15,
+    "core:memory": 19,
+    "core:permissions": 3,
+    "core:room": 50,
+    "core:runtime": 37,
+    "core:server": 98,
+    "core:storage": 2,
+    "core:vision": 6,
+    "core:voice": 18,
+    "tests": 407,
+    "website": 1,
+    "worker": 1
+  },
+  "byExt": {
+    ".mjs": 137,
+    ".md": 392,
+    ".html": 19,
+    ".jsx": 1,
+    ".js": 4121,
+    ".cjs": 113,
+    ".css": 42,
+    ".ts": 538
+  },
+  "byAuditStage": {
+    "indexed_pending_deep_read": 1166,
+    "deep_read_evidenced": 72,
+    "indexed_reference_or_generated": 4125
+  },
+  "output": "docs/全仓逐项完成审计_文件索引_2026-06-11.json"
+}

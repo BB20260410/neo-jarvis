@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "id": "clamp",
+  "category": "bug_fix",
+  "title": "clamp 边界比较写反",
+  "summary": "min/max 用反：buggy 把 Math.max/min 写颠倒，clamp 失效。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "clamp",
+  "signature": "clamp(value: number, min: number, max: number): number — 把 value 夹到 [min, max]。",
+  "probes": [
+    {
+      "name": "inside",
+      "args": [
+        5,
+        0,
+        10
+      ],
+      "expect": 5
+    },
+    {
+      "name": "below",
+      "args": [
+        -3,
+        0,
+        10
+      ],
+      "expect": 0
+    },
+    {
+      "name": "above",
+      "args": [
+        99,
+        0,
+        10
+      ],
+      "expect": 10
+    },
+    {
+      "name": "edge",
+      "args": [
+        10,
+        0,
+        10
+      ],
+      "expect": 10
+    }
+  ]
+}

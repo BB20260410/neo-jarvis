@@ -1,0 +1,322 @@
+/* ===== v0.48 Chat 房 1v1 对话 ===== */
+.chat-room {
+  display: flex; flex-direction: column;
+  height: calc(100vh - 280px); min-height: 380px;
+  border: 1px solid var(--color-border-light); border-radius: 12px;
+  background: var(--bg-surface); overflow: hidden;
+}
+.chat-room-messages {
+  flex: 1; overflow-y: auto; padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.chat-room-msg {
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.chat-room-msg.user { flex-direction: row-reverse; }
+.chat-room-msg-avatar {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 14px;
+  background: var(--bg-top); border: 1px solid var(--color-border-light);
+}
+.chat-room-msg.user .chat-room-msg-avatar { background: color-mix(in oklab, var(--color-accent-primary) 18%, transparent); }
+.chat-room-msg-bubble {
+  max-width: 72%; padding: 10px 14px; border-radius: 12px;
+  background: var(--bg-top); border: 1px solid var(--color-border-light);
+  font-size: var(--text-sm); line-height: 1.55;
+  /* v0.56 U5: 长 URL / 长 token 不撑出 bubble */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+.chat-room-msg-bubble pre, .chat-room-msg-bubble code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.chat-room-msg.user .chat-room-msg-bubble {
+  background: color-mix(in oklab, var(--color-accent-primary) 10%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--color-accent-primary) 30%, transparent);
+}
+.chat-room-msg.error .chat-room-msg-bubble {
+  border-color: var(--color-danger); background: color-mix(in oklab, var(--color-danger) 8%, var(--bg-top));
+}
+.chat-room-msg-thinking .chat-room-msg-bubble {
+  font-style: italic; color: var(--color-text-foreground-tertiary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.chat-room-msg-meta {
+  font-size: 11px; color: var(--color-text-foreground-tertiary);
+  margin-top: 4px;
+}
+.chat-room-input-wrap {
+  flex-shrink: 0; border-top: 1px solid var(--color-border-light);
+  padding: 12px 14px; display: flex; gap: 10px; align-items: flex-end;
+  background: var(--bg-surface);
+}
+.chat-media-composer {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;
+  border: 1px dashed transparent; border-radius: 12px; padding: 4px;
+  transition: border-color .15s ease, background .15s ease;
+}
+.chat-media-composer.dragover {
+  border-color: var(--color-accent-primary);
+  background: color-mix(in oklab, var(--color-accent-primary) 8%, transparent);
+}
+.chat-media-tray {
+  display: none; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.chat-media-tray.has-items { display: grid; }
+.chat-media-draft-card,
+.chat-attachment-card {
+  border: 1px solid var(--color-border-light); border-radius: 10px;
+  background: color-mix(in oklab, var(--bg-top) 82%, transparent);
+  overflow: hidden; min-width: 0;
+}
+.chat-media-draft-preview,
+.chat-attachment-preview {
+  height: 118px; display: grid; place-items: center;
+  background: color-mix(in oklab, var(--bg-main) 76%, transparent);
+  color: var(--color-text-foreground-tertiary); font-size: 12px;
+}
+.chat-media-draft-preview img,
+.chat-media-draft-preview video,
+.chat-attachment-preview img,
+.chat-attachment-preview video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.chat-media-draft-meta,
+.chat-attachment-meta {
+  display: flex; align-items: center; gap: 6px; padding: 7px 8px;
+  font-size: 11px; color: var(--color-text-foreground-secondary);
+}
+.chat-media-draft-name,
+.chat-attachment-name {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.chat-media-remove {
+  border: 0; background: transparent; color: var(--color-text-foreground-tertiary);
+  cursor: pointer; font: inherit; line-height: 1; padding: 2px 4px;
+}
+.chat-media-hint {
+  font-size: 11px; color: var(--color-text-foreground-tertiary); padding: 0 2px 2px;
+}
+.chat-room-input-wrap textarea {
+  width: 100%; box-sizing: border-box;
+  flex: 1; resize: vertical; min-height: 50px; max-height: 200px;
+  background: var(--bg-top); border: 1px solid var(--color-border-light);
+  border-radius: 8px; padding: 8px 10px; font: inherit; color: inherit;
+}
+.chat-room-input-wrap textarea:focus { outline: none; border-color: var(--color-accent-primary); }
+.chat-room-actions { display: flex; flex-direction: column; gap: 6px; }
+.chat-room-empty {
+  margin: auto; text-align: center; color: var(--color-text-foreground-tertiary);
+  font-size: var(--text-sm); padding: 24px;
+}
+.chat-attachments {
+  margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+.chat-attachment-card { max-width: 280px; }
+.chat-attachment-preview { height: 150px; }
+.chat-attachment-kind {
+  font-family: var(--mono); font-size: 10px; color: var(--color-text-foreground-tertiary);
+  text-transform: uppercase;
+}
+
+/* ===== Squad Kanban 看板 ===== */
+.squad-board { display: flex; flex-direction: column; gap: 10px; }
+.squad-board-head { font-weight: var(--font-weight-semibold); font-size: var(--text-sm); color: var(--color-text-foreground-secondary); }
+.squad-columns {
+  display: grid; gap: 8px;
+  /* v0.46: minmax 改小 + 允许换行（窄屏一行挤不下 5 列时换两行）*/
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.squad-col { min-width: 140px; }
+.squad-col {
+  border: 1px solid var(--color-border-light); border-radius: 10px;
+  background: var(--bg-surface);
+  display: flex; flex-direction: column; min-height: 200px;
+}
+.squad-col-head {
+  padding: 8px 10px; font-weight: var(--font-weight-medium); font-size: var(--text-xs);
+  border-bottom: 1px solid var(--color-border-light);
+  background: color-mix(in oklab, var(--bg-top) 40%, transparent);
+}
+.squad-col-cards { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 600px; }
+.squad-task-card {
+  background: var(--bg-top); border: 1px solid var(--color-border-light); border-radius: 8px;
+  padding: 10px; cursor: pointer; transition: border-color 0.15s, transform 0.15s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.squad-task-card:hover { border-color: var(--color-accent-primary); transform: translateY(-1px); }
+.squad-task-id { font-family: var(--mono); font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.squad-task-title { font-weight: var(--font-weight-medium); font-size: var(--text-sm); line-height: 1.35; min-width: 0; word-break: break-word; }
+.squad-task-meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: var(--color-text-foreground-tertiary); }
+.squad-task-meta .iter { font-family: var(--mono); }
+.squad-task-card.in_progress { border-color: var(--color-warn); }
+.squad-task-card.in_review  { border-color: var(--c-blue); }
+.squad-task-card.done       { border-color: var(--color-success); background: color-mix(in oklab, var(--color-success) 6%, var(--bg-top)); }
+.squad-task-card.escalated  { border-color: var(--color-danger); background: color-mix(in oklab, var(--color-danger) 6%, var(--bg-top)); }
+/* v0.52 看板卡片实时状态 badge */
+.squad-task-live {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 6px; font-size: 11px; font-family: var(--mono);
+  background: color-mix(in oklab, var(--color-warn) 14%, transparent);
+  color: #b45309; border: 1px solid color-mix(in oklab, var(--color-warn) 40%, transparent);
+  animation: pulse-amber 1.5s ease-in-out infinite;
+  width: fit-content;
+}
+.squad-task-card.in_review .squad-task-live {
+  background: color-mix(in oklab, var(--c-blue) 14%, transparent);
+  color: #1d4ed8; border-color: color-mix(in oklab, var(--c-blue) 40%, transparent);
+  animation-name: pulse-blue;
+}
+.squad-task-live.error { background: color-mix(in oklab, var(--color-danger) 12%, transparent); color: var(--color-red-deep); border-color: color-mix(in oklab, var(--color-danger) 40%, transparent); animation: none; }
+.squad-task-live.ok { background: color-mix(in oklab, var(--color-success) 12%, transparent); color: #15803d; border-color: color-mix(in oklab, var(--color-success) 40%, transparent); animation: none; }
+@keyframes pulse-amber { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes pulse-blue  { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+/* v0.52 辩论房 placeholder 也用 pulse-amber */
+.room-turn-card.speaking { border-style: dashed; }
+.room-turn-card.speaking.stalled { border-color: var(--color-danger) !important; background: color-mix(in oklab, var(--color-danger) 4%, transparent); }
+.room-turn-card.speaking.stalled .room-turn-spinner {
+  background: color-mix(in oklab, var(--color-danger) 14%, transparent);
+  color: var(--color-red-deep); border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+  animation: none;
+}
+.room-turn-spinner {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 6px; font-size: 11px; font-family: var(--mono);
+  background: color-mix(in oklab, var(--color-warn) 14%, transparent);
+  color: #b45309; border: 1px solid color-mix(in oklab, var(--color-warn) 40%, transparent);
+  animation: pulse-amber 1.5s ease-in-out infinite;
+}
+/* v0.52 Sprint1-D 局部重试按钮（仅 error 卡显示）*/
+.room-turn-retry {
+  margin-left: auto;
+  background: color-mix(in oklab, var(--color-danger) 12%, transparent);
+  color: var(--color-red-deep); border: 1px solid color-mix(in oklab, var(--color-danger) 40%, transparent);
+  border-radius: 6px; padding: 2px 8px; font-size: 11px; cursor: pointer;
+  font: inherit; font-size: 11px;
+}
+.room-turn-retry:hover { background: color-mix(in oklab, var(--color-danger) 22%, transparent); }
+/* v0.52 Sprint1-F：finalConsensus 转发按钮 */
+.room-consensus-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 14px; border-top: 1px solid var(--color-border-light); }
+
+/* 任务详情抽屉 */
+.squad-task-detail {
+  position: fixed; top: 0; right: 0; height: 100vh; width: min(440px, 50vw);
+  background: var(--bg-surface); border-left: 1px solid var(--color-border-light);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+  padding: 0 0 20px 0;
+  overflow-y: auto; z-index: 1000;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.squad-task-detail.hidden { display: none; }
+/* v0.56 fix2: head sticky 跟随滚动 */
+.squad-task-detail-head {
+  position: sticky; top: 0; z-index: 5;
+  background: var(--bg-surface);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex; align-items: flex-start; gap: 8px;
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+.squad-task-detail h3 {
+  margin: 0; font-size: var(--text-lg);
+  flex: 1 1 0; min-width: 0;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.squad-task-detail .close-btn {
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 22px; color: var(--color-text-foreground-tertiary);
+  flex-shrink: 0; line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.squad-task-detail .close-btn:hover { background: var(--bg-top); color: var(--text-pri); }
+/* drawer 内除 head 外用统一 padding */
+.squad-task-detail > *:not(.squad-task-detail-head) { padding-left: 20px; padding-right: 20px; }
+.squad-injections { background: color-mix(in oklab, var(--color-purple-alt) 8%, var(--bg-top)); border-left: 3px solid var(--color-purple-alt); padding: 8px 10px; border-radius: 0 6px 6px 0; font-size: var(--text-sm); }
+.squad-injections ul { margin: 4px 0 0 18px; }
+.squad-inject-wrap { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: color-mix(in oklab, var(--bg-top) 70%, transparent); border-radius: 8px; border: 1px dashed var(--color-border-light); }
+.squad-inject-label { font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.squad-inject-wrap textarea { resize: vertical; min-height: 50px; background: var(--bg-main); border: 1px solid var(--color-border-light); border-radius: 6px; padding: 6px 8px; font: inherit; color: inherit; }
+.squad-inject-wrap textarea:focus { outline: none; border-color: var(--color-accent-primary); }
+.squad-attempt, .squad-review {
+  border-left: 3px solid var(--color-border-light); padding: 8px 10px;
+  background: var(--bg-top); border-radius: 0 6px 6px 0;
+  font-size: var(--text-sm);
+}
+.squad-attempt { border-left-color: var(--color-warn); }
+.squad-review.pass { border-left-color: var(--color-success); }
+.squad-review.reject { border-left-color: var(--color-danger); }
+.squad-attempt-head, .squad-review-head { font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); margin-bottom: 4px; }
+
+.room-consensus {
+  border: 2px solid var(--color-accent-primary); border-radius: 14px; padding: 18px;
+  background: color-mix(in oklab, var(--color-accent-primary) 6%, var(--bg-surface));
+  display: flex; flex-direction: column; gap: 12px;
+}
+.room-consensus-head { font-weight: var(--font-weight-semibold); font-size: var(--text-base); color: var(--color-accent-primary); }
+/* v0.47 link button (取代 href=# 死链接) */
+.link-btn {
+  background: transparent; border: 0; padding: 0;
+  color: var(--orange); cursor: pointer; font: inherit; text-decoration: underline;
+}
+.link-btn:hover { opacity: 0.8; }
+
+/* v0.47 doc modal */
+.doc-modal {
+  position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center;
+}
+.doc-modal-content {
+  background: var(--bg-surface); border-radius: 12px;
+  width: min(780px, 92vw); max-height: 86vh; overflow-y: auto;
+  padding: 24px 28px; position: relative; box-shadow: 0 16px 48px rgba(0,0,0,0.24);
+}
+/* v0.56 fix2：doc modal X 改 sticky 跟随滚动（之前 absolute 滚动后看不见） */
+.doc-modal-close {
+  position: sticky; top: 0; float: right;
+  background: var(--bg-surface); border: 1px solid var(--color-border-light);
+  cursor: pointer; font-size: 16px;
+  color: var(--color-text-foreground-tertiary);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: inline-grid; place-items: center;
+  z-index: 5;
+  margin: -8px -12px 0 0;
+}
+.doc-modal-close:hover { color: var(--text-pri); background: var(--bg-top); }
+.doc-modal-body { font-size: var(--text-sm); line-height: 1.65; }
+.doc-modal-body h1, .doc-modal-body h2, .doc-modal-body h3 { margin: 16px 0 8px; }
+.doc-modal-body code { background: var(--bg-top); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.92em; }
+.doc-modal-body pre { background: var(--bg-top); padding: 12px; border-radius: 8px; overflow-x: auto; }
+
+/* v0.47 hook 事件流 */
+.hook-events-list { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
+.hook-event-item {
+  display: flex; gap: 8px; align-items: center;
+  padding: 4px 8px; border-radius: 6px;
+  background: var(--bg-top); border-left: 3px solid var(--color-border-light);
+  font-size: var(--text-xs);
+}
+.hook-event-name { font-weight: var(--font-weight-medium); font-family: var(--mono); color: var(--color-accent-secondary); }
+.hook-event-tool { color: var(--color-text-foreground-tertiary); }
+.hook-event-time { margin-left: auto; color: var(--color-text-foreground-tertiary); font-family: var(--mono); }
+.hook-event-PreToolUse  { border-left-color: var(--color-warn); }
+.hook-event-PostToolUse { border-left-color: var(--color-success); }
+.hook-event-SessionStart, .hook-event-SessionEnd { border-left-color: var(--c-blue); }
+.hook-event-Stop { border-left-color: var(--color-gray-500); }
+.hook-event-Notification { border-left-color: var(--color-danger); }
+.hook-event-SubagentStart, .hook-event-SubagentStop, .hook-event-SubagentResult { border-left-color: var(--color-purple-alt); }
+
+.final-degraded-badge {
+  background: color-mix(in oklab, var(--color-danger) 12%, transparent);
+  color: var(--color-red-deep); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;
+  font-size: var(--text-sm); border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
+}
+.room-consensus-body { font-size: var(--text-sm); line-height: 1.6; }
+.room-consensus-body h1, .room-consensus-body h2, .room-consensus-body h3 { margin-top: 12px; margin-bottom: 6px; }

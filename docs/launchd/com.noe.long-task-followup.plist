@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Long-task follow-up one-shot runner.
+       This file is a template only. Codex must not load it automatically.
+       It lets owner opt into durable periodic checks without keeping a chat
+       window alive for days. The command exits after each pass; launchd starts
+       it again on StartInterval. -->
+  <key>Label</key>
+  <string>com.noe.long-task-followup</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd "$HOME/Desktop/Neo 贾维斯" &amp;&amp; exec npm run noe:long-task-followup</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- 15 minutes: frequent enough to catch due observation windows, but still
+       avoids a busy loop. The script itself remains gate-aware and will not
+       bypass expectation/soak/Hermes observation requirements. -->
+  <key>StartInterval</key>
+  <integer>900</integer>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/noe-long-task-followup.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/noe-long-task-followup.launchd.err.log</string>
+</dict>
+</plist>

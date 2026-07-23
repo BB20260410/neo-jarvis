@@ -1,0 +1,216 @@
+
+/* ===== v0.7 Codex 风格按钮系统（.cxbtn 前缀避开旧 .btn-primary 冲突）===== */
+.cxbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius-cx-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 120ms, color 120ms, border-color 120ms, transform 80ms;
+  user-select: none;
+  white-space: nowrap;
+}
+.cxbtn:active:not(:disabled) { transform: scale(0.98); }
+.cxbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.cxbtn:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+.cxbtn-primary {
+  background: var(--btn-pri);
+  color: var(--btn-pri-text);
+}
+.cxbtn-primary:hover:not(:disabled)  { background: var(--btn-pri-hover); }
+.cxbtn-primary:active:not(:disabled) { background: var(--btn-pri-active); }
+
+.cxbtn-secondary {
+  background: var(--btn-sec);
+  color: var(--btn-sec-text);
+  border-color: var(--color-border-light);
+}
+.cxbtn-secondary:hover:not(:disabled)  { background: var(--btn-sec-hover); border-color: var(--color-border-heavy); }
+.cxbtn-secondary:active:not(:disabled) { background: var(--btn-sec-active); }
+
+.cxbtn-tertiary {
+  background: var(--btn-ter);
+  color: var(--btn-ter-text);
+}
+.cxbtn-tertiary:hover:not(:disabled)  { background: var(--btn-ter-hover); color: var(--color-text-foreground); }
+.cxbtn-tertiary:active:not(:disabled) { background: var(--btn-ter-active); }
+
+.cxbtn-danger {
+  background: var(--btn-danger);
+  color: var(--btn-danger-text);
+}
+.cxbtn-danger:hover:not(:disabled)  { background: var(--btn-danger-hover); }
+.cxbtn-danger:active:not(:disabled) { background: var(--btn-danger-active); }
+
+.cxbtn-sm   { height: 24px; padding: 0 10px; font-size: var(--text-xs); }
+.cxbtn-lg   { height: 40px; padding: 0 18px; font-size: var(--text-base); }
+.cxbtn-icon { width: 32px;  padding: 0; }
+.cxbtn-icon.cxbtn-sm { width: 24px; }
+.cxbtn-loading { pointer-events: none; opacity: 0.85; }
+.cxbtn-loading::after {
+  content: '';
+  width: 12px; height: 12px;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cxbtn-spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes cxbtn-spin { to { transform: rotate(360deg); } }
+
+/* ===== v0.29 状态时序 timeline ===== */
+.state-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.state-tx {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  background: color-mix(in oklab, var(--color-text-foreground) 3%, transparent);
+  border-left: 2px solid var(--color-border-light);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+.state-time {
+  color: var(--color-text-foreground-tertiary);
+  flex-shrink: 0;
+}
+.state-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-2xs);
+  font-size: 9.5px;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+/* S22 UI3: 改用 --state-* token，dark mode 自动响应 */
+.state-pill.state-idle      { background: var(--state-success-bg); color: var(--state-success-fg); }
+.state-pill.state-thinking  { background: var(--state-warning-bg); color: var(--state-warning-fg); }
+.state-pill.state-running   { background: rgba(193,95,60,0.18);    color: var(--orange); }
+.state-pill.state-completed { background: var(--state-success-bg); color: var(--state-success-fg); }
+.state-pill.state-error     { background: var(--state-danger-bg);  color: var(--state-danger-fg); }
+.state-arrow { color: var(--color-text-foreground-tertiary); }
+.state-reason {
+  flex: 1;
+  color: var(--color-text-foreground-secondary);
+  opacity: 0.85;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font);
+  font-size: 10px;
+}
+
+/* ===== v0.28 cost mini 折线图 sparkline ===== */
+.cost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.cost-spark {
+  width: 60px;
+  height: 14px;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.cost-spark path {
+  fill: color-mix(in oklab, var(--orange) 22%, transparent);
+  stroke: var(--orange);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+.cost-chip.cost-warn .cost-spark path {
+  fill: color-mix(in oklab, var(--accent-red) 22%, transparent);
+  stroke: var(--accent-red);
+}
+
+/* ===== v0.27 安全 tab（DangerDetector + LoopGuard 历史）===== */
+.safety-body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-foreground);
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+.safety-sec-h {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: var(--font-weight-semibold);
+  margin: 14px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+.safety-list {
+  display: flex; flex-direction: column;
+  gap: 6px;
+}
+.safety-item {
+  border-left: 3px solid var(--color-border-heavy);
+  background: color-mix(in oklab, var(--color-text-foreground) 4%, transparent);
+  padding: 7px 9px;
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+.safety-critical { border-left-color: var(--accent-red); background: color-mix(in oklab, var(--accent-red) 10%, transparent); }
+.safety-high     { border-left-color: var(--accent-amber); background: color-mix(in oklab, var(--accent-amber) 10%, transparent); }
+.safety-low      { border-left-color: var(--blue-300); background: color-mix(in oklab, var(--blue-300) 8%, transparent); }
+.safety-loop     { border-left-color: var(--color-purple); background: color-mix(in oklab, var(--color-purple) 10%, transparent); }
+.safety-row1 {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  margin-bottom: 4px;
+}
+.safety-sev {
+  padding: 1px 6px;
+  border-radius: var(--radius-2xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+/* S22 UI3: 改用 --state-* token；下面 html.dark .safety-sev.sev-* 现可删（token 已含 dark）但保留兼容 */
+.safety-sev.sev-critical { background: var(--state-danger-bg); color: var(--state-danger-fg); }
+.safety-sev.sev-high     { background: var(--state-warning-bg); color: var(--state-warning-fg); }
+.safety-sev.sev-low      { background: var(--state-info-bg); color: var(--state-info-fg); }
+.safety-tag {
+  font-size: 10px;
+  color: var(--color-text-foreground-tertiary);
+}
+.safety-time {
+  margin-left: auto;
+  color: var(--color-text-foreground-tertiary);
+  opacity: 0.85;
+}
+.safety-cmd {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--color-text-foreground-secondary);
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+.safety-cmd code {
+  background: color-mix(in oklab, var(--color-text-foreground) 6%, transparent);
+  padding: 1px 4px;
+  border-radius: var(--radius-2xs);
+}
+.safety-hits {
+  font-size: 11px;
+  color: var(--color-text-foreground-secondary);
+  margin-top: 2px;
+}
+.safety-hits div { margin: 1px 0; }

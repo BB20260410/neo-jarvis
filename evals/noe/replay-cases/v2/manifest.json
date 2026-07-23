@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "noe_replay_bundle_manifest",
+  "id": "noe-replay-cases-v2-20260620",
+  "generatedAt": "2026-06-19T23:50:53.793Z",
+  "repo": "/Users/hxx/Desktop/Neo 贾维斯",
+  "branch": "noe-main",
+  "head": "0063d9df1ebc",
+  "node": "v26.0.0",
+  "source": {
+    "runRef": "evals/neo/dev/run-replay-collection-001.json",
+    "runSha256": "7b37cd3244a97baf4c2014527c28341852b29f475117c0ea6114472ecbb3e75f",
+    "scoreRef": "output/noe-eval-runs/replay-collection-v5/run-replay-collection-001-1781890371430/score.json",
+    "scoreSha256": "25e15bac616e8fe3aacda38223dc311feca32731eccd2fa747b5c356cf05a8a7",
+    "rawRef": "output/noe-eval-runs/replay-collection-v5/run-replay-collection-001-1781890371430/raw.json",
+    "rawSha256": "5a3918bc6a88d0e91c5c4a48efcac0dc57bf80ae94b691efffa8736111cb0c44",
+    "legacyScoreRef": "evals/neo/dev/score-replay-collection-001.json",
+    "legacyScoreStatus": "superseded_by_output_score_ref",
+    "baselineFreezeRef": "output/noe-evidence-flywheel-v2/baseline-freeze.json",
+    "baselineFreezeSha256": "09873d2f7440bb96a457a619b966ba4485c940d5799fdf2eccef9c3df6ce961b"
+  },
+  "bundle": {
+    "jsonlRef": "evals/noe/replay-cases/v2/replay-cases.jsonl",
+    "jsonlSha256": "8352f698379000262b1a19c53d9da57ad00145a26a5e8aa47ed67457bb7a8c15",
+    "caseRefs": [
+      "evals/neo/dev/case-real-replay-001.json",
+      "evals/neo/dev/case-real-replay-002.json",
+      "evals/neo/dev/case-real-replay-003.json",
+      "evals/neo/dev/case-real-replay-004.json",
+      "evals/neo/dev/case-real-replay-005.json",
+      "evals/neo/dev/case-real-replay-006.json",
+      "evals/neo/dev/case-real-replay-007.json",
+      "evals/neo/dev/case-real-replay-008.json",
+      "evals/neo/dev/case-real-replay-009.json",
+      "evals/neo/dev/case-real-replay-010.json",
+      "evals/neo/dev/case-real-replay-011.json",
+      "evals/neo/dev/case-real-replay-012.json",
+      "evals/neo/dev/case-real-replay-013.json",
+      "evals/neo/dev/case-real-replay-014.json",
+      "evals/neo/dev/case-real-replay-015.json",
+      "evals/neo/dev/case-real-replay-016.json",
+      "evals/neo/dev/case-real-replay-017.json",
+      "evals/neo/dev/case-real-replay-018.json",
+      "evals/neo/dev/case-real-replay-019.json",
+      "evals/neo/dev/case-real-replay-020.json",
+      "evals/neo/dev/case-real-replay-021.json",
+      "evals/neo/dev/case-real-replay-022.json",
+      "evals/neo/dev/case-real-replay-023.json",
+      "evals/neo/dev/case-real-replay-024.json",
+      "evals/neo/dev/case-real-replay-025.json",
+      "evals/neo/dev/case-real-replay-026.json",
+      "evals/neo/dev/case-real-replay-027.json",
+      "evals/neo/dev/case-real-replay-028.json",
+      "evals/neo/dev/case-real-replay-029.json",
+      "evals/neo/dev/case-real-replay-030.json",
+      "evals/neo/dev/case-real-replay-031.json",
+      "evals/neo/dev/case-real-replay-032.json",
+      "evals/neo/dev/case-real-replay-033.json",
+      "evals/neo/dev/case-real-replay-034.json",
+      "evals/neo/dev/case-real-replay-035.json",
+      "evals/neo/dev/case-real-replay-036.json",
+      "evals/neo/dev/case-real-replay-037.json",
+      "evals/neo/dev/case-real-replay-038.json",
+      "evals/neo/dev/case-real-replay-039.json",
+      "evals/neo/dev/case-real-replay-040.json"
+    ],
+    "caseCount": 40,
+    "minimumRequiredCases": 30,
+    "exceedsMinimum": true,
+    "layer": "dev",
+    "sourceKinds": [
+      "real_replay"
+    ],
+    "routeTypes": [
+      "maintenance",
+      "mission"
+    ],
+    "categoryCounts": {
+      "real_replay:maintenance": 7,
+      "real_replay:mission": 33
+    },
+    "statusCounts": {
+      "failed": 7,
+      "passed": 33
+    },
+    "failedCaseIds": [
+      "case-real-replay-001",
+      "case-real-replay-002",
+      "case-real-replay-003",
+      "case-real-replay-004",
+      "case-real-replay-005",
+      "case-real-replay-006",
+      "case-real-replay-007"
+    ]
+  },
+  "policy": {
+    "runtimeTouched": false,
+    "liveSocialPublishPerformed": false,
+    "live51735Touched": false,
+    "liveRestartPerformed": false,
+    "rawSecretRead": false,
+    "rawPrivateHoldoutRead": false,
+    "memoryV2Write": false,
+    "privateHoldoutJsonEnumerated": false,
+    "candidateCanAccessPrivateHoldout": false
+  },
+  "caveats": [
+    "baseline_scorer_not_all_passed:33_passed_7_failed_0_blocked"
+  ]
+}

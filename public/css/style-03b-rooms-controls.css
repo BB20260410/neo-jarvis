@@ -1,0 +1,253 @@
+/* S17-extra：topic textarea 工具栏（📎 附件 + 字数计数 + 附件 chip 列表）*/
+.room-topic-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-bottom: 6px;
+  min-width: 0;
+}
+.room-topic-attach-list {
+  display: flex; gap: 6px; flex-wrap: wrap; min-width: 0;
+}
+.attach-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; font-size: 11.5px;
+  background: var(--bg-top, #f5f3ee);
+  border: 1px solid var(--color-border-light, #ddd);
+  border-radius: 12px;
+  min-width: 0; max-width: 240px;
+}
+.attach-chip-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--mono);
+  flex: 1 1 0; min-width: 0;
+}
+.attach-chip-rm {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--gray-mid); padding: 0 2px; font-size: 14px; line-height: 1;
+}
+.attach-chip-rm:hover { color: var(--color-danger-alt); }
+.room-topic-input.dragover {
+  border-color: var(--orange, #C15F3C) !important;
+  background: color-mix(in oklab, var(--orange, #C15F3C) 6%, transparent);
+}
+#topicCharCount.warn { color: #d97706; font-weight: 600; }
+#topicCharCount.danger { color: var(--color-danger-alt); font-weight: 700; }
+
+/* B-004 v0.9: 选中文字浮层（学 Cherry Studio 划词助手） */
+.selection-popover {
+  position: fixed;
+  z-index: 10500;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--color-border-heavy);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  padding: 4px;
+  display: flex;
+  gap: 2px;
+  font-size: 12px;
+  animation: selection-fade-in 120ms;
+}
+.selection-popover button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--color-text-foreground);
+  font: inherit;
+  white-space: nowrap;
+}
+.selection-popover button:hover {
+  background: var(--bg-hover, color-mix(in oklab, var(--orange) 12%, transparent));
+}
+@keyframes selection-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* v0.56 U6：textarea 全屏展开 */
+.room-topic-input.is-expanded {
+  position: fixed; inset: 5vh 5vw; z-index: 200;
+  max-height: none; height: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+/* v0.56 U6 修复：展开后浮一个半透明遮罩 + 收起按钮浮在 textarea 右上角（原位置被 textarea 全屏盖住找不到了）*/
+body.has-topic-expanded::before {
+  content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 199; pointer-events: none;
+}
+body.has-topic-expanded #btnTopicExpand {
+  position: fixed;
+  top: calc(5vh + 10px);
+  right: calc(5vw + 14px);
+  z-index: 201;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* v0.56 U7：单 turn-card 全屏展开（debate 4 列卡片任何一个都能拉大看完整内容）*/
+.room-turn-card.is-expanded {
+  position: fixed; inset: 5vh 5vw; z-index: 200;
+  max-height: none !important; max-width: none !important;
+  width: auto !important; height: auto !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  overflow: auto;
+  background: var(--bg-surface, #fff);
+}
+.room-turn-card.is-expanded .room-turn-content {
+  max-height: none !important;
+}
+body.has-turn-expanded::before {
+  content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 199; pointer-events: none;
+}
+.room-turn-expand {
+  margin-left: auto;
+  background: transparent; border: 1px solid var(--color-border-light, #ddd);
+  border-radius: 4px; padding: 2px 8px; font-size: 11px;
+  cursor: pointer; color: var(--color-text-foreground-tertiary, #666);
+}
+.room-turn-expand:hover { background: var(--bg-hover, rgba(0,0,0,0.05)); }
+/* v0.56 U10：turn-card 全屏后让收起按钮变成显眼的浮动红钮，原来角落 ⤢ 太小用户找不到 */
+.room-turn-card.is-expanded .room-turn-expand {
+  position: fixed;
+  top: calc(5vh + 10px);
+  right: calc(5vw + 14px);
+  z-index: 210;
+  font-size: 14px; font-weight: 600;
+  padding: 8px 16px;
+  background: var(--color-danger-alt); color: white;
+  border: none; border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.room-turn-card.is-expanded .room-turn-expand::after {
+  content: ' 收起';
+}
+.room-turn-card.is-expanded .room-turn-expand:hover {
+  background: #b02a37;
+}
+
+/* v0.56 U12：inspector 左侧可拖 resize 分隔条 */
+.inspector-resizer {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 5px; cursor: col-resize;
+  z-index: 50;
+  background: transparent;
+  transition: background 0.15s;
+}
+.inspector-resizer:hover,
+.inspector-resizer.dragging {
+  background: var(--orange-500, #C15F3C);
+  opacity: 0.5;
+}
+.inspector { position: relative; }
+body.inspector-dragging { cursor: col-resize !important; user-select: none; }
+body.inspector-dragging * { cursor: col-resize !important; user-select: none !important; }
+
+/* v0.56 U12：footer 字号从 10.5 → 12px，老人也能看清 */
+.status-bar { font-size: 12px !important; }
+.status-bar .status-item { font-size: 12px; }
+
+/* v0.56 U12：sidebar 房间归档按钮 📦 从 25×21 → 32×28，更好点 */
+.room-list-item-archive {
+  min-width: 32px !important;
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  font-size: 14px !important;
+}
+
+/* v0.56 U10：forward 转发 4 个按钮（之前 cxbtn-secondary 灰色看不清）改用强对比 + 加大 */
+.room-consensus-actions [data-forward],
+button[data-forward],
+/* S17-8：rooms view 4 个新建按钮跟 forward 一致橙描边风格 */
+#btnRoomNewChat,
+#btnRoomNewDebate,
+#btnRoomNewSquad,
+#btnRoomNewArena {
+  font-size: 13px !important;
+  padding: 8px 14px !important;
+  border: 1.5px solid var(--orange, #C15F3C) !important;
+  color: var(--orange, #C15F3C) !important;
+  background: color-mix(in oklab, var(--orange, #C15F3C) 10%, transparent) !important;
+  font-weight: 600 !important;
+}
+.room-consensus-actions [data-forward]:hover,
+button[data-forward]:hover,
+#btnRoomNewChat:hover,
+#btnRoomNewDebate:hover,
+#btnRoomNewSquad:hover,
+#btnRoomNewArena:hover {
+  background: var(--orange, #C15F3C) !important;
+  color: var(--c-white) !important;
+}
+
+/* v0.52 debate 大轮数控件 */
+.room-debate-rounds-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.room-debate-rounds-label { font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.room-debate-rounds-wrap input[type="number"] {
+  width: 64px; padding: 6px 8px; font: inherit; color: var(--color-text-foreground-primary);
+  background: var(--bg-top); border: 1px solid var(--color-border-light); border-radius: 6px;
+}
+.room-debate-rounds-wrap input[type="number"]:focus { outline: none; border-color: var(--color-accent-primary); }
+.room-debate-rounds-hint { font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+
+/* v0.52 房间 adapter 配置 modal */
+.room-adapters-body { display: flex; flex-direction: column; gap: 16px; max-height: 75vh; overflow-y: auto; padding-right: 4px; }
+.room-adapters-hint { margin: 0; color: var(--color-text-foreground-tertiary); font-size: var(--text-xs); line-height: 1.5; }
+.adapter-section {
+  border: 1px solid var(--color-border-light); border-radius: 10px; padding: 12px 14px;
+  background: var(--bg-top); display: flex; flex-direction: column; gap: 10px;
+}
+.adapter-section header { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--text-sm); }
+.adapter-section header label { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: var(--font-weight-semibold); }
+.adapter-section header label input[type="checkbox"] { transform: scale(1.1); }
+.adapter-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.adapter-fields label { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); margin: 0; }
+.adapter-fields input {
+  padding: 6px 8px; font: inherit; color: var(--color-text-foreground-primary);
+  background: var(--bg-surface); border: 1px solid var(--color-border-light); border-radius: 6px;
+}
+.adapter-fields input:focus { outline: none; border-color: var(--color-accent-primary); }
+.adapter-fields small { grid-column: 1 / -1; color: var(--color-text-foreground-tertiary); font-size: var(--text-xs); }
+.adapter-status { font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.adapter-customs { gap: 8px; }
+.adapter-customs > #customsList { display: flex; flex-direction: column; gap: 10px; }
+.custom-row {
+  border: 1px dashed var(--color-border-light); border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 8px; background: var(--bg-surface);
+}
+.custom-row .custom-row-head { display: flex; align-items: center; gap: 8px; }
+.custom-row .custom-row-head label { display: flex; align-items: center; gap: 6px; margin: 0; font-size: var(--text-xs); }
+.custom-row .custom-row-head .grow { flex: 1; }
+.custom-row .btn-icon { background: transparent; border: 0; color: var(--color-danger); cursor: pointer; font-size: 16px; padding: 2px 6px; }
+.adapter-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 6px; border-top: 1px solid var(--color-border-light); }
+.adapter-save-status { flex: 1; font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.adapter-save-status.error { color: var(--color-danger); }
+.adapter-save-status.success { color: var(--color-success); }
+
+.room-rounds { display: flex; flex-direction: column; gap: 14px; }
+.room-round {
+  border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden;
+  background: var(--bg-surface);
+}
+.room-round-head {
+  padding: 10px 14px; background: color-mix(in oklab, var(--bg-top) 50%, transparent);
+  font-weight: var(--font-weight-semibold); font-size: var(--text-sm);
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+.room-round-cards {
+  display: grid; gap: 10px; padding: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.room-turn-card {
+  background: var(--bg-top); border-radius: 10px; padding: 12px;
+  border: 1px solid var(--color-border-light);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.room-turn-card.speaking { border-color: var(--color-warn); animation: pulse 1.5s ease-in-out infinite; }
+.room-turn-card.error { border-color: var(--color-danger); }
+.room-turn-head { display: flex; align-items: center; gap: 8px; }
+.room-turn-speaker { font-weight: var(--font-weight-semibold); }
+.room-turn-tokens { margin-left: auto; font-family: var(--mono); font-size: var(--text-xs); color: var(--color-text-foreground-tertiary); }
+.room-turn-content { font-size: var(--text-sm); line-height: 1.55; max-height: 360px; overflow-y: auto; }
+.room-turn-content pre { background: color-mix(in oklab, var(--bg-main) 60%, transparent); padding: 8px; border-radius: 6px; overflow-x: auto; }
+.room-turn-spinner { color: var(--color-accent-primary); font-size: var(--text-xs); }

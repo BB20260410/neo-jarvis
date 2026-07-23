@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "kind": "noe_memory_bench_fixtures",
+  "provenance": "longmem-style-synthetic",
+  "note": "LongMemEval/LOCOMO 体例的风格自造语料，本地合成，非原公开题集。被召回的\"历史\"。",
+  "projectId": "noe",
+  "fixtures": [
+    {
+      "id": "bench-pref-coffee",
+      "scope": "user",
+      "body": "主人长期偏好喝美式黑咖啡，不加糖不加奶。",
+      "tags": [
+        "preference",
+        "coffee"
+      ],
+      "confidence": 0.92,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-pref-coffee"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-pref-coffee"
+    },
+    {
+      "id": "bench-pref-tea-distractor",
+      "scope": "fact",
+      "body": "某次测试日志里偶然出现过\"奶茶\"这个词，与主人长期口味无关。",
+      "tags": [
+        "distractor",
+        "drink"
+      ],
+      "confidence": 0.5,
+      "salience": 1,
+      "evidenceRefs": [
+        "bench-episode:bench-pref-tea-distractor"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-pref-tea-distractor"
+    },
+    {
+      "id": "bench-pref-music",
+      "scope": "user",
+      "body": "主人专注工作时偏好听器乐 lo-fi，不要带人声的歌。",
+      "tags": [
+        "preference",
+        "music"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-pref-music"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-pref-music"
+    },
+    {
+      "id": "bench-fact-birthplace",
+      "scope": "fact",
+      "body": "主人出生在沿海城市，从小在海边长大。",
+      "tags": [
+        "profile",
+        "origin"
+      ],
+      "confidence": 0.88,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-fact-birthplace"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-fact-birthplace"
+    },
+    {
+      "id": "bench-fact-pet",
+      "scope": "fact",
+      "body": "主人养了一只叫\"豆豆\"的橘猫。",
+      "tags": [
+        "profile",
+        "pet"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-fact-pet"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-fact-pet"
+    },
+    {
+      "id": "bench-fact-allergy",
+      "scope": "fact",
+      "body": "主人对花生过敏，点外卖要避开花生。",
+      "tags": [
+        "profile",
+        "health"
+      ],
+      "confidence": 0.95,
+      "salience": 5,
+      "evidenceRefs": [
+        "bench-episode:bench-fact-allergy"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-fact-allergy"
+    },
+    {
+      "id": "bench-pref-editor",
+      "scope": "user",
+      "body": "The owner prefers a dark theme editor and two-space indentation.",
+      "tags": [
+        "preference",
+        "editor"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-pref-editor"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-pref-editor"
+    },
+    {
+      "id": "bench-fact-timezone",
+      "scope": "fact",
+      "body": "The owner works in the Asia/Shanghai timezone, usually late at night.",
+      "tags": [
+        "profile",
+        "timezone"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-fact-timezone"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-fact-timezone"
+    },
+    {
+      "id": "bench-pref-commit-lang",
+      "scope": "user",
+      "body": "The owner wants all git commit messages written in Simplified Chinese.",
+      "tags": [
+        "preference",
+        "git"
+      ],
+      "confidence": 0.92,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-pref-commit-lang"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-pref-commit-lang"
+    },
+    {
+      "id": "bench-mh-proj-owner",
+      "scope": "project",
+      "body": "项目\"息刻\"的产品负责人是阿哲。",
+      "tags": [
+        "multihop",
+        "xike",
+        "owner"
+      ],
+      "confidence": 0.88,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-mh-proj-owner"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-mh-proj-owner"
+    },
+    {
+      "id": "bench-mh-owner-role",
+      "scope": "fact",
+      "body": "阿哲同时负责息刻的语音引导脚本审校。",
+      "tags": [
+        "multihop",
+        "xike",
+        "role"
+      ],
+      "confidence": 0.85,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-mh-owner-role"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-mh-owner-role"
+    },
+    {
+      "id": "bench-mh-proj-deadline",
+      "scope": "project",
+      "body": "息刻 1.2 版本计划在季度末提交 App Store 审核。",
+      "tags": [
+        "multihop",
+        "xike",
+        "deadline"
+      ],
+      "confidence": 0.84,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-mh-proj-deadline"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-mh-proj-deadline"
+    },
+    {
+      "id": "bench-mh-meeting",
+      "scope": "project",
+      "body": "In the Monday sync the team decided to migrate the memory store to better-sqlite3.",
+      "tags": [
+        "multihop",
+        "meeting",
+        "memory"
+      ],
+      "confidence": 0.86,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-mh-meeting"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-mh-meeting"
+    },
+    {
+      "id": "bench-mh-action",
+      "scope": "project",
+      "body": "The action item from that decision was assigned to the backend group with a two-week window.",
+      "tags": [
+        "multihop",
+        "meeting",
+        "action"
+      ],
+      "confidence": 0.84,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-mh-action"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-mh-action"
+    },
+    {
+      "id": "bench-temporal-city-old",
+      "scope": "fact",
+      "body": "主人曾经住在北京。",
+      "tags": [
+        "temporal",
+        "city"
+      ],
+      "confidence": 0.8,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-city-old"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-city-old",
+      "validFrom": 1665440000000,
+      "validTo": 1694816000000
+    },
+    {
+      "id": "bench-temporal-city-new",
+      "scope": "fact",
+      "body": "主人现在住在上海。",
+      "tags": [
+        "temporal",
+        "city"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-city-new"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-city-new",
+      "validFrom": 1694902400000,
+      "validTo": null
+    },
+    {
+      "id": "bench-temporal-phone-old",
+      "scope": "fact",
+      "body": "The owner used to carry an iPhone 13.",
+      "tags": [
+        "temporal",
+        "device"
+      ],
+      "confidence": 0.8,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-phone-old"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-phone-old",
+      "validFrom": 1656800000000,
+      "validTo": 1689632000000
+    },
+    {
+      "id": "bench-temporal-phone-new",
+      "scope": "fact",
+      "body": "The owner now uses an iPhone 16 Pro.",
+      "tags": [
+        "temporal",
+        "device"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-phone-new"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-phone-new",
+      "validFrom": 1689718400000,
+      "validTo": null
+    },
+    {
+      "id": "bench-temporal-laptop-old",
+      "scope": "fact",
+      "body": "主人之前用 MacBook Air 开发。",
+      "tags": [
+        "temporal",
+        "laptop"
+      ],
+      "confidence": 0.78,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-laptop-old"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-laptop-old",
+      "validFrom": 1648160000000,
+      "validTo": 1682720000000
+    },
+    {
+      "id": "bench-temporal-laptop-new",
+      "scope": "fact",
+      "body": "主人现在主力开发机是 MacBook Pro M3 Max。",
+      "tags": [
+        "temporal",
+        "laptop"
+      ],
+      "confidence": 0.92,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-temporal-laptop-new"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-temporal-laptop-new",
+      "validFrom": 1682806400000,
+      "validTo": null
+    },
+    {
+      "id": "bench-adv-freq-440",
+      "scope": "fact",
+      "body": "疗愈频率素材里 440Hz 那一组用于放松场景。",
+      "tags": [
+        "adversarial",
+        "freq",
+        "440"
+      ],
+      "confidence": 0.8,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-freq-440"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-freq-440"
+    },
+    {
+      "id": "bench-adv-freq-880",
+      "scope": "fact",
+      "body": "疗愈频率素材里 880Hz 那一组用于专注场景。",
+      "tags": [
+        "adversarial",
+        "freq",
+        "880"
+      ],
+      "confidence": 0.8,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-freq-880"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-freq-880"
+    },
+    {
+      "id": "bench-adv-ver-v12",
+      "scope": "project",
+      "body": "玛法史莱姆小游戏 1.1.2 版本是上一个被驳回的包。",
+      "tags": [
+        "adversarial",
+        "version",
+        "v112"
+      ],
+      "confidence": 0.8,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-ver-v12"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-ver-v12"
+    },
+    {
+      "id": "bench-adv-ver-v13",
+      "scope": "project",
+      "body": "玛法史莱姆小游戏 1.1.3 版本是当前已提交的包。",
+      "tags": [
+        "adversarial",
+        "version",
+        "v113"
+      ],
+      "confidence": 0.85,
+      "salience": 3,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-ver-v13"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-ver-v13"
+    },
+    {
+      "id": "bench-adv-negation",
+      "scope": "fact",
+      "body": "主人明确说过他【不】喜欢喝可乐，别推荐含糖碳酸饮料。",
+      "tags": [
+        "adversarial",
+        "negation",
+        "drink"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-negation"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-negation"
+    },
+    {
+      "id": "bench-adv-hype-distractor",
+      "scope": "fact",
+      "body": "聊天里有人随口夸某咖啡店，但主人没表达过个人偏好。",
+      "tags": [
+        "adversarial",
+        "distractor",
+        "coffee"
+      ],
+      "confidence": 0.4,
+      "salience": 1,
+      "evidenceRefs": [
+        "bench-episode:bench-adv-hype-distractor"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-adv-hype-distractor"
+    },
+    {
+      "id": "bench-insight-verify",
+      "scope": "insight",
+      "body": "完成任务后必须自己实测验证无 bug 再汇报，不要让用户当测试员。",
+      "tags": [
+        "insight",
+        "workflow"
+      ],
+      "confidence": 0.9,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-insight-verify"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-insight-verify"
+    },
+    {
+      "id": "bench-insight-no-fake",
+      "scope": "insight",
+      "body": "涉及钱/配额/限额必须官方溯源，社区估算必须标\"估\"，未知显示破折号不许编。",
+      "tags": [
+        "insight",
+        "data"
+      ],
+      "confidence": 0.92,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-insight-no-fake"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-insight-no-fake"
+    },
+    {
+      "id": "bench-insight-parallel",
+      "scope": "insight",
+      "body": "多个独立任务能并行且不影响质量就必须并行，默认用线程池或 asyncio。",
+      "tags": [
+        "insight",
+        "parallel"
+      ],
+      "confidence": 0.88,
+      "salience": 4,
+      "evidenceRefs": [
+        "bench-episode:bench-insight-parallel"
+      ],
+      "sourceEpisodeId": "bench-episode:bench-insight-parallel"
+    }
+  ]
+}

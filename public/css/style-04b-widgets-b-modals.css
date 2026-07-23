@@ -1,0 +1,366 @@
+
+/* ===== v0.15 流式消息光标 ===== */
+.msg-streaming .msg-body::after {
+  content: '▍';
+  display: inline-block;
+  color: var(--color-text-accent);
+  margin-left: 1px;
+  animation: stream-cursor 1s steps(2) infinite;
+  font-weight: var(--font-weight-bold);
+}
+@keyframes stream-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.msg-streaming .msg-body {
+  /* 流式时纯文本，保留换行 */
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg-finalized {
+  /* 视觉跟普通 msg 一致，不加额外样式 */
+}
+
+/* ===== v0.8 ConfirmModal（替代原生 confirm 弹窗）===== */
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: confirm-fade-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.confirm-modal-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+}
+.confirm-modal-body {
+  position: relative;
+  width: 420px;
+  max-width: 92vw;
+  /* S27 UI3：超长 message（如 adapter 列表）max-height 80vh + 内部 scroll，避免撑爆屏 */
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--color-border-heavy);
+  border-radius: var(--radius-cx-lg);
+  box-shadow: var(--shadow-cx-2xl);
+  padding: 20px 22px 16px;
+  animation: confirm-pop-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.confirm-modal-title {
+  margin: 0 0 8px;
+  font-size: var(--text-heading-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-foreground);
+}
+.confirm-modal-message {
+  font-size: var(--text-sm);
+  color: var(--color-text-foreground-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  margin-bottom: 18px;
+  word-break: break-word;
+}
+.confirm-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.confirm-modal-closing { animation: confirm-fade-out 180ms forwards; }
+/* ===== P2 审批后安全重试弹窗 ===== */
+.approval-retry-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 8px 10px;
+  background: var(--color-bg-subtle, rgba(127,127,127,0.08));
+  border-radius: 8px;
+}
+.approval-retry-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12px;
+  min-width: 0;
+}
+.approval-retry-row > span:first-child {
+  flex: 0 0 56px;
+  color: var(--color-text-muted, #888);
+}
+.approval-retry-row code,
+.approval-retry-row > span:last-child {
+  min-width: 0;
+  word-break: break-all;
+  flex-wrap: wrap;
+}
+.approval-retry-note {
+  font-size: 11px;
+  color: var(--color-text-muted, #888);
+  margin: 6px 0 10px;
+  line-height: 1.5;
+}
+@keyframes confirm-fade-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes confirm-fade-out {
+  from { opacity: 1; } to { opacity: 0; }
+}
+@keyframes confirm-pop-in {
+  0%   { opacity: 0; transform: scale(0.96) translateY(4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ===== v0.9 PromptModal 输入框 ===== */
+.prompt-modal-input {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  font-family: var(--font);
+  color: var(--color-text-foreground);
+  background: var(--bg-inset);
+  border: 1px solid var(--color-border-heavy);
+  border-radius: var(--radius-cx-md);
+  outline: none;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  transition: border-color 120ms, box-shadow 120ms;
+  resize: vertical;
+  min-height: 36px;
+}
+.prompt-modal-input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-border-focus) 25%, transparent);
+}
+textarea.prompt-modal-input {
+  font-family: var(--font);
+  line-height: 1.5;
+}
+
+/* ===== v0.7 shimmer 加载占位 + toast 通知 ===== */
+.shimmer {
+  background: linear-gradient(90deg,
+    var(--color-border-light) 0%,
+    var(--color-border-heavy) 50%,
+    var(--color-border-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-cx-sm);
+}
+@keyframes loading-shimmer {
+  0%   { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+.toast-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 360px;
+}
+.toast {
+  pointer-events: auto;
+  background: var(--gray-900);
+  color: var(--gray-0);
+  padding: 10px 14px;
+  border-radius: var(--radius-cx-md);
+  box-shadow: var(--shadow-cx-xl);
+  font-size: var(--text-sm);
+  animation: toast-open 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 3px solid var(--gray-500);
+  word-break: break-word;
+}
+.toast.toast-success { border-left-color: var(--green-500); }
+.toast.toast-error   { border-left-color: var(--red-500); }
+.toast.toast-warn    { border-left-color: var(--yellow-500); }
+.toast.toast-info    { border-left-color: var(--blue-400); }
+.toast-closing { animation: toast-close 200ms forwards; }
+.toast-close-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: color-mix(in oklab, var(--gray-0) 60%, transparent);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+.toast-close-btn:hover { color: var(--gray-0); }
+@keyframes toast-open {
+  0%   { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-close {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* prefers-reduced-motion 兼容（Codex 漏的）*/
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* v0.11: sidebar/inspector/status-bar 已改用 token 派生（color-mix oklab），不再需要 html.dark 覆写 */
+html.dark body {
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+}
+html.dark .archived-item { background: color-mix(in oklab, var(--gray-0) 4%, transparent); }
+html.dark .session-item.active {
+  background: color-mix(in oklab, var(--orange) 18%, transparent);
+  border-color: color-mix(in oklab, var(--orange) 40%, transparent);
+}
+
+/* 系统暗色 fallback（仅当用户没显式选过 light/dark 时生效）*/
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) {
+    --orange: #D4876A;
+    --orange-soft: #C15F3C;
+    --bg-main: #1E1E1E;
+    --bg-top: #232323;
+    --bg-bottom: #1A1A1A;
+    --gray-deep: #E5E2DB;
+    --gray-mid: #999693;
+    --gray-soft: #555550;
+    --line: #2F2E2C;
+    --code-bg: #2A2A28;
+    --card: #2A2826;
+    --card-soft: rgba(50,48,46,0.7);
+    --bg-surface: #2A2826;
+    --bg-surface-hover: #353230;
+    --bg-inset: #1F1E1C;
+    --text-pri: #E5E2DB;
+    --text-sec: #B8B5AE;
+    --text-muted: #6E6B65;
+    --border-def: #2F2E2C;
+    --user-bg: #1A1E2C;
+    --assistant-bg: #1C1A26;
+    --thinking-bg: #221C30;
+  }
+  html:not(.light):not(.dark) .modal-body { background: #2A2826; color: var(--gray-deep); }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font);
+  font-size: 14px; line-height: 1.5;
+  color: var(--gray-deep);
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 多显示器适配：50px 过渡区（容器最大宽 + 居中）*/
+@media (min-width: 2000px) {
+  body {
+    padding: 0 50px;  /* 左右 50px 过渡，多屏拼接无割裂感 */
+  }
+}
+
+/* v0.46 改：sidebar/inspector 固定宽，主区弹性（12% 在窄屏会把 sidebar 压成 ~170px，brand 标题被截断）*/
+/* 2% 亮度差层次：sidebar 比主区暗 2%，inspector 比主区亮 2% */
+/* v0.56 U1：响应式 + inspector 可折叠（body.inspector-hidden） */
+.app {
+  display: grid;
+  /* v0.56 U12：inspector 可拖动 resize，宽度走 CSS 变量 --inspector-w */
+  grid-template-columns: 240px 1fr var(--inspector-w, 340px);
+  height: 100vh;
+  gap: 0;
+  position: relative;
+  /* 10% 透明度的极淡渐变（顶 #F8F6F2 → 底 #F0EDE6，模拟 macOS 自然光感）*/
+  /* 顶 1/3 提亮 3% / 底 1/3 降低 2% */
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.03) 0%,
+      rgba(255,255,255,0) 33%,
+      rgba(255,255,255,0) 66%,
+      rgba(0,0,0,0.02) 100%
+    ),
+    repeating-linear-gradient(45deg,
+      rgba(193, 95, 60, 0.05) 0px,
+      rgba(193, 95, 60, 0.05) 1px,
+      transparent 1px,
+      transparent 80px
+    ),
+    linear-gradient(180deg,
+      rgba(248, 246, 242, 0.1) 0%,
+      rgba(240, 237, 230, 0.1) 100%
+    ),
+    var(--bg-main);
+}
+/* 中等屏：inspector 收成 280px */
+@media (max-width: 1280px) {
+  .app { grid-template-columns: 220px 1fr 280px; }
+}
+/* 窄屏：彻底隐藏 inspector（保留 sidebar + main） */
+@media (max-width: 1100px) {
+  .app { grid-template-columns: 200px 1fr; }
+  .app > .inspector { display: none; }
+}
+/* 移动 / 极窄：sidebar 收成 emoji 列（用户用 ⌘K 切 session） */
+@media (max-width: 760px) {
+  .app { grid-template-columns: 60px 1fr; }
+  .app > .sidebar .brand-text, .app > .sidebar .session-list, .app > .sidebar .archived-section, .app > .sidebar .btn-new span { display: none; }
+}
+/* 用户手动折叠 inspector（U3） */
+body.inspector-hidden .app { grid-template-columns: 240px 1fr 0px; }
+body.inspector-hidden .app > .inspector { display: none; }
+/* S17-1：折叠时也藏 resizer，避免误拖 */
+body.inspector-hidden .inspector-resizer { display: none; }
+
+/* 左上角 Claude 抽象星爆图标 — 菜单栏下方 100px + 左 100px，120×120 */
+.app::before {
+  content: '✦';
+  position: fixed;
+  top: 100px;
+  left: 100px;
+  width: 120px;
+  height: 120px;
+  font-size: 120px;
+  line-height: 1;
+  color: var(--orange);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  font-family: var(--font);
+  display: grid;
+  place-items: center;
+}
+
+/* 四象限对齐参考线（1px 5% 透明赭橙虚线）*/
+.zone-guide-v1, .zone-guide-v2, .zone-guide-h {
+  position: fixed;
+  background: transparent;
+  pointer-events: none;
+  z-index: 0;
+}
+.zone-guide-v1 {  /* 左 | 中 在 12% 位置 */
+  top: 0; left: 12%; bottom: 0; width: 0;
+  border-left: 1px dashed rgba(193, 95, 60, 0.08);
+}
+.zone-guide-v2 {  /* 中 | 右 在 72% 位置 */
+  top: 0; left: 72%; bottom: 0; width: 0;
+  border-left: 1px dashed rgba(193, 95, 60, 0.08);
+}
+.zone-guide-h {  /* 右区上下中分线 */
+  top: 50%; left: 72%; right: 0; height: 0;
+  border-top: 1px solid var(--line);
+}

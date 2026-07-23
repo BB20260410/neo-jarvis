@@ -1,0 +1,667 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-replay-collection-001",
+  "ok": false,
+  "summary": {
+    "caseCount": 40,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 40
+  },
+  "scores": {
+    "capability": 0,
+    "regression": 0,
+    "safety": 1,
+    "costLatency": 1,
+    "rewardHackingRisk": 0,
+    "overall": 0
+  },
+  "caseResults": [
+    {
+      "caseId": "case-real-replay-001",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771277592.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-002",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1781160541610.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-003",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1781161715472.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-004",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1781185821714.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-005",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1781335336899.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-006",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780762064750.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-007",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1781246058388.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-008",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771313950.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-009",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771334236.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-010",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771613547.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-011",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771767157.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-012",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780771793646.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-013",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780773616038.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-014",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780773858289.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-015",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780774202202.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-016",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780774398087.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-017",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780774672452.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-018",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780774888285.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-019",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780775200426.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-020",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780775491120.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-021",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780775877174.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-022",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780776354841.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-023",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780805723646.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-024",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780805970393.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-025",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780806207236.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-026",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780806255142.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-027",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780806944822.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-028",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780858591756.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-029",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780859162771.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-030",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780859558905.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-031",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780860129210.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-032",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780860656539.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-033",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780861128279.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-034",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780861692966.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-035",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780862300102.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-036",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780862602074.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-037",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780863329679.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-038",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780864468143.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-039",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780865471272.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    },
+    {
+      "caseId": "case-real-replay-040",
+      "status": "blocked",
+      "evidenceRefs": [
+        "output/noe-real-use-replay/real-use-replay-1780866506092.json"
+      ],
+      "failedChecks": [
+        "evaluator_not_connected_yet"
+      ],
+      "cost": {
+        "tokens": null,
+        "usd": null,
+        "source": "not_measured"
+      },
+      "latencyMs": null
+    }
+  ],
+  "invariants": {
+    "noSecretOutput": true,
+    "noPrivateHoldoutLeak": true,
+    "noEvaluatorMutation": true,
+    "rollbackPlanPresent": true
+  }
+}

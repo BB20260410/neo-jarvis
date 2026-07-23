@@ -1,0 +1,22 @@
+{
+  // 强健④（2026-06-10）：类型渐进强化——不迁 TypeScript，用 VS Code 内置 TS + JSDoc。
+  // 路线：checkJs 全局保持 false（存量巨石 app.js/server.js 直接开会爆红）；
+  //   新/重构模块在文件首行加 `// @ts-check` 逐文件开启 —— 写代码时编辑器就标红
+  //   （modelSettings 未定义那类崩溃在编辑期即可发现）。
+  // CI 侧:网络恢复后 `npm i -D typescript`，跑 `npm run typecheck`（package.json 已备好）。
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "checkJs": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    // 宽松渐进档：implicit any 不报（JS+JSDoc 项目报了全是噪声），只留结构性错误
+    // （属性不存在/类型不匹配/null 误用——modelSettings 那类崩溃就属这层）。
+    "noImplicitAny": false,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.js", "scripts/**/*.mjs", "server.js", "tests/**/*.js"],
+  "exclude": ["node_modules", "out", "dist", "output", "public/vendor"]
+}

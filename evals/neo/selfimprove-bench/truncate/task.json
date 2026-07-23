@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "id": "truncate",
+  "category": "boundary",
+  "title": "截断字符串边界",
+  "summary": "边界：长度 <= max 不应加省略号，buggy 总是切片加 …。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "truncate",
+  "signature": "truncate(text: string, max: number): string — 超过 max 才切片加 …，否则原样。",
+  "probes": [
+    {
+      "name": "long",
+      "args": [
+        "abcdef",
+        3
+      ],
+      "expect": "abc…"
+    },
+    {
+      "name": "exact",
+      "args": [
+        "abc",
+        3
+      ],
+      "expect": "abc"
+    },
+    {
+      "name": "short",
+      "args": [
+        "ab",
+        5
+      ],
+      "expect": "ab"
+    },
+    {
+      "name": "empty",
+      "args": [
+        "",
+        3
+      ],
+      "expect": ""
+    }
+  ]
+}

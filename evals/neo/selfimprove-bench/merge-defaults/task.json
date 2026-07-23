@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 2,
+  "id": "merge-defaults",
+  "category": "bug_fix",
+  "title": "合并默认值方向写反",
+  "summary": "展开顺序错：buggy 让 defaults 覆盖 overrides，应反过来。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "withDefaults",
+  "signature": "withDefaults(overrides: object, defaults: object): object — overrides 覆盖 defaults。",
+  "probes": [
+    {
+      "name": "merge",
+      "args": [
+        {
+          "a": 2,
+          "c": 9
+        },
+        {
+          "a": 1,
+          "b": 1
+        }
+      ],
+      "expect": {
+        "a": 2,
+        "b": 1,
+        "c": 9
+      }
+    },
+    {
+      "name": "override-only",
+      "args": [
+        {
+          "x": 5
+        },
+        {}
+      ],
+      "expect": {
+        "x": 5
+      }
+    },
+    {
+      "name": "default-only",
+      "args": [
+        {},
+        {
+          "y": 7
+        }
+      ],
+      "expect": {
+        "y": 7
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "system_self_repair",
+  "name": "系统自修复：系统运行",
+  "type": "passive",
+  "description": "指尖划过屏幕，那串报错代码仿佛有了温度。",
+  "effect": {
+    "heal": 10,
+    "debug": true
+  },
+  "cooldown": 0,
+  "rarity": "legendary"
+}

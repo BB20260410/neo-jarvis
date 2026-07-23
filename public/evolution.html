@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>进化 dry-run · Neo 贾维斯</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+  <link rel="stylesheet" href="/css/home-shell.css?v=home-20260723c" />
+  <style>
+    .evo-page { max-width: 720px; margin: 0 auto; padding: 18px 16px 40px; }
+    .evo-page h1 { margin: 0 0 6px; font-size: 1.2rem; }
+    .evo-page .sub { color: var(--home-muted); font-size: 0.85rem; margin: 0 0 18px; }
+    .back { color: var(--home-accent); text-decoration: none; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="evo-page" id="evoApp">
+    <a class="back" href="/home.html">← 返回主界面</a>
+    <h1>进化 dry-run 仪表</h1>
+    <p class="sub" id="evoHonesty">只读观测 · 真改默认 OFF（profile=safe 需双开关才真改源码）</p>
+    <div class="evo-grid" id="evoGrid">
+      <p class="empty-hint">加载中…</p>
+    </div>
+  </div>
+  <script type="module">
+    const PANEL_OWNER_TOKEN_KEY = 'panel-owner-token';
+    function getOwnerToken() {
+      try {
+        return (
+          sessionStorage.getItem(PANEL_OWNER_TOKEN_KEY)
+          || localStorage.getItem(PANEL_OWNER_TOKEN_KEY)
+          || window.__panelOwnerToken
+          || new URLSearchParams(location.search).get('t')
+          || ''
+        );
+      } catch {
+        return '';
+      }
+    }
+    function headers() {
+      const t = getOwnerToken();
+      return t ? { 'X-Panel-Owner-Token': t } : {};
+    }
+    function card(title, body, cls = '') {
+      const d = document.createElement('div');
+      d.className = `evo-card ${cls}`.trim();
+      d.innerHTML = `<h3>${title}</h3><p></p>`;
+      d.querySelector('p').textContent = body;
+      return d;
+    }
+    async function load() {
+      const grid = document.getElementById('evoGrid');
+      const honesty = document.getElementById('evoHonesty');
+      if (!grid) return;
+      grid.innerHTML = '';
+      try {
+        // Prefer dedicated dashboard; fall back to /api/version.selfEvolution
+        let dash = null;
+        const r = await fetch('/api/noe/evolution-dashboard', {
+          credentials: 'same-origin',
+          headers: headers(),
+        });
+        if (r.ok) {
+          const j = await r.json();
+          dash = j.dashboard;
+        }
+        if (!dash) {
+          const vr = await fetch('/api/version', { credentials: 'same-origin', headers: headers() });
+          const vj = vr.ok ? await vr.json() : {};
+          const se = vj.selfEvolution || {};
+          dash = {
+            profile: se.profile || 'off',
+            boundary: {
+              realApply: se.armed?.realApply === true || se.realApply === true,
+              label: (se.armed?.realApply || se.realApply)
+                ? '真改已开启（请确认你知情）'
+                : 'dry-run · 默认不真改源码',
+              honestyNote: se.honesty?.note || '',
+            },
+            rings: se.rings || {},
+            stage: { name: 'from_version', nextAction: '', blockerReason: '' },
+            cycleSummary: { openGoalCount: 0, primaryGoalId: null, primaryStage: null },
+            claimsLiveRewrite: se.armed?.realApply === true || se.realApply === true,
+            readOnly: true,
+          };
+        }
+        if (honesty) {
+          honesty.textContent = dash.boundary?.honestyNote
+            || (dash.claimsLiveRewrite
+              ? '当前声明：真改可能已开启 — 请核对双开关与门控'
+              : '只读观测 · 真改默认 OFF（profile=safe 需双开关才真改源码）');
+        }
+        const rings = dash.rings || {};
+        grid.appendChild(card(
+          '边界 / REAL_APPLY',
+          dash.boundary?.label || (dash.claimsLiveRewrite ? '真改' : 'dry-run'),
+          dash.claimsLiveRewrite ? 'warn' : 'ok',
+        ));
+        grid.appendChild(card('Profile', String(dash.profile || 'off')));
+        grid.appendChild(card(
+          '四环',
+          `感知${rings.perception ? '✓' : '·'} 记忆${rings.memory ? '✓' : '·'} 证伪${rings.falsification ? '✓' : '·'} 边界${rings.boundary !== false ? '✓' : '·'}`,
+        ));
+        const st = dash.stage || {};
+        grid.appendChild(card(
+          '阶段 / 阻塞',
+          `stage=${st.name || '—'} · next=${st.nextAction || '—'} · blocker=${st.blockerReason || 'none'}`,
+        ));
+        const cy = dash.cycleSummary || {};
+        grid.appendChild(card(
+          '周期摘要',
+          `openGoals=${cy.openGoalCount ?? 0} · primary=${cy.primaryGoalId || '—'} · stage=${cy.primaryStage || '—'}`,
+        ));
+        if (dash.recentSignal) {
+          grid.appendChild(card(
+            '最近信号',
+            `${dash.recentSignal.kind || ''} ${dash.recentSignal.summary || dash.recentSignal.id || ''}`.trim() || '—',
+          ));
+        }
+        grid.appendChild(card(
+          '诚实声明',
+          dash.claimsLiveRewrite
+            ? 'claimsLiveRewrite=true（仅当 effective realApply 为真）'
+            : 'claimsLiveRewrite=false · 不会在 safe 无双开关时谎称真改',
+        ));
+      } catch (e) {
+        grid.appendChild(card('加载失败', e instanceof Error ? e.message : String(e), 'bad'));
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

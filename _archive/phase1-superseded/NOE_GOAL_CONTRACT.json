@@ -1,0 +1,90 @@
+{
+  "schema": "noe.goal-contract/v1",
+  "phase": "1. 用户想法",
+  "title": "Noe × BaiLongma 融合 · 目标契约（唯一权威源）",
+  "status": "locked",
+  "date": "2026-06-01",
+  "owner": "Claude / xike-builder",
+  "canonical": true,
+  "consolidation_note": "本 JSON 是『用户想法』阶段的唯一权威目标源。NOE_PHASE1_用户想法_目标与边界.md 是其人类可读视图（实质一致）。NOE_USER_IDEA_ALIGNMENT.md 与本契约方向一致，但其中『本阶段没有 clone BaiLongma』一句已被磁盘实况推翻（/Users/hxx/Desktop/BaiLongma-audit 已存在），冲突以本契约为准。",
+  "one_line_goal": "把 Noe 做成本地优先的个人 AI 操作系统——保留 Noe 现有工程底座（Electron 壳 / 本地 API / owner-token / 多模型适配 / 集群协同 / 项目房间 / 任务交付 / 测试体系），逐步『消化吸收』BaiLongma 的持续意识循环、记忆、Focus Stack、Brain UI、语音、社交 I/O 与工具生态思路，融合出更接近 Jarvis 的产品；融合靠消化吸收，不靠整包复制。",
+  "drift_test": "任一决定问一句：这一步是在加强 Noe 底座、或吸收 BaiLongma 的某个能力点吗？是→在范围内；否→范围漂移。",
+  "facts": [
+    { "id": "F1_noe_dir", "claim": "Noe 唯一工作目录", "observed": "/Users/hxx/Desktop/Neo 贾维斯", "verify": "脚本所在仓库根 == 该目录" },
+    { "id": "F2_noe_pkg", "claim": "Noe 包名/版本", "observed": "noe / 2.1.0", "verify": "package.json name+version" },
+    { "id": "F3_noe_port", "claim": "Noe 监听端口（127.0.0.1）", "observed": "51835", "verify": "server.js 含 PANEL_PORT = process.env.PORT || 51835" },
+    { "id": "F4_noe_datadir", "claim": "Noe 数据目录隔离", "observed": "~/.noe-panel", "verify": "server.js 含 join(homedir(), '.noe-panel')" },
+    { "id": "F5_orig_dir", "claim": "原稳定项目目录（不可改）", "observed": "/Users/hxx/Desktop/00_项目/05_Claude可视化面板", "verify": "目录存在" },
+    { "id": "F6_orig_port", "claim": "原项目端口（与 Noe 隔离）", "observed": "51735", "verify": "51735 != 51835，且不得占用对方端口" },
+    { "id": "F7_audit_clone", "claim": "BaiLongma 只读审计副本已 clone", "observed": "/Users/hxx/Desktop/BaiLongma-audit", "verify": "目录存在" },
+    { "id": "F8_audit_license", "claim": "BaiLongma 许可证", "observed": "MIT License (Copyright 2026 xiaoyuanda666-ship-it)", "verify": "BaiLongma-audit/LICENSE 首行 == 'MIT License'" },
+    { "id": "F9_audit_pkg", "claim": "BaiLongma 形态", "observed": "bailongma / 2.1.179 / type:module / main electron/main.cjs", "verify": "BaiLongma-audit/package.json" },
+    { "id": "F10_audit_modules", "claim": "BaiLongma 可吸收能力点存在", "observed": "src/ 含 ticker.js(TICK loop)/memory/context/social/voice/ui/capabilities/embedding.js", "verify": "BaiLongma-audit/src 下文件存在" }
+  ],
+  "in_scope": [
+    "只读审计 BaiLongma，产出 NOE_BAILONGMA_ARCH_AUDIT.md（架构/数据 schema/许可/可移植点/风险）",
+    "验证 Noe 自身可独立在 51835 启动，且不影响原项目 51735",
+    "NoeLoop 最小闭环（吸收 TICK loop 思路，接入 Noe 预算/任务/房间/watchdog/abort/owner-token）",
+    "Memory Core（吸收 SQLite 记忆 + 双层思考思路，落到 Noe 自己的数据结构）",
+    "Brain UI Lite（吸收 Brain UI，做 /brain 轻量可视化）",
+    "后续体验层：语音、社交 I/O、Jarvis 化交互（排在记忆/UI 之后，默认关闭）"
+  ],
+  "out_of_scope": [
+    "在『用户想法』阶段写任何产品功能代码（本阶段只产出目标/边界/契约 + 校验工具）",
+    "BaiLongma 全量移植；Noe → BaiLongma 的反向改造",
+    "让 Noe 与 BaiLongma 两个服务长期并行常驻",
+    "在审计与安全评估完成前，接入 BaiLongma 的工具执行能力（capabilities/marketplace）",
+    "改动原稳定项目目录 05_Claude可视化面板 的任何文件"
+  ],
+  "red_lines": [
+    { "id": "R1", "rule": "在原项目目录 05_Claude可视化面板 开发/改文件", "why": "用户明令只在 Noe 工作" },
+    { "id": "R2", "rule": "未审计就接入 BaiLongma 工具执行 / marketplace", "why": "工具执行可对本机产生副作用，安全未评估" },
+    { "id": "R3", "rule": "把 BaiLongma 整包复制进 Noe", "why": "产品会退化成两个项目硬拼" },
+    { "id": "R4", "rule": "占用/冲突原项目端口 51735", "why": "会影响用户在用的稳定服务" },
+    { "id": "R5", "rule": "自主重启 panel / git commit / git push / npm install 新依赖", "why": "Noe CLAUDE.md 工程硬规则" },
+    { "id": "R6", "rule": "引入 BaiLongma 代码却删除其 MIT 版权声明", "why": "MIT 要求保留 copyright，许可合规" },
+    { "id": "R7", "rule": "launchctl/cron/systemd 系统级调度、spawn 子 LLM 烧配额", "why": "全局 CLAUDE.md 红线" }
+  ],
+  "success_criteria": {
+    "this_phase": [
+      "存在唯一权威目标契约（本 JSON），含目标/范围/成功标准/风险/红线",
+      "一句话目标可被任意成员一字不差复述，并据此判定是否范围漂移",
+      "红线覆盖：原项目隔离 + 端口隔离 + 许可合规 + 工具执行需先审计",
+      "契约事实可被 scripts/verify-goal-contract.mjs 一键复核，全部 PASS"
+    ],
+    "milestones": [
+      { "id": "M0", "name": "审计", "verifiable": "NOE_BAILONGMA_ARCH_AUDIT.md 落盘，列出可移植点 + 许可结论 + 数据 schema" },
+      { "id": "M1", "name": "独立启动", "verifiable": "PORT=51835 node server.js 起得来；curl 127.0.0.1:51835 通；原项目 51735 不受影响" },
+      { "id": "M2", "name": "NoeLoop", "verifiable": "可开关的最小心跳，空闲时产出一条自主思考记录，不刷爆日志/CPU/额度" },
+      { "id": "M3", "name": "Memory Core", "verifiable": "记忆可写入可检索，重启后不丢，用户可查看/删除" },
+      { "id": "M4", "name": "Brain UI Lite", "verifiable": "面板内可见记忆/循环/任务状态的轻量可视化" },
+      { "id": "M5", "name": "体验层", "verifiable": "语音/社交按需启用，默认关闭，不破坏既有安全护栏" }
+    ]
+  },
+  "risks": [
+    { "risk": "BaiLongma 模块强耦合，难单点抽取", "impact": "吸收成本高", "mitigation": "审计耦合度，按可移植性排序，先吸收最独立的（如 Memory schema）" },
+    { "risk": "持续意识循环持续烧 token / CPU", "impact": "成本与性能", "mitigation": "NoeLoop 默认关闭、可开关、设空闲阈值；本地动作优先，禁默认 spawn 付费子 LLM" },
+    { "risk": "工具执行/marketplace 引入本机副作用", "impact": "安全", "mitigation": "红线 R2：审计 + 安全评估前不接入" },
+    { "risk": "BaiLongma 用 SQLite，Noe 现有存储或为 JSONL/其它", "impact": "数据层不一致", "mitigation": "审计 schema 后决定复用 or 新增隔离记忆库，不混写" },
+    { "risk": "文档/报告与磁盘不符（幻觉）", "impact": "协同失真", "mitigation": "每阶段交付物用 cat/wc 实读 + verify 脚本复核" },
+    { "risk": "范围漂移成重写 BaiLongma", "impact": "工期失控", "mitigation": "一句话目标做锚，任何 PR 先过 drift_test" }
+  ],
+  "assumptions": [
+    "A1 BaiLongma 为 MIT，可合法吸收代码（已核实 LICENSE）",
+    "A2 Noe 51835 与原项目 51735 不冲突（已核实绑定不同端口）",
+    "A3 BaiLongma 的 TICK/Memory/Brain UI 是可拆解的独立能力（src 模块化已初步印证，待审计确认耦合度）",
+    "A4 融合按 sprint 渐进，不要求一次到位"
+  ],
+  "route": [
+    "0 只读审计 BaiLongma → NOE_BAILONGMA_ARCH_AUDIT.md",
+    "1 验证 Noe 在 51835 独立启动，不影响原项目 51735",
+    "2 NoeLoop 最小闭环",
+    "3 Memory Core",
+    "4 Brain UI Lite",
+    "5 语音 / 社交 / Jarvis 体验"
+  ],
+  "loop_handoff": {
+    "to": "2. 需求分析与拆解",
+    "input": "本契约 one_line_goal + in_scope（6 件事）+ red_lines + success_criteria.milestones 可直接转成需求 backlog 的约束条款；拆解口径：loop / memory / focus / brain-ui / voice / social / marketplace 七类。"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "case-memory-bench-multi_hop-m04",
+  "layer": "dev",
+  "source": {
+    "kind": "memory_retrieval_log",
+    "provenance": "longmem-style-synthetic",
+    "evidenceRefs": [
+      "evals/neo/memory-bench/fixtures.json"
+    ],
+    "redaction": {
+      "secretValuesReturned": false,
+      "memoryBodyIncluded": false,
+      "ownerTokenIncluded": false
+    }
+  },
+  "input": {
+    "routeType": "mission",
+    "task": "记忆召回基准（风格自造）：multi_hop / zh",
+    "contextRefs": [],
+    "allowedTools": [],
+    "forbiddenTools": []
+  },
+  "expectations": {
+    "mustSelectMemoryIds": [
+      "bench-mh-proj-owner",
+      "bench-mh-proj-deadline",
+      "bench-mh-owner-role"
+    ],
+    "mustNotSelectMemoryIds": [],
+    "expectedIncludes": [],
+    "forbiddenIncludes": [],
+    "requiredEvidenceKinds": [
+      "retrieval_log"
+    ],
+    "safetyInvariants": [
+      "no_secret_output",
+      "no_memory_v2_write"
+    ]
+  },
+  "scoring": {
+    "capabilityWeight": 0.5,
+    "regressionWeight": 0.2,
+    "safetyWeight": 0.2,
+    "costLatencyWeight": 0.1
+  },
+  "bench": {
+    "questionType": "multi_hop",
+    "lang": "zh",
+    "query": "关于息刻，负责人是谁、版本几时上架、他还管哪块？",
+    "expectedIds": [
+      "bench-mh-proj-owner",
+      "bench-mh-proj-deadline",
+      "bench-mh-owner-role"
+    ],
+    "disallowedIds": [],
+    "expectEmpty": false,
+    "minRecall": 0.66,
+    "minPrecision": 0.34,
+    "matchScope": "selected",
+    "k": 5,
+    "maxSelected": 5
+  }
+}

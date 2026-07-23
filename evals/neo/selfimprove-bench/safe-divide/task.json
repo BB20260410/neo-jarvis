@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "id": "safe-divide",
+  "category": "boundary",
+  "title": "除零保护",
+  "summary": "边界：除数为 0 应返回 0（或约定值），buggy 直接除得 Infinity/NaN。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "safeDivide",
+  "signature": "safeDivide(a: number, b: number): number — b===0 返回 0，否则 a/b。",
+  "probes": [
+    {
+      "name": "normal",
+      "args": [
+        10,
+        2
+      ],
+      "expect": 5
+    },
+    {
+      "name": "zero-denominator",
+      "args": [
+        5,
+        0
+      ],
+      "expect": 0
+    },
+    {
+      "name": "zero-numerator",
+      "args": [
+        0,
+        4
+      ],
+      "expect": 0
+    },
+    {
+      "name": "neg",
+      "args": [
+        -6,
+        3
+      ],
+      "expect": -2
+    }
+  ]
+}

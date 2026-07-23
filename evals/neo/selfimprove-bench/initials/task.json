@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "id": "initials",
+  "category": "feature",
+  "title": "生成姓名缩写",
+  "summary": "小特性：取每个单词首字母大写拼接；buggy 只返回了首词首字母。",
+  "source": "synthetic",
+  "subjectFile": "subject.js",
+  "testFile": "test.mjs",
+  "buggyFile": "subject.buggy.js",
+  "fixedFile": "subject.fixed.js",
+  "export": "initials",
+  "signature": "initials(name: string): string — 每个单词首字母大写拼接。",
+  "probes": [
+    {
+      "name": "two",
+      "args": [
+        "john doe"
+      ],
+      "expect": "JD"
+    },
+    {
+      "name": "three",
+      "args": [
+        "a b c"
+      ],
+      "expect": "ABC"
+    },
+    {
+      "name": "one",
+      "args": [
+        "madonna"
+      ],
+      "expect": "M"
+    },
+    {
+      "name": "spaces",
+      "args": [
+        "  mary  jane "
+      ],
+      "expect": "MJ"
+    }
+  ]
+}

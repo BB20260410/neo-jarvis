@@ -1,0 +1,233 @@
+.delegation-modal-body {
+  padding: var(--spacing-3) var(--spacing-4);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+.delegation-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.delegation-toolbar input,
+.delegation-toolbar select {
+  min-width: 140px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-primary);
+  font-size: var(--text-xs);
+}
+.delegation-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--color-text-foreground-secondary);
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--bg-top) 50%, transparent);
+}
+.delegation-stats strong { color: var(--color-text-foreground-primary); }
+.delegation-stats .is-warn { color: var(--color-danger-alt); }
+.delegation-layout {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.2fr);
+  gap: var(--spacing-3);
+  flex: 1;
+}
+.delegation-list,
+.delegation-detail {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+.delegation-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.delegation-item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-gray-500);
+  border-radius: 8px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-primary);
+  padding: 8px;
+  cursor: pointer;
+}
+.delegation-item:hover,
+.delegation-item.is-active {
+  border-color: color-mix(in oklab, var(--color-accent-primary) 42%, var(--color-border-light));
+  background: color-mix(in oklab, var(--color-accent-primary) 10%, var(--bg-top));
+}
+.delegation-item.status-failed { border-left-color: var(--color-danger-alt); }
+.delegation-item.status-created { border-left-color: var(--color-success-alt); }
+.delegation-item.status-queued { border-left-color: var(--color-warn-alt); }
+.delegation-item-head,
+.delegation-item-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-xs);
+}
+.delegation-item-head strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+}
+.delegation-item-head span,
+.delegation-item-meta,
+.delegation-item-foot {
+  color: var(--color-text-foreground-tertiary);
+}
+.delegation-item-meta {
+  display: block;
+  margin: 4px 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  overflow-wrap: anywhere;
+}
+.delegation-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 1px 7px;
+  border: 1px solid var(--color-border-light);
+  background: var(--bg-surface);
+  color: var(--color-text-foreground-secondary);
+}
+.delegation-status.created { color: var(--color-success-alt); }
+.delegation-status.queued { color: var(--color-warn-alt); }
+.delegation-status.failed { color: var(--color-danger-alt); }
+.delegation-status.cancelled { color: var(--color-text-foreground-tertiary); }
+.delegation-detail {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.delegation-detail-grid {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 8px 12px;
+  font-size: var(--text-sm);
+}
+.delegation-detail-grid .k {
+  color: var(--color-text-foreground-tertiary);
+}
+.delegation-detail-grid .v {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-foreground-primary);
+}
+.delegation-detail-grid code {
+  font-family: var(--mono);
+  font-size: var(--text-xs);
+}
+.delegation-instructions {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--bg-top);
+  color: var(--color-text-foreground-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.delegation-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.delegation-empty {
+  padding: 20px;
+  color: var(--color-text-foreground-tertiary);
+}
+@media (max-width: 1100px) {
+  .activity-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .activity-toolbar .activity-search-field {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+  .activity-toolbar .cxbtn {
+    width: 100%;
+  }
+  .activity-layout {
+    grid-template-columns: 1fr;
+  }
+  .activity-list {
+    max-height: 30vh;
+  }
+  .delegation-layout {
+    grid-template-columns: 1fr;
+  }
+  .delegation-list {
+    max-height: 30vh;
+  }
+}
+
+/* v0.54 Sprint 5.5 — forward 注入的 context 消息样式 */
+.chat-room-msg-forward-ctx .chat-room-msg-bubble {
+  background: rgba(193, 95, 60, 0.06);
+  border-left: 3px solid var(--orange);
+  font-size: 13px;
+}
+.chat-room-forward-badge {
+  display: inline-block; margin-left: 8px;
+  padding: 1px 6px; border-radius: 4px;
+  background: rgba(193, 95, 60, 0.10); color: var(--orange);
+  font-size: 10px;
+}
+
+/* v0.54 Sprint 6 — squad escalated task 重试按钮 */
+.squad-task-retry {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(193, 95, 60, 0.10);
+  border: 1px solid var(--orange-soft);
+  border-radius: var(--radius-sm);
+  color: var(--orange);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background .15s;
+}
+.squad-task-retry:hover:not(:disabled) { background: rgba(193, 95, 60, 0.20); }
+.squad-task-retry:disabled { opacity: 0.5; cursor: not-allowed; background: var(--gray-100); border-color: var(--line); color: var(--text-muted); }
+
+/* S20 UI4 — :focus-visible 全局兜底（键盘可达性）
+ * 仅鼠标点击不显示焦点环；键盘 Tab 显示蓝色 outline
+ * specificity 极低（伪类），不覆盖 .cxbtn / .code-collapse-btn 等已自定义的元素 */
+:focus-visible {
+  outline: 2px solid var(--accent-blue, #2563EB);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* S20 UI2 — tap target 全局兜底（≥32×32px）
+ * 用 :where() 降 specificity 到 0，任何 class 自定义尺寸（如 .cxbtn-sm height:24px）都能 override
+ * 仅作用于无显式尺寸约束的「裸 button」/「带 role=button 的 a」 */
+:where(button, [role="button"], a.btn-icon) {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* v0.54 Sprint 8 — 帮助横幅（已弃用，留样式空段 ok） */

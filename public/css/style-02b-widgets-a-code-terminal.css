@@ -1,0 +1,284 @@
+
+/* ===== v0.26 diff 行级着色 ===== */
+.msg-body .code-wrap[data-lang="diff"] > pre {
+  border-left-color: color-mix(in oklab, var(--accent-amber) 40%, transparent);
+}
+.msg-body code.lang-diff .diff-line {
+  display: block;
+  padding: 0 6px;
+  margin: 0;
+  white-space: pre-wrap;
+  border-left: 3px solid transparent;
+}
+.msg-body code.lang-diff .diff-add {
+  background: color-mix(in oklab, var(--accent-green) 14%, transparent);
+  color: var(--color-text-success);
+  border-left-color: color-mix(in oklab, var(--accent-green) 50%, transparent);
+}
+.msg-body code.lang-diff .diff-del {
+  background: color-mix(in oklab, var(--accent-red) 14%, transparent);
+  color: var(--color-text-error);
+  border-left-color: color-mix(in oklab, var(--accent-red) 50%, transparent);
+}
+.msg-body code.lang-diff .diff-hunk {
+  color: var(--orange);
+  font-weight: var(--font-weight-semibold);
+  background: color-mix(in oklab, var(--orange) 8%, transparent);
+}
+.msg-body code.lang-diff .diff-file {
+  color: var(--color-text-foreground-tertiary);
+  font-style: italic;
+}
+.msg-body code.lang-diff .diff-ctx {
+  color: var(--color-text-foreground-secondary);
+}
+
+/* ===== v0.25 代码块包装：toolbar + 行号 + 折叠 ===== */
+.msg-body .code-wrap {
+  position: relative;
+  margin: 10px 0;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-cx-sm);
+  background: color-mix(in oklab, var(--color-text-foreground) 4%, var(--bg-surface));
+  overflow: hidden;
+}
+.msg-body .code-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px 5px 12px;
+  background: color-mix(in oklab, var(--color-text-foreground) 6%, transparent);
+  border-bottom: 1px solid var(--color-border-light);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--color-text-foreground-tertiary);
+  user-select: none;
+}
+.msg-body .code-lang {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-foreground-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.msg-body .code-lines { opacity: 0.7; }
+.msg-body .code-copy-btn,
+.msg-body .code-collapse-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+  cursor: pointer;
+  color: var(--color-text-foreground-secondary);
+  font-size: 11px;
+  transition: background 100ms, border-color 100ms, color 100ms;
+}
+.msg-body .code-collapse-btn { margin-left: auto; }
+.msg-body .code-copy-btn:hover,
+.msg-body .code-collapse-btn:hover {
+  background: color-mix(in oklab, var(--orange) 12%, transparent);
+  color: var(--orange);
+  border-color: color-mix(in oklab, var(--orange) 30%, transparent);
+}
+.msg-body .code-copy-btn:focus-visible,
+.msg-body .code-collapse-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+.msg-body .code-copy-btn.copy-success {
+  background: color-mix(in oklab, var(--accent-green) 18%, transparent);
+  color: var(--color-text-success);
+  border-color: color-mix(in oklab, var(--accent-green) 40%, transparent);
+}
+.msg-body .code-wrap > pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  max-height: 600px;
+  overflow: auto;
+  counter-reset: line;
+  padding: 10px 12px;
+}
+.msg-body .code-wrap > pre > code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre;
+  background: transparent;
+  padding: 0;
+}
+/* 行号（按 \n 分行用 CSS counter）*/
+.msg-body .code-wrap > pre > code {
+  /* 用 ::before 给每行加序号要求 code 拆分 span；简化方案：用 background-image gutter */
+  padding-left: 36px;
+  position: relative;
+}
+.msg-body .code-wrap > pre {
+  /* 左侧 gutter 用 linear-gradient 画一条竖线 + 行号靠 ::before 不现实，简化：只显左竖线作 "代码块" 视觉提示，行号留给后续若加 hljs */
+  border-left: 3px solid var(--color-border-light);
+}
+
+/* 折叠状态：pre 折叠 max-height */
+.msg-body .code-wrap.code-collapsed > pre {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+  border-bottom: none;
+}
+.msg-body .code-wrap.code-collapsed {
+  background: color-mix(in oklab, var(--color-text-foreground) 6%, var(--bg-surface));
+}
+
+/* ===== v0.24 marked 渲染产物的样式 ===== */
+.msg-body h1, .msg-body h2, .msg-body h3,
+.msg-body h4, .msg-body h5, .msg-body h6 {
+  font-weight: var(--font-weight-semibold);
+  margin: 14px 0 6px;
+  line-height: 1.3;
+  color: var(--color-text-foreground);
+}
+.msg-body h1 { font-size: var(--text-heading-lg); }
+.msg-body h2 { font-size: var(--text-heading-md); }
+.msg-body h3 { font-size: 15px; }
+.msg-body h4 { font-size: var(--text-base); }
+.msg-body p { margin: 6px 0; line-height: 1.6; }
+.msg-body ul, .msg-body ol {
+  margin: 6px 0;
+  padding-left: 24px;
+  line-height: 1.55;
+}
+.msg-body ul li { list-style-type: disc; }
+.msg-body ol li { list-style-type: decimal; }
+.msg-body li { margin: 2px 0; }
+.msg-body li > p { margin: 2px 0; }
+.msg-body blockquote {
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-left: 3px solid var(--color-border-heavy);
+  background: color-mix(in oklab, var(--color-text-foreground) 4%, transparent);
+  color: var(--color-text-foreground-secondary);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+.msg-body code:not(pre code) {
+  background: color-mix(in oklab, var(--color-text-foreground) 8%, transparent);
+  padding: 1px 5px;
+  border-radius: var(--radius-2xs);
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+.msg-body pre {
+  background: color-mix(in oklab, var(--color-text-foreground) 6%, var(--bg-surface));
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-cx-sm);
+  padding: 10px 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.msg-body pre code {
+  font-family: var(--mono);
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  display: block;
+}
+.msg-body table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: var(--text-sm);
+}
+.msg-body th, .msg-body td {
+  border: 1px solid var(--color-border-heavy);
+  padding: 6px 10px;
+  text-align: left;
+}
+.msg-body th {
+  background: color-mix(in oklab, var(--color-text-foreground) 8%, transparent);
+  font-weight: var(--font-weight-semibold);
+}
+.msg-body a {
+  color: var(--orange);
+  text-decoration: none;
+  border-bottom: 1px dotted color-mix(in oklab, var(--orange) 50%, transparent);
+}
+.msg-body a:hover { border-bottom-style: solid; }
+.msg-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border-light);
+  margin: 12px 0;
+}
+.msg-body img {
+  max-width: 100%;
+  border-radius: var(--radius-cx-sm);
+}
+
+/* ===== v0.23 内嵌真终端面板 ===== */
+.term-area {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-main);
+  overflow: hidden;
+}
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--color-border-light);
+  background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
+  flex-shrink: 0;
+}
+.term-title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-base);
+}
+.term-meta {
+  font-family: var(--mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-foreground-tertiary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.term-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.term-container {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 12px;
+  background: var(--bg-top);
+  overflow: hidden;
+  position: relative;
+}
+.term-container .xterm {
+  height: 100% !important;
+}
+.term-container .xterm-viewport {
+  background: transparent !important;
+}
+.plain-term-container {
+  padding: 0;
+}
+.plain-term-screen {
+  height: 100%;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  outline: none;
+  color: var(--text-pri);
+  background: var(--bg-top);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "run-stage-c-dev",
+  "caseSet": {
+    "layer": "dev",
+    "caseRefs": [
+      "evals/neo/dev/case-memory-retrieval-smoke-001.json",
+      "evals/neo/dev/case-real-replay-smoke-001.json",
+      "evals/neo/dev/case-synthetic-guard-smoke-001.json",
+      "evals/neo/dev/case-incident-regression-smoke-001.json"
+    ],
+    "caseCount": 4
+  },
+  "candidate": {
+    "kind": "baseline",
+    "candidateRef": "git:0063d9df1ebc",
+    "diffRef": "",
+    "parentRef": ""
+  },
+  "environment": {
+    "repo": "/Users/hxx/Desktop/Neo 贾维斯",
+    "branch": "noe-main",
+    "head": "0063d9df1ebc",
+    "node": "v26.0.0",
+    "runtimeBaseUrl": "http://127.0.0.1:51835",
+    "runtimeTouched": false
+  },
+  "policy": {
+    "readOnly": true,
+    "privateHoldoutAccessibleToCandidate": false,
+    "secretValuesReturned": false,
+    "memoryV2Writes": false,
+    "liveRestart": false
+  },
+  "outputs": {
+    "rawRef": "output/noe-eval-runs/evidence-flywheel-v2-stage-c-dev/raw.json",
+    "scoreRef": "output/noe-eval-runs/evidence-flywheel-v2-stage-c-dev/score.json",
+    "traceRefs": []
+  }
+}

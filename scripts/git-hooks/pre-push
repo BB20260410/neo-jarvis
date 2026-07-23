@@ -1,0 +1,31 @@
+#!/bin/sh
+# pre-push — light integrity first, then full unit suite.
+# 紧急绕过：git push --no-verify（事后必须补跑 npm test + integrity light）
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+NODE22="${NODE22:-$HOME/.nvm/versions/node/v22.22.2/bin/node}"
+if [ ! -x "$NODE22" ]; then
+  NODE22="$(command -v node || true)"
+fi
+
+echo "[pre-push] code-integrity light gate..."
+if [ -n "$NODE22" ] && [ -f scripts/git-hooks/pre-push-integrity-light.mjs ]; then
+  "$NODE22" scripts/git-hooks/pre-push-integrity-light.mjs \
+    || { echo "❌ pre-push: integrity light 失败"; exit 1; }
+else
+  echo "⚠️ pre-push: Node/integrity light 脚本不可用，跳过 light 门"
+fi
+
+echo "[pre-push] 全量单测中（约 40s，紧急绕过用 --no-verify）..."
+if [ -n "$NODE22" ]; then
+  "$NODE22" node_modules/vitest/vitest.mjs run --reporter=dot \
+    || { echo "❌ pre-push: 测试有红，禁止推送。"; exit 1; }
+else
+  node node_modules/vitest/vitest.mjs run --reporter=dot \
+    || { echo "❌ pre-push: 测试有红，禁止推送。"; exit 1; }
+fi
+
+echo "[pre-push] ✅ 全绿，放行。"
+exit 0

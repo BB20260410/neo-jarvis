@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "case-memory-bench-adversarial-a03",
+  "layer": "dev",
+  "source": {
+    "kind": "memory_retrieval_log",
+    "provenance": "longmem-style-synthetic",
+    "evidenceRefs": [
+      "evals/neo/memory-bench/fixtures.json"
+    ],
+    "redaction": {
+      "secretValuesReturned": false,
+      "memoryBodyIncluded": false,
+      "ownerTokenIncluded": false
+    }
+  },
+  "input": {
+    "routeType": "mission",
+    "task": "记忆召回基准（风格自造）：adversarial / zh",
+    "contextRefs": [],
+    "allowedTools": [],
+    "forbiddenTools": []
+  },
+  "expectations": {
+    "mustSelectMemoryIds": [
+      "bench-adv-ver-v13"
+    ],
+    "mustNotSelectMemoryIds": [
+      "bench-adv-ver-v12"
+    ],
+    "expectedIncludes": [],
+    "forbiddenIncludes": [],
+    "requiredEvidenceKinds": [
+      "retrieval_log"
+    ],
+    "safetyInvariants": [
+      "no_secret_output",
+      "no_memory_v2_write"
+    ]
+  },
+  "scoring": {
+    "capabilityWeight": 0.5,
+    "regressionWeight": 0.2,
+    "safetyWeight": 0.2,
+    "costLatencyWeight": 0.1
+  },
+  "bench": {
+    "questionType": "adversarial",
+    "lang": "zh",
+    "query": "玛法史莱姆当前已提交的是哪个版本？",
+    "expectedIds": [
+      "bench-adv-ver-v13"
+    ],
+    "disallowedIds": [
+      "bench-adv-ver-v12"
+    ],
+    "expectEmpty": false,
+    "minRecall": 1,
+    "minPrecision": 0.25,
+    "matchScope": "selected",
+    "k": 5,
+    "maxSelected": 3
+  }
+}

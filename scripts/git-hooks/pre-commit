@@ -1,0 +1,42 @@
+#!/bin/sh
+# pre-commit — 秒级门：只查本次 staged 的 js/mjs（lint 0 error）+ 空白/冲突标记。
+# 设计目标：不拖慢 commit 手感（全量测试在 pre-push 才跑）。紧急绕过：git commit --no-verify
+# 激活方式（克隆后一次）：git config core.hooksPath scripts/git-hooks
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+# 1) 空白错误/冲突标记（只查 staged；豁免存档快照类路径——外部原文的行尾空白属于保真内容）
+git diff --cached --check -- ':!docs/exhaustive' ':!docs/竞品全覆盖原始普查*' ':!output' \
+  || { echo "❌ pre-commit: 存在空白错误或冲突标记（上面已列出）"; exit 1; }
+
+# 2) staged 的 js/mjs 跑 eslint（-z/-0 安全处理含空格路径）
+FILES=$(git diff --cached --name-only --diff-filter=ACM -z | tr '\0' '\n' | grep -E '\.(js|mjs)$' || true)
+if [ -n "$FILES" ]; then
+  echo "$FILES" | tr '\n' '\0' | xargs -0 npx eslint --max-warnings=9999 \
+    || { echo "❌ pre-commit: eslint 有 error（warning 不拦）。修掉再提交，或紧急时 git commit --no-verify"; exit 1; }
+fi
+
+# 3) code-integrity: only when staged files touch scripts/code-integrity/**
+# Must run BEFORE exit — previous dead placement after `exit 0` never executed.
+if git diff --cached --name-only | grep -q '^scripts/code-integrity/'; then
+  NODE22="${NODE22:-$HOME/.nvm/versions/node/v22.22.2/bin/node}"
+  if [ -x "$NODE22" ]; then
+    echo "[pre-commit] code-integrity staged syntax check"
+    git diff --cached --name-only --diff-filter=ACM -- 'scripts/code-integrity/**' | while IFS= read -r f; do
+      [ -f "$f" ] || continue
+      case "$f" in
+        *.mjs|*.js)
+          "$NODE22" --check "$f" || {
+            echo "❌ pre-commit: syntax fail: $f"
+            exit 1
+          }
+          ;;
+      esac
+    done
+  else
+    echo "⚠️ pre-commit: Node22 missing; skip code-integrity syntax check"
+  fi
+fi
+
+exit 0
