@@ -103,18 +103,27 @@ async function drillLoadEnv(tempRoot) {
   const copyRoot = join(tempRoot, 'load-env-copy');
   const copyDir = join(copyRoot, 'src', 'bootstrap');
   const runtimeCopyDir = join(copyRoot, 'src', 'runtime');
+  const roomCopyDir = join(copyRoot, 'src', 'room');
   mkdirSync(copyDir, { recursive: true });
   mkdirSync(runtimeCopyDir, { recursive: true });
+  mkdirSync(roomCopyDir, { recursive: true });
   const sourceText = readFileSync(join(ROOT, 'src', 'bootstrap', 'load-env.js'), 'utf8');
-  const isolationPolicyText = readFileSync(join(ROOT, 'src', 'runtime', 'NoeIsolationDbPolicy.js'), 'utf8');
+  // load-env 顶层 import 的依赖须一并拷贝，否则 temp import 假红
+  const depCopies = [
+    [join(ROOT, 'src', 'runtime', 'NoeIsolationDbPolicy.js'), join(runtimeCopyDir, 'NoeIsolationDbPolicy.js')],
+    [join(ROOT, 'src', 'runtime', 'NoeBaiLongmaRuntimeMode.js'), join(runtimeCopyDir, 'NoeBaiLongmaRuntimeMode.js')],
+    [join(ROOT, 'src', 'room', 'NoeSelfEvolutionProfile.js'), join(roomCopyDir, 'NoeSelfEvolutionProfile.js')],
+  ];
   const copyPath = join(copyDir, 'load-env.js');
-  const isolationPolicyCopyPath = join(runtimeCopyDir, 'NoeIsolationDbPolicy.js');
+  const isolationPolicyCopyPath = depCopies[0][1];
   const existingKey = `NOE_WEAK_LOADENV_KEEP_${process.pid}`;
   const newKey = `NOE_WEAK_LOADENV_NEW_${process.pid}`;
   const missingKey = `NOE_WEAK_LOADENV_MISSING_${process.pid}`;
   const explicitKey = `NOE_WEAK_LOADENV_EXPLICIT_${process.pid}`;
   writeFileSync(copyPath, sourceText, { mode: 0o600 });
-  writeFileSync(isolationPolicyCopyPath, isolationPolicyText, { mode: 0o600 });
+  for (const [from, to] of depCopies) {
+    writeFileSync(to, readFileSync(from, 'utf8'), { mode: 0o600 });
+  }
   writeFileSync(join(copyRoot, '.env'), `${newKey}=from-temp-copy\n${existingKey}=from-temp-file\n`, { mode: 0o600 });
   writeFileSync(join(tempRoot, 'explicit.env'), `${explicitKey}=from-explicit-file\n`, { mode: 0o600 });
 

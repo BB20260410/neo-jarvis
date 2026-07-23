@@ -37,12 +37,12 @@ describe('NoePackagingContract', () => {
     expect(pkg.build?.linux?.artifactName).toBe('${productName}-${version}-${arch}.${ext}');
     expect(c.writeUpdateInfo).toBe(true);
     expect(pkg.build?.mac?.identity).toBeNull();
-    expect(pkg.homepage).toBe('https://github.com/BB20260410/noe');
+    expect(pkg.homepage).toBe('https://github.com/BB20260410/neo-jarvis');
     expect(pkg.repository).toEqual({
       type: 'git',
-      url: 'https://github.com/BB20260410/noe.git',
+      url: 'https://github.com/BB20260410/neo-jarvis.git',
     });
-    expect(pkg.license).toBe('UNLICENSED');
+    expect(pkg.license).toBe('AGPL-3.0-only');
   });
 
   it('lists prepackaged candidates with out-noe first and external brand Neo 贾维斯', () => {

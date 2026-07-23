@@ -22,7 +22,8 @@ import { createSignalRetentionWeightProvider } from '../../src/room/NoeSelfEvolu
 // 2026-07-03 十二校准 3810→3822：第三阶段 视觉源引入融合点。
 // 2026-07-03 十三校准 3822→3825：第三阶段 语音模态补活(VoiceActivity 追踪→融合 voiceActive),四模态全融合,组合根DI。
 // 2026-07-03 十四校准 3825→3830：飞轮 stuck 根因修复 A1/A2/B 三 flag 组合根接线(typeErrDetail/repairHints/failFast)。
-const MAX_LINES = 3830;
+// 2026-07-23 十五校准 3830→3905：产品 polish 组合根接线（version 四环芯片 / product-settings 路由挂载等），后续仍只许减。
+const MAX_LINES = 3905;
 
 describe('server.js 行数棘轮', () => {
   it(`server.js 不得超过 ${MAX_LINES} 行（只许减不许增）`, () => {
